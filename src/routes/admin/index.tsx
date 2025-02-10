@@ -11,6 +11,18 @@ const Layout = () => {
               <Link to="/admin/dashboard">Dashboard</Link>
             </li>
             <li className="hover:bg-[#E6B56C] p-2 rounded">
+              <Link to="/admin/school">School Management</Link>
+            </li>
+            <li className="hover:bg-[#E6B56C] p-2 rounded">
+              <Link to="/admin/staff-management">Staff Management</Link>
+            </li>
+            <li className="hover:bg-[#E6B56C] p-2 rounded">
+              <Link to="/admin/class-management">Class Management</Link>
+            </li>
+            <li className="hover:bg-[#E6B56C] p-2 rounded">
+              <Link to="/admin/student-management">Student Management</Link>
+            </li>
+            <li className="hover:bg-[#E6B56C] p-2 rounded">
               <Link to="/admin/reports">Reports</Link>
             </li>
             <li className="hover:bg-[#E6B56C] p-2 rounded">
@@ -26,7 +38,7 @@ const Layout = () => {
   )
 }
 
-export const AdminRoute = createRoute({
+export const Route = createRoute({
     path: '/admin',
     component: Layout,
     getParentRoute: () => RootRoute as AnyRoute,

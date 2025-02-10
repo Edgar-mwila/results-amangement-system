@@ -3,7 +3,7 @@ import { createFileRoute, Outlet } from '@tanstack/react-router'
 const Dashboard = () => {
   return (
     <div className="grid grid-cols-4">
-      <div className="bg-[#F2CC8F] h-full">
+      <div className="bg-[#F2CC8F] min-h-hieght">
         <ul>
           <li>item 1</li>
           <li>item 2</li>

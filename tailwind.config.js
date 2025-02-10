@@ -11,6 +11,7 @@ export default {
   		},
   		colors: {
 			'custom-text': '#3D405B',
+			'custom-brown': '#F2CC8F',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

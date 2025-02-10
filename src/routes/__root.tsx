@@ -4,19 +4,6 @@ import { type QueryClient } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/sonner"
 import { HelpCircleIcon } from 'lucide-react';
 
-export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
-      <head />
-      <body>
-        <main>{children}</main>
-        <Toaster />
-      </body>
-    </html>
-  )
-}
-
-
 interface MyRouterContext {
   queryClient: QueryClient
 }
