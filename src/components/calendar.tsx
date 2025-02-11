@@ -149,7 +149,7 @@ const SchoolCalendar = () => {
   return (
     <div  className="w-full text-[#3D405B]">
       {/* Current Term Title */}
-      <div className="text-center font-bold text-lg">
+      <div className="text-center font-bold text-2xl">
         {currentTerm.name}
       </div>
       <Card className='border border-[#3D405B]'>
