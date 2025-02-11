@@ -37,12 +37,12 @@ import { Route as ParentStudentIdImport } from './routes/parent/student.$id'
 import { Route as ParentAuthResetPasswordImport } from './routes/parent/auth/reset-password'
 import { Route as AdminAuthResetPasswordImport } from './routes/admin/auth/reset-password'
 import { Route as TeacherClassesIdIndexImport } from './routes/teacher/classes/id/index'
-import { Route as AdminClassManagementIdIndexImport } from './routes/admin/class-management/id/index'
+import { Route as AdminClassManagementIdIndexImport } from './routes/admin/class-management/$id/index'
 import { Route as TeacherClassesIdAssesmentsImport } from './routes/teacher/classes/id/assesments'
 import { Route as AdminStudentManagementStudentIdImport } from './routes/admin/student-management/student.$id'
 import { Route as AdminStaffManagementStafferIdImport } from './routes/admin/staff-management/staffer.$id'
 import { Route as TeacherClassesIdStudentIdImport } from './routes/teacher/classes/id/student.$id'
-import { Route as AdminClassManagementIdStudentIdImport } from './routes/admin/class-management/id/student.$id'
+import { Route as AdminClassManagementIdStudentIdImport } from './routes/admin/class-management/$id/student.$id'
 
 // Create/Update Routes
 
@@ -179,7 +179,7 @@ const TeacherClassesIdIndexRoute = TeacherClassesIdIndexImport.update({
 
 const AdminClassManagementIdIndexRoute =
   AdminClassManagementIdIndexImport.update({
-    path: '/admin/class-management/id/',
+    path: '/admin/class-management/$id/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -209,7 +209,7 @@ const TeacherClassesIdStudentIdRoute = TeacherClassesIdStudentIdImport.update({
 
 const AdminClassManagementIdStudentIdRoute =
   AdminClassManagementIdStudentIdImport.update({
-    path: '/admin/class-management/id/student/$id',
+    path: '/admin/class-management/$id/student/$id',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -413,10 +413,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeacherClassesIdAssesmentsImport
       parentRoute: typeof rootRoute
     }
-    '/admin/class-management/id/': {
-      id: '/admin/class-management/id/'
-      path: '/admin/class-management/id'
-      fullPath: '/admin/class-management/id'
+    '/admin/class-management/$id/': {
+      id: '/admin/class-management/$id/'
+      path: '/admin/class-management/$id'
+      fullPath: '/admin/class-management/$id'
       preLoaderRoute: typeof AdminClassManagementIdIndexImport
       parentRoute: typeof rootRoute
     }
@@ -427,10 +427,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeacherClassesIdIndexImport
       parentRoute: typeof rootRoute
     }
-    '/admin/class-management/id/student/$id': {
-      id: '/admin/class-management/id/student/$id'
-      path: '/admin/class-management/id/student/$id'
-      fullPath: '/admin/class-management/id/student/$id'
+    '/admin/class-management/$id/student/$id': {
+      id: '/admin/class-management/$id/student/$id'
+      path: '/admin/class-management/$id/student/$id'
+      fullPath: '/admin/class-management/$id/student/$id'
       preLoaderRoute: typeof AdminClassManagementIdStudentIdImport
       parentRoute: typeof rootRoute
     }
@@ -475,9 +475,9 @@ export interface FileRoutesByFullPath {
   '/admin/staff-management/staffer/$id': typeof AdminStaffManagementStafferIdRoute
   '/admin/student-management/student/$id': typeof AdminStudentManagementStudentIdRoute
   '/teacher/classes/id/assesments': typeof TeacherClassesIdAssesmentsRoute
-  '/admin/class-management/id': typeof AdminClassManagementIdIndexRoute
+  '/admin/class-management/$id': typeof AdminClassManagementIdIndexRoute
   '/teacher/classes/id': typeof TeacherClassesIdIndexRoute
-  '/admin/class-management/id/student/$id': typeof AdminClassManagementIdStudentIdRoute
+  '/admin/class-management/$id/student/$id': typeof AdminClassManagementIdStudentIdRoute
   '/teacher/classes/id/student/$id': typeof TeacherClassesIdStudentIdRoute
 }
 
@@ -510,9 +510,9 @@ export interface FileRoutesByTo {
   '/admin/staff-management/staffer/$id': typeof AdminStaffManagementStafferIdRoute
   '/admin/student-management/student/$id': typeof AdminStudentManagementStudentIdRoute
   '/teacher/classes/id/assesments': typeof TeacherClassesIdAssesmentsRoute
-  '/admin/class-management/id': typeof AdminClassManagementIdIndexRoute
+  '/admin/class-management/$id': typeof AdminClassManagementIdIndexRoute
   '/teacher/classes/id': typeof TeacherClassesIdIndexRoute
-  '/admin/class-management/id/student/$id': typeof AdminClassManagementIdStudentIdRoute
+  '/admin/class-management/$id/student/$id': typeof AdminClassManagementIdStudentIdRoute
   '/teacher/classes/id/student/$id': typeof TeacherClassesIdStudentIdRoute
 }
 
@@ -546,9 +546,9 @@ export interface FileRoutesById {
   '/admin/staff-management/staffer/$id': typeof AdminStaffManagementStafferIdRoute
   '/admin/student-management/student/$id': typeof AdminStudentManagementStudentIdRoute
   '/teacher/classes/id/assesments': typeof TeacherClassesIdAssesmentsRoute
-  '/admin/class-management/id/': typeof AdminClassManagementIdIndexRoute
+  '/admin/class-management/$id/': typeof AdminClassManagementIdIndexRoute
   '/teacher/classes/id/': typeof TeacherClassesIdIndexRoute
-  '/admin/class-management/id/student/$id': typeof AdminClassManagementIdStudentIdRoute
+  '/admin/class-management/$id/student/$id': typeof AdminClassManagementIdStudentIdRoute
   '/teacher/classes/id/student/$id': typeof TeacherClassesIdStudentIdRoute
 }
 
@@ -583,9 +583,9 @@ export interface FileRouteTypes {
     | '/admin/staff-management/staffer/$id'
     | '/admin/student-management/student/$id'
     | '/teacher/classes/id/assesments'
-    | '/admin/class-management/id'
+    | '/admin/class-management/$id'
     | '/teacher/classes/id'
-    | '/admin/class-management/id/student/$id'
+    | '/admin/class-management/$id/student/$id'
     | '/teacher/classes/id/student/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -617,9 +617,9 @@ export interface FileRouteTypes {
     | '/admin/staff-management/staffer/$id'
     | '/admin/student-management/student/$id'
     | '/teacher/classes/id/assesments'
-    | '/admin/class-management/id'
+    | '/admin/class-management/$id'
     | '/teacher/classes/id'
-    | '/admin/class-management/id/student/$id'
+    | '/admin/class-management/$id/student/$id'
     | '/teacher/classes/id/student/$id'
   id:
     | '__root__'
@@ -651,9 +651,9 @@ export interface FileRouteTypes {
     | '/admin/staff-management/staffer/$id'
     | '/admin/student-management/student/$id'
     | '/teacher/classes/id/assesments'
-    | '/admin/class-management/id/'
+    | '/admin/class-management/$id/'
     | '/teacher/classes/id/'
-    | '/admin/class-management/id/student/$id'
+    | '/admin/class-management/$id/student/$id'
     | '/teacher/classes/id/student/$id'
   fileRoutesById: FileRoutesById
 }
@@ -768,9 +768,9 @@ export const routeTree = rootRoute
         "/admin/staff-management/staffer/$id",
         "/admin/student-management/student/$id",
         "/teacher/classes/id/assesments",
-        "/admin/class-management/id/",
+        "/admin/class-management/$id/",
         "/teacher/classes/id/",
-        "/admin/class-management/id/student/$id",
+        "/admin/class-management/$id/student/$id",
         "/teacher/classes/id/student/$id"
       ]
     },
@@ -858,14 +858,14 @@ export const routeTree = rootRoute
     "/teacher/classes/id/assesments": {
       "filePath": "teacher/classes/id/assesments.tsx"
     },
-    "/admin/class-management/id/": {
-      "filePath": "admin/class-management/id/index.tsx"
+    "/admin/class-management/$id/": {
+      "filePath": "admin/class-management/$id/index.tsx"
     },
     "/teacher/classes/id/": {
       "filePath": "teacher/classes/id/index.tsx"
     },
-    "/admin/class-management/id/student/$id": {
-      "filePath": "admin/class-management/id/student.$id.tsx"
+    "/admin/class-management/$id/student/$id": {
+      "filePath": "admin/class-management/$id/student.$id.tsx"
     },
     "/teacher/classes/id/student/$id": {
       "filePath": "teacher/classes/id/student.$id.tsx"
