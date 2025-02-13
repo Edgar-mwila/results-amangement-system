@@ -1,10 +1,11 @@
 import { useState } from "react"
-import { createFileRoute } from "@tanstack/react-router"
+import { AnyRoute, createRoute } from "@tanstack/react-router"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { FileText, Printer, Search } from "lucide-react"
+import { Route as AdminRoute } from '../index'
 
 // Define types for overall metrics
 type OverallMetrics = {
@@ -139,7 +140,8 @@ const Reports: React.FC = () => {
     </div>
   )
 }
-
-export const Route = createFileRoute("/admin/reports/")({
+export const Route = createRoute({
+  path: '/admin/reports/',
   component: Reports,
+  getParentRoute: () => AdminRoute as AnyRoute,
 })

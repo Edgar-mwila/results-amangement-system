@@ -1,11 +1,10 @@
-"use client"
-
 import { Input } from "@/components/ui/input"
 import { TableRow, TableCell, TableBody, TableHead, Table } from "@/components/ui/table"
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { AnyRoute, createRoute, Link } from "@tanstack/react-router"
 import { Search, BookPlus } from "lucide-react"
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
+import { Route as AdminRoute } from '../index'
 
 const exampleClasses = [
   { id: 1, name: "Advanced Mathematics", teacher: "Dr. Smith", grade: "11", students: 25, room: "101" },
@@ -79,7 +78,9 @@ const ClassManagement = () => {
   )
 }
 
-export const Route = createFileRoute("/admin/class-management/")({
+export const Route = createRoute({
+  path: '/admin/class-management/',
   component: ClassManagement,
+  getParentRoute: () => AdminRoute as AnyRoute,
 })
 

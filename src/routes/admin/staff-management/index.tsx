@@ -1,9 +1,10 @@
 import { Input } from "@/components/ui/input"
 import { TableRow, TableCell, TableBody, TableHead, Table } from "@/components/ui/table"
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { AnyRoute, createRoute, Link } from "@tanstack/react-router"
 import { Search, UserPlus } from "lucide-react"
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
+import { Route as AdminRoute } from '../index'
 
 const exampleStaff = [
   { id: 1, firstname: "John", lastname: "Doe", role: "Teacher", email: "john.doe@school.com", status: "Active" },
@@ -115,6 +116,8 @@ const StaffManagement = () => {
   )
 }
 
-export const Route = createFileRoute("/admin/staff-management/")({
+export const Route = createRoute({
+  path: '/admin/staff-management/',
   component: StaffManagement,
+  getParentRoute: () => AdminRoute as AnyRoute,
 })

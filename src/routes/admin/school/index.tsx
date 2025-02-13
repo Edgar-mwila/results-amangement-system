@@ -1,6 +1,7 @@
 import SchoolCalendar from '@/components/manage-calendar'
 import SchoolProfile from '@/components/school-profile'
-import { createFileRoute } from '@tanstack/react-router'
+import { AnyRoute, createRoute } from '@tanstack/react-router'
+import { Route as AdminRoute } from '../index'
 
 const SchoolManagement = () => {
   return (
@@ -11,6 +12,8 @@ const SchoolManagement = () => {
   )
 }
 
-export const Route = createFileRoute('/admin/school/')({
+export const Route = createRoute({
+  path: '/admin/school/',
   component: SchoolManagement,
+  getParentRoute: () => AdminRoute as AnyRoute,
 })

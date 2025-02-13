@@ -4,7 +4,7 @@ import { Route as RootRoute } from '../__root'
 const Layout = () => {
   return (
     <div className="grid grid-cols-4 min-h-screen">
-      <div className="bg-[#F2CC8F] p-4">
+      <div className="bg-[#F2CC8F] p-4 max-h-screen">
         <nav>
           <ul className="space-y-2">
             <li className="hover:bg-[#E6B56C] p-2 rounded">
@@ -31,7 +31,7 @@ const Layout = () => {
           </ul>
         </nav>
       </div>
-      <div className="col-span-3 p-4 bg-gray-50">
+      <div className="col-span-3 p-4 bg-gray-50 max-h-screen overflow-y-scroll">
         <Outlet />
       </div>
     </div>
