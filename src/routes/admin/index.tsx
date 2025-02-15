@@ -26,7 +26,7 @@ const Layout = () => {
   )
 }
 
-export const AdminRoute = createRoute({
+export const Route = createRoute({
     path: '/admin',
     component: Layout,
     getParentRoute: () => RootRoute as AnyRoute,
