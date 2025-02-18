@@ -123,7 +123,7 @@ const SchoolProfile = () => {
 
   const getStatusColor = (status: string): string => {
     const colors = {
-      active: "bg-green-500",
+      active: "bg-[#F2CC8F]",
       expired: "bg-red-500",
       cancelled: "bg-gray-500",
       pending: "bg-yellow-500",
@@ -296,7 +296,7 @@ const SchoolProfile = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-6">
+    <div className="min-w-full mx-auto p-4 space-y-6">
       {/* Header Section */}
       <div className="flex justify-between items-center">
         <div>

@@ -68,7 +68,7 @@ const StaffManagement = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Button className="bg-green-500 hover:bg-green-600">
+        <Button className="bg-[#F2CC8F] hover:bg-green-600">
           <UserPlus className="mr-2 h-4 w-4" />
           Add New Staff
         </Button>

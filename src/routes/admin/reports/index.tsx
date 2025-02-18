@@ -48,8 +48,8 @@ type ReportDialogProps = {
 const ReportDialog: React.FC<ReportDialogProps> = ({ title, onGenerate }) => (
   <Dialog>
     <DialogTrigger asChild>
-      <Button className="w-full h-full text-left p-4 flex flex-col items-start justify-between">
-        <span>{title}</span>
+      <Button className="w-full h-full text-left p-4 flex flex-col items-start justify-between bg-[#F2CC8F] hover:bg-[#F2CC8F] hover:p-5">
+        <span className="text-2xl">{title}</span>
         <FileText className="mt-4" size={24} />
       </Button>
     </DialogTrigger>
@@ -81,7 +81,7 @@ const Reports: React.FC = () => {
 
   return (
     <div className="flex flex-col justify-center min-w-full p-4 space-y-8">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="flex justify-evenly gap-4">
         <ReportDialog title="Student Report" onGenerate={handleGenerateReport} />
         <ReportDialog title="Teacher Report" onGenerate={handleGenerateReport} />
         <ReportDialog title="Class Report" onGenerate={handleGenerateReport} />
@@ -90,7 +90,7 @@ const Reports: React.FC = () => {
       <div className="border border-custom-text p-4 rounded-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Overall School Metrics</h2>
-          <Button onClick={handlePrintOverallMetrics}>
+          <Button onClick={handlePrintOverallMetrics} className="bg-[#F2CC8F] hover:bg-[#F2CC8F] hover:p-5">
             <Printer className="mr-2 h-4 w-4" /> Print Metrics
           </Button>
         </div>
@@ -135,7 +135,7 @@ const Reports: React.FC = () => {
       </div>
 
       {generatedReport && (
-        <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-md shadow-lg">{generatedReport}</div>
+        <div className="fixed bottom-4 right-4 bg-[#F2CC8F] text-white p-4 rounded-md shadow-lg">{generatedReport}</div>
       )}
     </div>
   )

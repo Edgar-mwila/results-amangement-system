@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <!-- Background -->
+  <rect width="800" height="500" fill="#f8f9fa" />
+  
+  <!-- Title at top -->
+  <text x="400" y="40" fill="#343a40" text-anchor="middle" font-family="Arial" font-size="32" font-weight="bold">Iterative Enhancement Model Workflow</text>
+  
+  <!-- Define the arrow marker properly -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#343a40" />
+    </marker>
+  </defs>
+  
+  <!-- Circles - positioned lower to accommodate title at top -->
+  <g id="plan">
+    <circle cx="400" cy="120" r="40" fill="#4e73df" />
+    <text x="400" y="125" fill="white" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">Plan</text>
+  </g>
+  
+  <g id="design">
+    <circle cx="630" cy="220" r="40" fill="#1cc88a" />
+    <text x="630" y="225" fill="white" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">Design</text>
+  </g>
+  
+  <g id="implement">
+    <circle cx="550" cy="370" r="40" fill="#f6c23e" />
+    <text x="550" y="375" fill="white" text-anchor="middle" font-family="Arial" font-size="15" font-weight="bold">Implement</text>
+  </g>
+  
+  <g id="test">
+    <circle cx="250" cy="370" r="40" fill="#e74a3b" />
+    <text x="250" y="375" fill="white" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">Test</text>
+  </g>
+  
+  <g id="evaluate">
+    <circle cx="170" cy="220" r="40" fill="#36b9cc" />
+    <text x="170" y="225" fill="white" text-anchor="middle" font-family="Arial" font-size="15" font-weight="bold">Evaluate</text>
+  </g>
+  
+  <!-- Corrected Arrows with better alignment -->
+  <!-- Plan to Design - from right side of Plan to left side of Design -->
+  <path d="M 438 130 Q 520 150, 592 205" stroke="#343a40" stroke-width="2" marker-end="url(#arrowhead)" fill="none" />
+  
+  <!-- Design to Implement - from bottom of Design to top of Implement -->
+  <path d="M 620 258 Q 600 310, 560 332" stroke="#343a40" stroke-width="2" marker-end="url(#arrowhead)" fill="none" />
+  
+  <!-- Implement to Test - from left of Implement to right of Test -->
+  <path d="M 512 370 Q 380 380, 290 370" stroke="#343a40" stroke-width="2" marker-end="url(#arrowhead)" fill="none" />
+  
+  <!-- Test to Evaluate - from top of Test to bottom of Evaluate -->
+  <path d="M 230 335 Q 200 290, 180 258" stroke="#343a40" stroke-width="2" marker-end="url(#arrowhead)" fill="none" />
+  
+  <!-- Evaluate to Plan - from right of Evaluate to left of Plan -->
+  <path d="M 208 210 Q 300 160, 360 130" stroke="#343a40" stroke-width="2" marker-end="url(#arrowhead)" fill="none" />
+  
+  <!-- Center Text -->
+  <text x="400" y="245" fill="#343a40" text-anchor="middle" font-family="Arial" font-size="24" font-weight="bold">Iteration</text>
+</svg>

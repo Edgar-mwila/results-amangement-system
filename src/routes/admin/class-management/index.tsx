@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input"
-import { TableRow, TableCell, TableBody, TableHead, Table } from "@/components/ui/table"
+import { TableRow, TableCell, TableBody, Table } from "@/components/ui/table"
 import { AnyRoute, createRoute, Link } from "@tanstack/react-router"
 import { Search, BookPlus } from "lucide-react"
 import { useState, useMemo } from "react"
@@ -48,15 +48,13 @@ const ClassManagement = () => {
       <div>
         <h2 className="text-xl font-semibold mb-2">Class List</h2>
         <Table>
-          <TableHead>
-            <TableRow className="bg-[#F2CC8F]">
+            <TableRow className="bg-[#F2CC8F] hover:bg-[#F2CC8F]">
               <TableCell className="font-bold text-base">Class Name</TableCell>
               <TableCell className="font-bold text-base">Teacher</TableCell>
               <TableCell className="font-bold text-base">Grade</TableCell>
               <TableCell className="font-bold text-base">Students</TableCell>
               <TableCell className="font-bold text-base">Room</TableCell>
             </TableRow>
-          </TableHead>
           <TableBody>
             {filteredClasses.map((cls) => (
               <TableRow key={cls.id} className="hover:bg-gray-50">

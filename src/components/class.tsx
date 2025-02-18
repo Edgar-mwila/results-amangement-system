@@ -112,83 +112,8 @@ const classData = {
       improvementAreas: ['Probability'],
       behaviorRating: 'Excellent'
     },
-  ],
-  monitorComplaints: [
-    { 
-      id: 1, 
-      student: 'Emma Wilson', 
-      type: 'Discipline', 
-      description: 'Disruptive behavior during group work',
-      date: '2023-05-10'
-    },
-    { 
-      id: 2, 
-      student: 'Noah Kim', 
-      type: 'Academic Integrity', 
-      description: 'Caught cheating on a quiz',
-      date: '2023-04-20'
-    },
-    { 
-      id: 3, 
-      student: 'Sophia Patel', 
-      type: 'Attendance', 
-      description: 'Excessive tardiness',
-      date: '2023-04-15'
-    },
-    { 
-      id: 4, 
-      student: 'Michael Brown', 
-      type: 'Bullying', 
-      description: 'Verbally harassing a classmate',
-      date: '2023-03-25'
-    },
-    { 
-      id: 5, 
-      student: 'Olivia Lee', 
-      type: 'Discipline', 
-      description: 'Refusing to follow teacher instructions',
-      date: '2023-03-18'
-    },
-  ],
-  classActivities: [
-    { 
-      id: 1, 
-      name: 'Math Olympiad Preparation', 
-      type: 'Academic',
-      participants: 15,
-      date: '2023-05-20'
-    },
-    { 
-      id: 2, 
-      name: 'Geometry Scavenger Hunt', 
-      type: 'Interactive',
-      participants: 25,
-      date: '2023-05-15'
-    },
-    { 
-      id: 3, 
-      name: 'Math Fair Project Exhibition', 
-      type: 'Extracurricular',
-      participants: 20,
-      date: '2023-06-01'
-    },
-    { 
-      id: 4, 
-      name: 'Algebra Review Game Day', 
-      type: 'Academic',
-      participants: 18,
-      date: '2023-05-25'
-    },
-    { 
-      id: 5, 
-      name: 'Guest Lecture: Real-World Math Applications', 
-      type: 'Enrichment',
-      participants: 28,
-      date: '2023-06-08'
-    },
   ]
 };
-
 
 export default function ClassView() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -263,17 +188,6 @@ export default function ClassView() {
               Student Performance
             </TabsTrigger>
             <TabsTrigger 
-              value="complaints"
-              className="
-                data-[state=active]:text-[#2A9D8F]
-                data-[state=active]:border-b-2 
-                data-[state=active]:border-[#2A9D8F]
-                mr-4 pb-2
-              "
-            >
-              Monitor Complaints
-            </TabsTrigger>
-            <TabsTrigger 
               value="activities"
               className="
                 data-[state=active]:text-[#2A9D8F]
@@ -282,13 +196,14 @@ export default function ClassView() {
                 mr-4 pb-2
               "
             >
-              Class Activities
+              Assesments
             </TabsTrigger>
           </TabsList>
         </ScrollArea>
 
         {/* Overview Tab */}
-        <TabsContent value="overview">
+        <TabsContent value="subjects">
+          <h1>Subjects</h1>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             <Card 
               className="shadow-md" 
@@ -374,81 +289,6 @@ export default function ClassView() {
                         >
                           Detailed Report
                         </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Monitor Complaints Tab */}
-        <TabsContent value="complaints">
-          <Card 
-            className="mt-6"
-            style={{ 
-              backgroundColor: '#FFFFFF', 
-              borderColor: '#A8A8A8' 
-            }}
-          >
-            <CardHeader>
-              <CardTitle 
-                className="text-lg flex items-center"
-                style={{ color: '#264653' }}
-              >
-                <AlertCircle className="mr-2" style={{ color: '#E76F51' }} />
-                Monitor Complaints
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Student</TableHead>
-                    <TableHead>Complaint Type</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {classData.monitorComplaints.map((complaint) => (
-                    <TableRow key={complaint.id}>
-                      <TableCell>{complaint.student}</TableCell>
-                      <TableCell>
-                        <Badge 
-                          style={{ 
-                            backgroundColor: '#E76F51', 
-                            color: 'white' 
-                          }}
-                        >
-                          {complaint.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{complaint.description}</TableCell>
-                      <TableCell>{complaint.date}</TableCell>
-                      <TableCell>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              style={{ 
-                                borderColor: '#2A9D8F', 
-                                color: '#2A9D8F' 
-                              }}
-                            >
-                              Investigate
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Complaint Details</DialogTitle>
-                            </DialogHeader>
-                            {/* Add more detailed complaint investigation UI */}
-                          </DialogContent>
-                        </Dialog>
                       </TableCell>
                     </TableRow>
                   ))}
