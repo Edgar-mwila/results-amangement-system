@@ -185,7 +185,7 @@ const terms: Term[] = [
 function getGradeColor(grade: string) {
   const gradeColors = {
     'A': 'text-[#4CAF50]',
-    'B': 'text-[#2A9D8F]',
+    'B': 'text-[#F2CC8F]',
     'C': 'text-[#F4A261]',
     'D': 'text-[#E76F51]',
     'F': 'text-[#D62828]'
@@ -207,7 +207,7 @@ function SubjectCard({ subject }: { subject: Subject }) {
     <Card className="mb-6 bg-white">
       <CardHeader className="border-b border-[#F4F4F4]">
         <CardTitle className="text-[#264653] flex items-center">
-          <Book className="w-5 h-5 mr-2 text-[#2A9D8F]" />
+          <Book className="w-5 h-5 mr-2 text-[#F2CC8F]" />
           {subject.name}
         </CardTitle>
       </CardHeader>
@@ -242,7 +242,7 @@ function SubjectCard({ subject }: { subject: Subject }) {
               <div className="bg-[#F4F4F4] p-4 rounded-lg">
                 <h4 className="text-[#264653] font-semibold mb-2">Final Exam</h4>
                 <div className="text-center">
-                  <span className="text-3xl font-bold text-[#2A9D8F]">{subject.finalExam}%</span>
+                  <span className="text-3xl font-bold text-[#F2CC8F]">{subject.finalExam}%</span>
                 </div>
               </div>
             </div>
@@ -260,14 +260,14 @@ function SubjectCard({ subject }: { subject: Subject }) {
               </div>
               <div className="text-right">
                 <h4 className="text-[#264653] font-semibold mb-2">Attendance</h4>
-                <span className="text-2xl font-semibold text-[#2A9D8F]">{subject.attendance}%</span>
+                <span className="text-2xl font-semibold text-[#F2CC8F]">{subject.attendance}%</span>
               </div>
             </div>
 
             {/* Teacher's Comment */}
             <div>
               <h4 className="text-[#264653] font-semibold mb-2 flex items-center">
-                <MessageSquare className="w-4 h-4 mr-2 text-[#2A9D8F]" />
+                <MessageSquare className="w-4 h-4 mr-2 text-[#F2CC8F]" />
                 Teacher's Comment
               </h4>
               <p className="text-[#264653]">{subject.teacherComment}</p>
@@ -291,7 +291,7 @@ function SubjectCard({ subject }: { subject: Subject }) {
             {/* Teacher Contact */}
             <div className="bg-[#F4F4F4] p-4 rounded-lg">
               <h4 className="text-[#264653] font-semibold mb-3 flex items-center">
-                <GraduationCap className="w-4 h-4 mr-2 text-[#2A9D8F]" />
+                <GraduationCap className="w-4 h-4 mr-2 text-[#F2CC8F]" />
                 Teacher Contact
               </h4>
               <div className="space-y-2">
@@ -299,11 +299,11 @@ function SubjectCard({ subject }: { subject: Subject }) {
                   {subject.teacherName}
                 </p>
                 <p className="flex items-center text-[#264653]">
-                  <Mail className="w-4 h-4 mr-2 text-[#2A9D8F]" />
+                  <Mail className="w-4 h-4 mr-2 text-[#F2CC8F]" />
                   {subject.teacherEmail}
                 </p>
                 <p className="flex items-center text-[#264653]">
-                  <Phone className="w-4 h-4 mr-2 text-[#2A9D8F]" />
+                  <Phone className="w-4 h-4 mr-2 text-[#F2CC8F]" />
                   {subject.teacherPhone}
                 </p>
               </div>
@@ -332,8 +332,8 @@ function SubjectTabs({ subjects }: { subjects: Subject[] }) {
               key={subject.name} 
               value={subject.name}
               className="
-                data-[state=active]:bg-[#2A9D8F]/10 
-                data-[state=active]:text-[#2A9D8F] 
+                data-[state=active]:bg-[#F2CC8F]/10 
+                data-[state=active]:text-custom-text 
                 text-[#A8A8A8] 
                 mx-2 
                 rounded-full
@@ -406,19 +406,19 @@ export function StudentPage() {
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-[#F4F4F4] rounded-lg">
                   <p className="text-[#A8A8A8] mb-1">Attendance</p>
-                  <p className="text-2xl font-bold text-[#2A9D8F]">
+                  <p className="text-2xl font-bold text-[#F2CC8F]">
                     {selectedTerm.overallAttendance}%
                   </p>
                 </div>
                 <div className="text-center p-4 bg-[#F4F4F4] rounded-lg">
                   <p className="text-[#A8A8A8] mb-1">Behavior</p>
-                  <p className="text-2xl font-bold text-[#2A9D8F]">
+                  <p className="text-2xl font-bold text-[#F2CC8F]">
                     {selectedTerm.behaviorRating}%
                   </p>
                 </div>
                 <div className="text-center p-4 bg-[#F4F4F4] rounded-lg">
                   <p className="text-[#A8A8A8] mb-1">Activities</p>
-                  <p className="text-2xl font-bold text-[#2A9D8F]">
+                  <p className="text-2xl font-bold text-[#F2CC8F]">
                     {selectedTerm.extracurricularActivities.length}
                   </p>
                 </div>
@@ -443,7 +443,7 @@ export function StudentPage() {
         <SubjectTabs subjects={selectedTerm.subjects} />
 
         {/* Overall Evaluation */}
-        <Card className="mt-8 bg-[#2A9D8F]/5">
+        <Card className="mt-8 bg-[#F2CC8F]/5">
           <CardHeader>
             <CardTitle className="text-[#264653]">Overall Evaluation</CardTitle>
           </CardHeader>
@@ -464,7 +464,7 @@ export function StudentPage() {
                 {selectedTerm.extracurricularActivities.map((activity, index) => (
                   <span 
                     key={index}
-                    className="px-3 py-1 bg-[#2A9D8F]/10 text-[#2A9D8F] rounded-full text-sm"
+                    className="px-3 py-1 bg-[#F2CC8F]/10 text-custom-text rounded-full text-sm"
                   >
                     {activity}
                   </span>
