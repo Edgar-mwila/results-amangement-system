@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <!-- White background -->
+  <rect x="0" y="0" width="800" height="800" fill="white" />
+  
+  <!-- Container backdrop -->
+  <rect x="50" y="70" width="700" height="500" rx="15" fill="#edf2f7" stroke="#2d3748" stroke-width="3" stroke-dasharray="10,5" />
+  <text x="400" y="50" font-family="Arial" font-size="22" text-anchor="middle" font-weight="bold">System Architecture</text>
+  
+  <!-- Arrowhead definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#495057" />
+    </marker>
+    <marker id="blueArrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#1971c2" />
+    </marker>
+    <marker id="greenArrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6db33f" />
+    </marker>
+    <marker id="orangeArrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#f08c00" />
+    </marker>
+  </defs>
+  
+  <!-- Frontend Section -->
+  <rect x="100" y="120" width="200" height="400" rx="10" fill="#e9ecef" stroke="#495057" stroke-width="2" />
+  <text x="200" y="150" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Frontend (React)</text>
+  
+  <!-- Frontend Components -->
+  <rect x="120" y="170" width="160" height="40" rx="5" fill="#fff" stroke="#495057" stroke-width="1" />
+  <text x="200" y="195" font-family="Arial" font-size="14" text-anchor="middle">React Components</text>
+  
+  <rect x="120" y="220" width="160" height="40" rx="5" fill="#fff" stroke="#495057" stroke-width="1" />
+  <text x="200" y="245" font-family="Arial" font-size="14" text-anchor="middle">Hooks / State</text>
+  
+  <rect x="120" y="270" width="160" height="40" rx="5" fill="#fff" stroke="#495057" stroke-width="1" />
+  <text x="200" y="295" font-family="Arial" font-size="14" text-anchor="middle">Assets</text>
+  
+  <!-- Vite Packaging -->
+  <rect x="120" y="450" width="160" height="50" rx="5" fill="#ffe066" stroke="#f08c00" stroke-width="2" />
+  <text x="200" y="480" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">Vite Build</text>
+  
+  <!-- Backend Section -->
+  <rect x="350" y="120" width="200" height="400" rx="10" fill="#e9ecef" stroke="#495057" stroke-width="2" />
+  <text x="450" y="150" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Backend (Spring Boot)</text>
+  
+  <!-- Backend Components -->
+  <rect x="370" y="170" width="160" height="40" rx="5" fill="#fff" stroke="#495057" stroke-width="1" />
+  <text x="450" y="195" font-family="Arial" font-size="14" text-anchor="middle">Static File Server</text>
+  
+  <rect x="370" y="270" width="160" height="40" rx="5" fill="#fff" stroke="#495057" stroke-width="1" />
+  <text x="450" y="295" font-family="Arial" font-size="14" text-anchor="middle">REST Controllers</text>
+  
+  <rect x="370" y="370" width="160" height="40" rx="5" fill="#fff" stroke="#495057" stroke-width="1" />
+  <text x="450" y="395" font-family="Arial" font-size="14" text-anchor="middle">Service Layer</text>
+  
+  <rect x="370" y="470" width="160" height="40" rx="5" fill="#fff" stroke="#495057" stroke-width="1" />
+  <text x="450" y="495" font-family="Arial" font-size="14" text-anchor="middle">JPA Repositories</text>
+  
+  <!-- Database Section -->
+  <rect x="600" y="120" width="100" height="400" rx="10" fill="#e9ecef" stroke="#495057" stroke-width="2" />
+  <text x="650" y="150" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">PostgreSQL</text>
+  
+  <!-- PostgreSQL Logo -->
+  <circle cx="650" cy="180" r="12" fill="#336791" />
+  <path d="M650 168 Q655 173, 650 178 Q645 173, 650 168" fill="white" stroke="white" stroke-width="0.5" />
+  <path d="M650 178 L650 186" stroke="white" stroke-width="1.5" />
+  <path d="M647 183 L653 183" stroke="white" stroke-width="1" />
+  
+  <!-- Database Icon -->
+  <path d="M650 215 C680 215, 680 215, 680 230 C680 245, 620 245, 620 230 C620 215, 620 215, 650 215" fill="#ced4da" stroke="#495057" stroke-width="1" />
+  <path d="M650 230 C680 230, 680 230, 680 245 C680 260, 620 260, 620 245 C620 230, 620 230, 650 230" fill="#adb5bd" stroke="#495057" stroke-width="1" />
+  <path d="M650 245 C680 245, 680 245, 680 260 C680 275, 620 275, 620 260 C620 245, 620 245, 650 245" fill="#868e96" stroke="#495057" stroke-width="1" />
+  
+  <!-- User and Browser (Positioned outside the container) -->
+  <!-- Browser Window -->
+  <rect x="375" y="600" width="50" height="40" rx="3" fill="#dee2e6" stroke="#495057" stroke-width="2" />
+  <rect x="375" y="600" width="50" height="8" rx="2" fill="#adb5bd" stroke="#495057" stroke-width="1" />
+  <text x="400" y="590" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">Browser</text>
+  
+  <!-- User -->
+  <circle cx="400" cy="720" r="10" fill="#dee2e6" stroke="#495057" stroke-width="1" /> <!-- Head -->
+  <rect x="390" y="730" width="20" height="30" rx="5" fill="#dee2e6" stroke="#495057" stroke-width="1" /> <!-- Body -->
+  <text x="400" y="775" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">User</text>
+  
+  <!-- Updated Flow Arrows -->
+  <!-- Frontend internal arrows -->
+  <path d="M200 210 L200 450" stroke="#495057" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+  <path d="M200 260 L200 450" stroke="#495057" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+  <path d="M200 310 L200 450" stroke="#495057" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+  
+  <!-- Vite Build to Static File Server -->
+  <path d="M280 475 L370 190" stroke="#f08c00" stroke-width="2" fill="none" marker-end="url(#orangeArrowhead)" />
+  
+  <!-- Static File Server to Browser -->
+  <path d="M370 210 C300 210, 300 550, 375 600" stroke="#6db33f" stroke-width="2" fill="none" marker-end="url(#greenArrowhead)" />
+  
+  <!-- Browser to Static File Server -->
+  <path d="M385 590 C300 210, 300 550, 380 210" stroke="#1971c2" stroke-width="2" fill="none" marker-end="url(#blueArrowhead)" />
+
+  <!-- Static File Server to REST Controllers -->
+  <path d="M450 210 L450 270" stroke="#1971c2" stroke-width="2" fill="none" marker-end="url(#blueArrowhead)" />
+  
+  <!-- REST Controllers to Static File Server -->
+  <path d="M470 270 L470 210" stroke="#6db33f" stroke-width="2" fill="none" marker-end="url(#greenArrowhead)" />
+  
+  <!-- REST Controllers to Service Layer -->
+  <path d="M450 310 L450 370" stroke="#1971c2" stroke-width="2" fill="none" marker-end="url(#blueArrowhead)" />
+  
+  <!-- Service Layer to REST Controllers -->
+  <path d="M470 370 L470 310" stroke="#6db33f" stroke-width="2" fill="none" marker-end="url(#greenArrowhead)" />
+  
+  <!-- Service Layer to JPA Repositories -->
+  <path d="M450 410 L450 470" stroke="#1971c2" stroke-width="2" fill="none" marker-end="url(#blueArrowhead)" />
+  
+  <!-- JPA Repositories to Service Layer -->
+  <path d="M470 470 L470 410" stroke="#6db33f" stroke-width="2" fill="none" marker-end="url(#greenArrowhead)" />
+  
+  <!-- JPA Repositories to Database -->
+  <path d="M530 490 L600 490" stroke="#1971c2" stroke-width="2" fill="none" marker-end="url(#blueArrowhead)" />
+  
+  <!-- Database to JPA Repositories -->
+  <path d="M600 510 L530 510" stroke="#6db33f" stroke-width="2" fill="none" marker-end="url(#greenArrowhead)" />
+  
+  <!-- User to Browser -->
+  <path d="M380 710 L380 640" stroke="#495057" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+  
+  <!-- Browser to User -->
+  <path d="M420 640 L420 710" stroke="#495057" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+
+  <!-- Legend -->
+  <rect x="70" y="620" width="210" height="80" rx="5" fill="#fff" stroke="#495057" stroke-width="1" />
+  <circle cx="85" cy="635" r="5" fill="#1971c2" />
+  <text x="180" y="640" font-family="Arial" font-size="12" text-anchor="start">Requests</text>
+  <circle cx="85" cy="655" r="5" fill="#6db33f" />
+  <text x="180" y="660" font-family="Arial" font-size="12" text-anchor="start">Responses</text>
+  <circle cx="85" cy="675" r="5" fill="#f08c00" />
+  <text x="180" y="680" font-family="Arial" font-size="12" text-anchor="start">Build Deployment</text>
+  
+  <!-- Container Label -->
+  <text x="400" y="95" font-family="Arial" font-size="16" text-anchor="middle" fill="#2d3748" font-weight="bold">Docker Container</text>
+</svg>

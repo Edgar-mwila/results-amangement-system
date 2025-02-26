@@ -4,11 +4,13 @@ import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import SchoolCalendar from '@/components/calendar'
 
 const Dashboard = () => {
+  
   const totals = {
     students: 2047,
     staff: 109,
     classes: 17
   }
+
   const activityLogs = [
     {
       user: "Mr. Smith",
@@ -39,6 +41,7 @@ const Dashboard = () => {
       remarks: "Removed an incorrect student entry",
     },
   ];
+
   return (
     <div className="flex flex-col justify-center min-w-full p-4 space-y-8">
       <div className='grid grid-cols-3 gap-4'>
@@ -67,7 +70,7 @@ const Dashboard = () => {
           </TableRow>
           <TableBody>
             {activityLogs.map((log, index) => (
-              <TableRow key={index} className="hover:bg-gray-50">
+              <TableRow key={index+1} className="hover:bg-gray-50">
                 <TableCell className="text-left">{log.user}</TableCell>
                 <TableCell className="text-left">{log.time}</TableCell>
                 <TableCell className="text-left">{log.class}</TableCell>
