@@ -5,12 +5,14 @@ import { Search, BookPlus } from "lucide-react"
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Route as AdminRoute } from '../index'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 
 const exampleClasses = [
-  { id: 1, name: "Advanced Mathematics", teacher: "Dr. Smith", grade: "11", students: 25, room: "101" },
-  { id: 2, name: "World History", teacher: "Mrs. Johnson", grade: "10", students: 30, room: "202" },
-  { id: 3, name: "Biology", teacher: "Mr. Williams", grade: "9", students: 28, room: "Lab 1" },
-  { id: 4, name: "English Literature", teacher: "Ms. Brown", grade: "12", students: 22, room: "303" },
+  { id: 1, name: "11A", teacher: "Dr. Smith", grade: "11", students: 25, room: "101" },
+  { id: 2, name: "10A", teacher: "Mrs. Johnson", grade: "10", students: 30, room: "202" },
+  { id: 3, name: "9A", teacher: "Mr. Williams", grade: "9", students: 28, room: "Lab 1" },
+  { id: 4, name: "12A", teacher: "Ms. Brown", grade: "12", students: 22, room: "303" },
   { id: 5, name: "Physical Education", teacher: "Coach Davis", grade: "All", students: 35, room: "Gym" },
 ]
 
@@ -21,7 +23,6 @@ const ClassManagement = () => {
     return exampleClasses.filter(
       (cls) =>
         cls.name.toLowerCase().includes(search.toLowerCase()) ||
-        cls.teacher.toLowerCase().includes(search.toLowerCase()) ||
         cls.grade.toLowerCase().includes(search.toLowerCase()) ||
         cls.room.toLowerCase().includes(search.toLowerCase()),
     )
@@ -40,10 +41,43 @@ const ClassManagement = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Button className="bg-purple-500 hover:bg-purple-600">
-          <BookPlus className="mr-2 h-4 w-4" />
-          Add New Class
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="bg-purple-500 hover:bg-purple-600">
+              <BookPlus className="mr-2 h-4 w-4" />
+              Add New Class
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Create New Class</DialogTitle>
+              <DialogDescription>
+                Fill in the details to create a new class.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">Name</Label>
+                <Input id="name" className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="teacher" className="text-right">Teacher</Label>
+                <Input id="teacher" className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="grade" className="text-right">Grade</Label>
+                <Input id="grade" className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="room" className="text-right">Room</Label>
+                <Input id="room" className="col-span-3" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Create Class</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
       <div>
         <h2 className="text-xl font-semibold mb-2">Class List</h2>

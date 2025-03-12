@@ -30,10 +30,11 @@ type ClassInfo = {
   };
   
   export type TeacherData = {
+    role: string | undefined;
     id: number;
     name: string;
     subject: string;
-    status: 'active' | 'inactive'; // You can add more possible statuses if needed
+    status: 'active' | 'inactive' | 'on-leave'; // You can add more possible statuses if needed
     classes: ClassInfo[];
     qualifications: string;
     yearsOfExperience: number;

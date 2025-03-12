@@ -174,20 +174,30 @@ const StaffManagement = () => {
                     {staff.firstname} {staff.lastname}
                   </Link>
                 </TableCell>
-                <TableCell className="text-left">{staff.role}</TableCell>
-                <TableCell className="text-left">{staff.email}</TableCell>
                 <TableCell className="text-left">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      staff.status === "Active"
-                        ? "bg-green-200 text-green-800"
-                        : staff.status === "Inactive"
-                        ? "bg-red-200 text-red-800"
-                        : "bg-yellow-200 text-yellow-800"
-                    }`}
-                  >
-                    {staff.status}
-                  </span>
+                  <Link to="/admin/staff-management/staffer/$id" params={{ id: staff.id.toString() }}>
+                    {staff.role}
+                  </Link>
+                </TableCell>
+                <TableCell className="text-left">
+                  <Link to="/admin/staff-management/staffer/$id" params={{ id: staff.id.toString() }}>
+                    {staff.email}
+                  </Link>
+                </TableCell>
+                <TableCell className="text-left">
+                  <Link to="/admin/staff-management/staffer/$id" params={{ id: staff.id.toString() }}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs ${
+                        staff.status === "Active"
+                          ? "bg-green-200 text-green-800"
+                          : staff.status === "Inactive"
+                          ? "bg-red-200 text-red-800"
+                          : "bg-yellow-200 text-yellow-800"
+                      }`}
+                    >
+                      {staff.status}
+                    </span>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}

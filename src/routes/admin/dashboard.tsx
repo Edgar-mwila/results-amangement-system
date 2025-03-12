@@ -1,7 +1,7 @@
 import { AnyRoute, createRoute } from '@tanstack/react-router'
 import { Route as AdminRoute } from './index'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
-import SchoolCalendar from '@/components/calendar'
+import SchoolCalendar from '@/components/school-calendar'
 
 const Dashboard = () => {
   const totals = {
@@ -78,7 +78,7 @@ const Dashboard = () => {
           </TableBody>
         </Table>
       </div>
-      <SchoolCalendar />
+      <SchoolCalendar edit={false}/>
     </div>
   )
 }

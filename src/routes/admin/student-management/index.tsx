@@ -1,10 +1,10 @@
 import { Input } from "@/components/ui/input"
 import { TableRow, TableCell, TableBody, Table } from "@/components/ui/table"
 import { AnyRoute, createRoute, Link } from "@tanstack/react-router"
-import { Search, UserPlus } from "lucide-react"
+import { Search } from "lucide-react"
 import { useState, useMemo } from "react"
-import { Button } from "@/components/ui/button"
 import { Route as AdminRoute } from '../index'
+import AddStudentDialog from "@/components/add-student-dialog"
 
 const exampleStudents = [
   { id: 1, firstname: "Emma", lastname: "Johnson", grade: "9", email: "emma.johnson@school.com", status: "Enrolled" },
@@ -47,15 +47,12 @@ const StudentManagement = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Button className="bg-blue-500 hover:bg-blue-600">
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add New Student
-        </Button>
+        <AddStudentDialog />
       </div>
       <div>
         <h2 className="text-xl font-semibold mb-2">Student List</h2>
         <Table>
-            <TableRow className="bg-[#F2CC8F]">
+            <TableRow className="bg-[#F2CC8F] hover:bg-[#F2CC8F]">
               <TableCell className="font-bold text-base">Name</TableCell>
               <TableCell className="font-bold text-base">Grade</TableCell>
               <TableCell className="font-bold text-base">Email</TableCell>
