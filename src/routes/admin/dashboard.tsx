@@ -1,5 +1,5 @@
 import { AnyRoute, createRoute } from '@tanstack/react-router'
-import { AdminRoute } from './index'
+import { Route as AdminRoute } from './index'
 
 const Dashboard = () => {
   return (
