@@ -43,6 +43,7 @@ import { Route as TeacherClassesIdAssesmentsImport } from './routes/teacher/clas
 import { Route as AdminStudentManagementStudentIdImport } from './routes/admin/student-management/student.$id'
 import { Route as AdminStaffManagementStafferIdImport } from './routes/admin/staff-management/staffer.$id'
 import { Route as TeacherClassesIdStudentIdImport } from './routes/teacher/classes/id/student.$id'
+import { Route as AdminClassManagementIdSubjectIdImport } from './routes/admin/class-management/$id/subject.$id'
 import { Route as AdminClassManagementIdStudentIdImport } from './routes/admin/class-management/$id/student.$id'
 
 // Create/Update Routes
@@ -201,9 +202,10 @@ const ParentDashboardRoute = ParentDashboardImport.update({
   getParentRoute: () => ParentIndexRoute,
 } as any)
 
-const ParentCommunicationsRoute = ParentCommunicationsImport.update({
-  path: 'communications',
-  getParentRoute: () => ParentIndexRoute,
+const AdminClassManagementIdSubjectIdRoute =
+  AdminClassManagementIdSubjectIdImport.update({
+    path: 'class-management/$id/subject/$id',
+    getParentRoute: () => AdminClassManagementIdIndexRoute,
 } as any)
 
 const ParentAuthResetPasswordRoute = ParentAuthResetPasswordImport.update({
@@ -359,6 +361,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClassManagementIdStudentIdImport
       parentRoute: typeof AdminIndexRoute
     }
+    '/admin/class-management/$id/subject/$id': {
+      id: '/admin/class-management/$id/subject/$id'
+      path: '/admin/class-management/$id/subject/$id'
+      fullPath: '/admin/class-management/$id/subject/$id'
+      preLoaderRoute: typeof AdminClassManagementIdSubjectIdImport
+      parentRoute: typeof AdminClassManagementIdIndexRoute
+    }
     '/teacher': {
       id: '/teacher'
       path: '/teacher'
@@ -474,13 +483,7 @@ export interface FileRoutesByFullPath {
   '/admin/student-management/student/$id': typeof AdminStudentManagementStudentIdRoute
   '/admin/class-management/$id': typeof AdminClassManagementIdIndexRoute
   '/admin/class-management/$id/student/$id': typeof AdminClassManagementIdStudentIdRoute
-  '/teacher': typeof TeacherIndexRoute
-  '/teacher/dashboard': typeof TeacherDashboardRoute
-  '/teacher/auth/reset-password': typeof TeacherAuthResetPasswordRoute
-  '/teacher/classes': typeof TeacherClassesIndexRoute
-  '/teacher/communication': typeof TeacherCommunicationIndexRoute
-  '/teacher/classes/id': typeof TeacherClassesIdIndexRoute
-  '/teacher/classes/id/assesments': typeof TeacherClassesIdAssesmentsRoute
+  '/admin/class-management/$id/subject/$id': typeof AdminClassManagementIdSubjectIdRoute
   '/teacher/classes/id/student/$id': typeof TeacherClassesIdStudentIdRoute
   '/parent': typeof ParentIndexRoute
   '/parent/dashboard': typeof ParentDashboardRoute
@@ -509,6 +512,7 @@ export interface FileRoutesByTo {
   '/admin/staff-management/staffer/$id': typeof AdminStaffManagementStafferIdRoute
   '/admin/student-management/student/$id': typeof AdminStudentManagementStudentIdRoute
   '/admin/class-management/$id': typeof AdminClassManagementIdIndexRoute
+  '/admin/class-management/$id/subject/$id': typeof AdminClassManagementIdSubjectIdRoute
   '/admin/class-management/$id/student/$id': typeof AdminClassManagementIdStudentIdRoute
   '/teacher': typeof TeacherIndexRoute
   '/teacher/dashboard': typeof TeacherDashboardRoute
@@ -547,6 +551,7 @@ export interface FileRoutesById {
   '/admin/student-management/student/$id': typeof AdminStudentManagementStudentIdRoute
   '/admin/class-management/$id': typeof AdminClassManagementIdIndexRoute
   '/admin/class-management/$id/student/$id': typeof AdminClassManagementIdStudentIdRoute
+  '/admin/class-management/$id/subject/$id': typeof AdminClassManagementIdSubjectIdRoute
   '/teacher': typeof TeacherIndexRoute
   '/teacher/dashboard': typeof TeacherDashboardRoute
   '/teacher/auth/reset-password': typeof TeacherAuthResetPasswordRoute
@@ -583,6 +588,7 @@ const rootRouteChildren = {
   AdminStudentManagementStudentIdRoute,
   AdminClassManagementIdIndexRoute,
   AdminClassManagementIdStudentIdRoute,
+  AdminClassManagementIdSubjectIdRoute,
   TeacherIndexRoute,
   TeacherDashboardRoute,
   TeacherAuthResetPasswordRoute,
@@ -593,7 +599,6 @@ const rootRouteChildren = {
   TeacherClassesIdStudentIdRoute,
   ParentIndexRoute,
   ParentDashboardRoute,
-  ParentCommunicationsRoute,
   ParentAuthResetPasswordRoute,
   ParentStudentIdRoute,
 }

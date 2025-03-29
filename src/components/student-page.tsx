@@ -5,8 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import { Book, GraduationCap, Mail, Phone, TrendingUp, MessageSquare, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import StudentInfoModal from './student-details';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@radix-ui/react-tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
 
 interface Subject {
   name: string;
@@ -185,7 +184,7 @@ const terms: Term[] = [
 function getGradeColor(grade: string) {
   const gradeColors = {
     'A': 'text-[#4CAF50]',
-    'B': 'text-[#2A9D8F]',
+    'B': 'text-green-600',
     'C': 'text-[#F4A261]',
     'D': 'text-[#E76F51]',
     'F': 'text-[#D62828]'
@@ -207,7 +206,7 @@ function SubjectCard({ subject }: { subject: Subject }) {
     <Card className="mb-6 bg-white">
       <CardHeader className="border-b border-[#F4F4F4]">
         <CardTitle className="text-[#264653] flex items-center">
-          <Book className="w-5 h-5 mr-2 text-[#2A9D8F]" />
+          <Book className="w-5 h-5 mr-2 text-green-600" />
           {subject.name}
         </CardTitle>
       </CardHeader>
@@ -242,7 +241,7 @@ function SubjectCard({ subject }: { subject: Subject }) {
               <div className="bg-[#F4F4F4] p-4 rounded-lg">
                 <h4 className="text-[#264653] font-semibold mb-2">Final Exam</h4>
                 <div className="text-center">
-                  <span className="text-3xl font-bold text-[#2A9D8F]">{subject.finalExam}%</span>
+                  <span className="text-3xl font-bold text-green-600">{subject.finalExam}%</span>
                 </div>
               </div>
             </div>
@@ -260,14 +259,14 @@ function SubjectCard({ subject }: { subject: Subject }) {
               </div>
               <div className="text-right">
                 <h4 className="text-[#264653] font-semibold mb-2">Attendance</h4>
-                <span className="text-2xl font-semibold text-[#2A9D8F]">{subject.attendance}%</span>
+                <span className="text-2xl font-semibold text-green-600">{subject.attendance}%</span>
               </div>
             </div>
 
             {/* Teacher's Comment */}
             <div>
               <h4 className="text-[#264653] font-semibold mb-2 flex items-center">
-                <MessageSquare className="w-4 h-4 mr-2 text-[#2A9D8F]" />
+                <MessageSquare className="w-4 h-4 mr-2 text-green-600" />
                 Teacher's Comment
               </h4>
               <p className="text-[#264653]">{subject.teacherComment}</p>
@@ -291,7 +290,7 @@ function SubjectCard({ subject }: { subject: Subject }) {
             {/* Teacher Contact */}
             <div className="bg-[#F4F4F4] p-4 rounded-lg">
               <h4 className="text-[#264653] font-semibold mb-3 flex items-center">
-                <GraduationCap className="w-4 h-4 mr-2 text-[#2A9D8F]" />
+                <GraduationCap className="w-4 h-4 mr-2 text-green-600" />
                 Teacher Contact
               </h4>
               <div className="space-y-2">
@@ -299,11 +298,11 @@ function SubjectCard({ subject }: { subject: Subject }) {
                   {subject.teacherName}
                 </p>
                 <p className="flex items-center text-[#264653]">
-                  <Mail className="w-4 h-4 mr-2 text-[#2A9D8F]" />
+                  <Mail className="w-4 h-4 mr-2 text-green-600" />
                   {subject.teacherEmail}
                 </p>
                 <p className="flex items-center text-[#264653]">
-                  <Phone className="w-4 h-4 mr-2 text-[#2A9D8F]" />
+                  <Phone className="w-4 h-4 mr-2 text-green-600" />
                   {subject.teacherPhone}
                 </p>
               </div>
@@ -325,27 +324,49 @@ function SubjectTabs({ subjects }: { subjects: Subject[] }) {
       className="w-full"
     >
       {/* Scrollable Tab List */}
-      <ScrollArea className="w-full whitespace-nowrap">
-        <TabsList className="inline-flex w-full justify-start bg-transparent">
-          {subjects.map((subject) => (
-            <TabsTrigger 
-              key={subject.name} 
-              value={subject.name}
-              className="
-                data-[state=active]:bg-[#2A9D8F]/10 
-                data-[state=active]:text-[#2A9D8F] 
-                text-[#A8A8A8] 
-                mx-2 
-                rounded-full
-                transition-colors
-                duration-300
-              "
-            >
-              {subject.name}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </ScrollArea>
+        <div className="relative">
+          <TabsList className="
+            inline-flex 
+            w-full 
+            overflow-x-auto 
+            scrollbar-thin 
+            scrollbar-thumb-gray-300 
+            scrollbar-track-transparent 
+            pb-2 
+            mb-2 
+            border-b 
+            border-gray-200
+          ">
+            {subjects.map((subject) => (
+              <TabsTrigger 
+                key={subject.name} 
+                value={subject.name}
+                className="
+                  flex-shrink-0
+                  px-4
+                  py-2
+                  mx-1
+                  rounded-lg
+                  font-medium
+                  transition-all
+                  duration-200
+                  data-[state=active]:bg-green-600
+                  data-[state=active]:text-white
+                  data-[state=inactive]:bg-gray-100
+                  data-[state=inactive]:text-gray-600
+                  hover:bg-green-50
+                  hover:text-green-600
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-green-500
+                  focus:ring-opacity-50
+                "
+              >
+                {subject.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
       {/* Subject Content */}
       {subjects.map((subject) => (
@@ -406,19 +427,19 @@ export function StudentPage() {
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-[#F4F4F4] rounded-lg">
                   <p className="text-[#A8A8A8] mb-1">Attendance</p>
-                  <p className="text-2xl font-bold text-[#2A9D8F]">
+                  <p className="text-2xl font-bold text-green-600">
                     {selectedTerm.overallAttendance}%
                   </p>
                 </div>
                 <div className="text-center p-4 bg-[#F4F4F4] rounded-lg">
                   <p className="text-[#A8A8A8] mb-1">Behavior</p>
-                  <p className="text-2xl font-bold text-[#2A9D8F]">
+                  <p className="text-2xl font-bold text-green-600">
                     {selectedTerm.behaviorRating}%
                   </p>
                 </div>
                 <div className="text-center p-4 bg-[#F4F4F4] rounded-lg">
                   <p className="text-[#A8A8A8] mb-1">Activities</p>
-                  <p className="text-2xl font-bold text-[#2A9D8F]">
+                  <p className="text-2xl font-bold text-green-600">
                     {selectedTerm.extracurricularActivities.length}
                   </p>
                 </div>
@@ -443,7 +464,7 @@ export function StudentPage() {
         <SubjectTabs subjects={selectedTerm.subjects} />
 
         {/* Overall Evaluation */}
-        <Card className="mt-8 bg-[#2A9D8F]/5">
+        <Card className="mt-8 bg-[#F2CC8F]/5">
           <CardHeader>
             <CardTitle className="text-[#264653]">Overall Evaluation</CardTitle>
           </CardHeader>
@@ -464,7 +485,7 @@ export function StudentPage() {
                 {selectedTerm.extracurricularActivities.map((activity, index) => (
                   <span 
                     key={index}
-                    className="px-3 py-1 bg-[#2A9D8F]/10 text-[#2A9D8F] rounded-full text-sm"
+                    className="px-3 py-1 bg-[#F2CC8F]/10 text-custom-text rounded-full text-sm"
                   >
                     {activity}
                   </span>

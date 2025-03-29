@@ -1,7 +1,7 @@
 import { AnyRoute, createRoute } from '@tanstack/react-router'
 import { Route as AdminRoute } from './index'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
-import SchoolCalendar from '@/components/calendar'
+import SchoolCalendar from '@/components/school-calendar'
 
 const Dashboard = () => {
   
@@ -45,15 +45,15 @@ const Dashboard = () => {
   return (
     <div className="flex flex-col justify-center min-w-full p-4 space-y-8">
       <div className='grid grid-cols-3 gap-4'>
-        <div className='flex flex-col border border-custom-text text-custom-text p-4 space-y-4' >
+        <div className='flex flex-col border border-custom-text text-custom-text  p-4 space-y-4' >
           <p className=''>Number of students</p>
           <p className='text-2xl font-semibold'>{totals.students}</p>
         </div>
-        <div className='flex flex-col border border-custom-text text-custom-text p-4 space-y-4' >
+        <div className='flex flex-col border border-custom-text text-custom-text  p-4 space-y-4' >
           <p className=''>Number of staff</p>
           <p className='text-2xl font-semibold'>{totals.staff}</p>
         </div>
-        <div className='flex flex-col border border-custom-text text-custom-text p-4 space-y-4' >
+        <div className='flex flex-col border border-custom-text text-custom-text  p-4 space-y-4' >
           <p className=''>Number of classes</p>
           <p className='text-2xl font-semibold'>{totals.classes}</p>
         </div>
@@ -81,7 +81,7 @@ const Dashboard = () => {
           </TableBody>
         </Table>
       </div>
-      <SchoolCalendar />
+      <SchoolCalendar edit={false}/>
     </div>
   )
 }
