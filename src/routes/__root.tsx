@@ -19,10 +19,10 @@ function NavBar() {
           Results Management System
         </Link>
         <div className="flex gap-2">
-          <Link to="/about" className="font-semibold [&.active]:font-bold mr-5 text-2xl text-custom-text">
+          <Link to="/about" className="font-semibold [&.active]:font-bold mr-5 text-2xl text-custom-text ">
             About
           </Link>
-          <Link to="/help-desk" className="font-semibold [&.active]:font-bold mr-5 text-custom-text">
+          <Link to="/help-desk" className="font-semibold [&.active]:font-bold mr-5 text-custom-text ">
             <HelpCircleIcon className='h-8 w-auto' />
           </Link>
         </div>
@@ -35,7 +35,7 @@ function Root() {
     <>
       <NavBar />
       <hr />
-      <div className='m-auto p-2 text-custom-text'>
+      <div className='m-auto text-custom-text '>
         <Outlet />
       </div>
       <Toaster />

@@ -80,19 +80,19 @@ const StudentInfoModal = () => {
             <CardContent>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Full Name</p>
+                  <p className="font-semibold text-[#F2CC8F]">Full Name</p>
                   <p>{studentDetails.personal.name}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Date of Birth</p>
+                  <p className="font-semibold text-[#F2CC8F]">Date of Birth</p>
                   <p>{studentDetails.personal.dob}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Gender</p>
+                  <p className="font-semibold text-[#F2CC8F]">Gender</p>
                   <p>{studentDetails.personal.gender}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Blood Group</p>
+                  <p className="font-semibold text-[#F2CC8F]">Blood Group</p>
                   <p>{studentDetails.personal.bloodGroup}</p>
                 </div>
               </div>
@@ -107,15 +107,15 @@ const StudentInfoModal = () => {
             <CardContent>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Email</p>
+                  <p className="font-semibold text-[#F2CC8F]">Email</p>
                   <p>{studentDetails.personal.email}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Phone</p>
+                  <p className="font-semibold text-[#F2CC8F]">Phone</p>
                   <p>{studentDetails.personal.phone}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Address</p>
+                  <p className="font-semibold text-[#F2CC8F]">Address</p>
                   <p>{studentDetails.personal.address}</p>
                 </div>
               </div>
@@ -130,23 +130,23 @@ const StudentInfoModal = () => {
             <CardContent>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Father's Name</p>
+                  <p className="font-semibold text-[#F2CC8F]">Father's Name</p>
                   <p>{studentDetails.guardians.father.name}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Father's Occupation</p>
+                  <p className="font-semibold text-[#F2CC8F]">Father's Occupation</p>
                   <p>{studentDetails.guardians.father.occupation}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Mother's Name</p>
+                  <p className="font-semibold text-[#F2CC8F]">Mother's Name</p>
                   <p>{studentDetails.guardians.mother.name}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Mother's Occupation</p>
+                  <p className="font-semibold text-[#F2CC8F]">Mother's Occupation</p>
                   <p>{studentDetails.guardians.mother.occupation}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="font-semibold text-[#2A9D8F]">Guardian Contact</p>
+                  <p className="font-semibold text-[#F2CC8F]">Guardian Contact</p>
                   <p>Phone: {studentDetails.guardians.contact}</p>
                 </div>
               </div>
@@ -163,15 +163,15 @@ const StudentInfoModal = () => {
                 <div key={index} className="mb-4 pb-4 border-b last:border-b-0">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="font-semibold text-[#2A9D8F]">Name</p>
+                      <p className="font-semibold text-[#F2CC8F]">Name</p>
                       <p>{contact.name}</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-[#2A9D8F]">Relationship</p>
+                      <p className="font-semibold text-[#F2CC8F]">Relationship</p>
                       <p>{contact.relationship}</p>
                     </div>
                     <div className="col-span-2">
-                      <p className="font-semibold text-[#2A9D8F]">Contact Number</p>
+                      <p className="font-semibold text-[#F2CC8F]">Contact Number</p>
                       <p>{contact.phone}</p>
                     </div>
                   </div>
@@ -188,19 +188,19 @@ const StudentInfoModal = () => {
             <CardContent>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Student ID</p>
+                  <p className="font-semibold text-[#F2CC8F]">Student ID</p>
                   <p>{studentDetails.school.studentID}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Grade</p>
+                  <p className="font-semibold text-[#F2CC8F]">Grade</p>
                   <p>{studentDetails.school.grade}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Class Teacher</p>
+                  <p className="font-semibold text-[#F2CC8F]">Class Teacher</p>
                   <p>{studentDetails.school.classTeacher}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-[#2A9D8F]">Overall Grade</p>
+                  <p className="font-semibold text-[#F2CC8F]">Overall Grade</p>
                   <p>{studentDetails.school.overallGrade}</p>
                 </div>
               </div>

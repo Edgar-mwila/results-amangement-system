@@ -352,7 +352,11 @@ export default function ClassView() {
       className="container mx-auto p-6 space-y-6"
     >
       {/* Header Section with Dialog for Class Details */}
+<<<<<<< HEAD
       <div className="flex justify-between items-center">
+=======
+      <div className="sticky flex justify-between items-center">
+>>>>>>> 7e7aea72160548051ba9943b0005333881208d25
         <div>
           <h1 className="text-4xl font-bold text-[#3D405B]">
             {classData.name}
@@ -471,7 +475,6 @@ export default function ClassView() {
         onValueChange={setActiveTab}
         className="w-full"
       >
-        <ScrollArea className="w-full whitespace-nowrap">
           <TabsList 
             className="inline-flex w-full justify-start"
             style={{ 
@@ -524,8 +527,8 @@ export default function ClassView() {
               Assessments
             </TabsTrigger>
           </TabsList>
-        </ScrollArea>
 
+<<<<<<< HEAD
         {/* Overview Tab */}
         <TabsContent value="overview">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
@@ -542,9 +545,96 @@ export default function ClassView() {
                 </p>
                 <p className="text-sm text-gray-500">
                   Capacity: {classData.optimumCapacity}
+=======
+        <ScrollArea className="w-full whitespace-nowrap">
+          {/* Overview Tab */}
+          <TabsContent value="overview">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
+                    <Users className="mr-2 text-[#3D405B]" />
+                    Students
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-semibold text-[#3D405B]">
+                    {classData.totalStudents}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Capacity: {classData.optimumCapacity}
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
+                    <BookOpen className="mr-2 text-[#3D405B]" />
+                    Subjects
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-semibold text-[#3D405B]">
+                    {classData.subjects.length}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Pure Sciences Curriculum
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
+                    <TrendingUp className="mr-2 text-[#3D405B]" />
+                    Avg. Performance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-semibold text-[#3D405B]">
+                    {classData.averagePerformance}%
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Class Average Grade: B+
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <Card className="shadow-md mt-6">
+              <CardHeader>
+                <CardTitle className="text-lg text-[#3D405B] flex items-center">
+                  <School className="mr-2 text-[#3D405B]" />
+                  About {classData.name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4">
+                  {classData.description}
+>>>>>>> 7e7aea72160548051ba9943b0005333881208d25
                 </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="font-medium text-[#3D405B] mb-1">Class Teacher</h3>
+                    <p>{classData.classTeacher}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-[#3D405B] mb-1">Classroom</h3>
+                    <p>{classData.assignedClassroom}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-[#3D405B] mb-1">Total Subjects</h3>
+                    <p>{classData.subjects.length}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-[#3D405B] mb-1">Upcoming Tests</h3>
+                    <p>{classData.upcomingTests.length}</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
+<<<<<<< HEAD
             
             <Card className="shadow-md">
               <CardHeader>
@@ -766,13 +856,111 @@ export default function ClassView() {
                         </a>
                       </TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
+=======
+          </TabsContent>
 
+          {/* Subjects Tab */}
+          <TabsContent value="subjects">
+            <Card className="mt-6 shadow-md">
+              <CardHeader>
+                <CardTitle className="text-lg text-[#3D405B] flex items-center">
+                  <BookOpen className="mr-2 text-[#3D405B]" />
+                  Subject List
+                </CardTitle>
+                <CardDescription>
+                  All subjects offered in {classData.name} with ECZ codes
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 gap-4">
+                  {classData.subjects.map((subject) => (
+                    <div 
+                      key={subject.id}
+                      className="p-4 border rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-medium text-[#3D405B]">
+                            {subject.name}
+                            <Badge className="ml-2 bg-[#3D405B]">
+                              {subject.code}
+                            </Badge>
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            Teacher: {subject.teacher}
+                          </p>
+                        </div>
+                        <Dialog>
+                          <DialogTrigger>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="border-[#3D405B] text-[#3D405B]"
+                            >
+                              View Details
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle className="text-xl text-[#3D405B]">
+                                {subject.name} <span className="text-gray-500">({subject.code})</span>
+                              </DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-4 py-4">
+                              <div>
+                                <h3 className="font-medium text-[#3D405B]">Teacher</h3>
+                                <p>{subject.teacher}</p>
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-[#3D405B]">Description</h3>
+                                <p>{subject.description}</p>
+                              </div>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <h3 className="font-medium text-[#3D405B]">Examination Type</h3>
+                                  <p>{subject.examinationType}</p>
+                                </div>
+                                <div>
+                                  <h3 className="font-medium text-[#3D405B]">Hours per Week</h3>
+                                  <p>{subject.hoursPerWeek}</p>
+                                </div>
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-[#3D405B] mb-2">Upcoming Tests</h3>
+                                <ul className="space-y-1">
+                                  {classData.upcomingTests
+                                    .filter(test => test.subject === subject.name)
+                                    .map(test => (
+                                      <li key={test.id} className="text-sm">
+                                        • {test.name} - {test.date}
+                                      </li>
+                                    ))}
+                                </ul>
+                              </div>
+                            </div>
+                            <DialogFooter className="flex justify-between items-center">
+                              <Button 
+                                variant="outline"
+                                className="border-[#3D405B] text-[#3D405B]"
+                              >
+                                View Syllabus
+                              </Button>
+                              <Button className="bg-green-500 hover:bg-green-600 text-white">
+                                View Performance
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                    </div>
+>>>>>>> 7e7aea72160548051ba9943b0005333881208d25
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+<<<<<<< HEAD
         {/* Assessments Tab */}
         <TabsContent value="assessments">
           <div className="space-y-6 mt-6">
@@ -788,19 +976,37 @@ export default function ClassView() {
                     Create New Test
                   </Button>
                 </div>
+=======
+          {/* Student Performance Tab */}
+          <TabsContent value="performance">
+            <Card className="mt-6 shadow-md">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center text-[#3D405B]">
+                  <TrendingUp className="mr-2 text-[#3D405B]" />
+                  Student Performance Highlights
+                </CardTitle>
+>>>>>>> 7e7aea72160548051ba9943b0005333881208d25
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
+<<<<<<< HEAD
                       <TableHead>Test Name</TableHead>
                       <TableHead>Subject</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>Duration</TableHead>
+=======
+                      <TableHead>Student Name</TableHead>
+                      <TableHead>Overall Grade</TableHead>
+                      <TableHead>Improvement Areas</TableHead>
+                      <TableHead>Behavior Rating</TableHead>
+>>>>>>> 7e7aea72160548051ba9943b0005333881208d25
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
+<<<<<<< HEAD
                     {classData.upcomingTests.map((test) => (
                       <TableRow key={test.id}>
                         <TableCell>{test.name}</TableCell>
@@ -977,6 +1183,37 @@ export default function ClassView() {
                               </DialogFooter>
                             </DialogContent>
                           </Dialog>
+=======
+                    {classData.studentPerformance.map((student) => (
+                      <TableRow key={student.id}>
+                        <TableCell>{student.name}</TableCell>
+                        <TableCell>
+                          <Badge 
+                            className={
+                              student.overallGrade.startsWith('A') 
+                                ? 'bg-green-500' 
+                                : student.overallGrade.startsWith('B') 
+                                  ? 'bg-[#3D405B]' 
+                                  : 'bg-amber-500'
+                            }
+                          >
+                            {student.overallGrade}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {student.improvementAreas.length > 0 
+                            ? student.improvementAreas.join(', ') 
+                            : 'None identified'}
+                        </TableCell>
+                        <TableCell>{student.behaviorRating}</TableCell>
+                        <TableCell>
+                          <a 
+                            href={`/student/${student.id}`}
+                            className="text-[#3D405B] hover:underline flex items-center"
+                          >
+                            Detailed Report <ChevronRight className="h-4 w-4 ml-1" />
+                          </a>
+>>>>>>> 7e7aea72160548051ba9943b0005333881208d25
                         </TableCell>
                       </TableRow>
                     ))}
@@ -984,6 +1221,7 @@ export default function ClassView() {
                 </Table>
               </CardContent>
             </Card>
+<<<<<<< HEAD
           </div>
         </TabsContent>
       </Tabs>
@@ -1002,6 +1240,239 @@ export default function ClassView() {
           Enter Grades
         </Button>
       </div>
+=======
+          </TabsContent>
+
+          {/* Assessments Tab */}
+          <TabsContent value="assessments">
+            <div className="space-y-6 mt-6">
+              {/* Quick Action Buttons */}
+              <div className="flex space-x-4 mt-6">
+                <Button 
+                  variant="outline" 
+                  className="w-full border-[#3D405B] text-[#3D405B]"
+                >
+                  Review Grades
+                </Button>
+                <Button 
+                  className="w-full bg-green-500 hover:bg-green-600 text-white"
+                >
+                  Enter Grades
+                </Button>
+              </div>
+              {/* Upcoming Tests Section */}
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center text-[#3D405B]">
+                    <Calendar className="mr-2 text-[#3D405B]" />
+                    Upcoming Tests
+                  </CardTitle>
+                  <div className="flex justify-end">
+                    <Button className="bg-green-500 hover:bg-green-600 text-white">
+                      Create New Test
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Test Name</TableHead>
+                        <TableHead>Subject</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Duration</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {classData.upcomingTests.map((test) => (
+                        <TableRow key={test.id}>
+                          <TableCell>{test.name}</TableCell>
+                          <TableCell>{test.subject}</TableCell>
+                          <TableCell>{test.date}</TableCell>
+                          <TableCell>{test.duration}</TableCell>
+                          <TableCell className="space-x-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="border-[#3D405B] text-[#3D405B]"
+                            >
+                              Edit
+                            </Button>
+                            <Button 
+                              size="sm"
+                              className="bg-green-500 hover:bg-green-600 text-white"
+                            >
+                              Enter Results
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+
+              {/* Past Tests Section */}
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center text-[#3D405B]">
+                    <Clipboard className="mr-2 text-[#3D405B]" />
+                    Past Tests
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Test Name</TableHead>
+                        <TableHead>Subject</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Average Score</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {classData.pastTests.map((test) => (
+                        <TableRow key={test.id}>
+                          <TableCell>{test.name}</TableCell>
+                          <TableCell>{test.subject}</TableCell>
+                          <TableCell>{test.date}</TableCell>
+                          <TableCell>
+                            <Badge 
+                              className={
+                                test.averageScore >= 90 
+                                  ? 'bg-green-500' 
+                                  : test.averageScore >= 80 
+                                    ? 'bg-[#3D405B]' 
+                                    : test.averageScore >= 70 
+                                      ? 'bg-amber-500' 
+                                      : 'bg-red-500'
+                              }
+                            >
+                              {test.averageScore}%
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Dialog>
+                              <DialogTrigger>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  className="border-[#3D405B] text-[#3D405B]"
+                                >
+                                  <BarChart2 className="h-4 w-4 mr-1" /> Statistics
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-3xl">
+                                <DialogHeader>
+                                  <DialogTitle className="text-xl text-[#3D405B]">{test.name} Statistics</DialogTitle>
+                                  <DialogDescription>
+                                    Test conducted on {test.date} for {test.subject}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="space-y-4 py-4">
+                                  <div className="grid grid-cols-3 gap-4">
+                                    <Card className="shadow-sm">
+                                      <CardContent className="pt-6">
+                                        <p className="text-sm text-gray-500">Mean Score</p>
+                                        <p className="text-2xl font-semibold text-[#3D405B]">{test.mean}%</p>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="shadow-sm">
+                                      <CardContent className="pt-6">
+                                        <p className="text-sm text-gray-500">Median Score</p>
+                                        <p className="text-2xl font-semibold text-[#3D405B]">{test.median}%</p>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="shadow-sm">
+                                      <CardContent className="pt-6">
+                                        <p className="text-sm text-gray-500">Mode Score</p>
+                                        <p className="text-2xl font-semibold text-[#3D405B]">{test.mode}%</p>
+                                      </CardContent>
+                                    </Card>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <h3 className="font-medium text-[#3D405B] mb-2">Best Performance</h3>
+                                      <p className="text-lg">{test.bestStudent}</p>
+                                      <p className="text-sm text-gray-500">
+                                        Score: {test.highestScore}%
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <h3 className="font-medium text-[#3D405B] mb-2">Needs Improvement</h3>
+                                      <p className="text-lg">{test.worstStudent}</p>
+                                      <p className="text-sm text-gray-500">
+                                        Score: {test.lowestScore}%
+                                      </p>
+                                    </div>
+                                  </div>
+                                  
+                                  <div>
+                                    <h3 className="font-medium text-[#3D405B] mb-2">Score Distribution</h3>
+                                    <Table>
+                                      <TableHeader>
+                                        <TableRow>
+                                          <TableHead>Student</TableHead>
+                                          <TableHead>Score</TableHead>
+                                          <TableHead>Performance</TableHead>
+                                        </TableRow>
+                                      </TableHeader>
+                                      <TableBody>
+                                        {test.studentScores
+                                          .sort((a, b) => b.score - a.score)
+                                          .map((result, index) => (
+                                            <TableRow key={index}>
+                                              <TableCell>{result.student}</TableCell>
+                                              <TableCell>{result.score}%</TableCell>
+                                              <TableCell>
+                                                <Badge 
+                                                  className={
+                                                    result.score >= 90 
+                                                      ? 'bg-green-500' 
+                                                      : result.score >= 80 
+                                                        ? 'bg-[#3D405B]' 
+                                                        : result.score >= 70 
+                                                          ? 'bg-amber-500' 
+                                                          : 'bg-red-500'
+                                                  }
+                                                >
+                                                  {result.score >= 90 
+                                                    ? 'Excellent' 
+                                                    : result.score >= 80 
+                                                      ? 'Good' 
+                                                      : result.score >= 70 
+                                                        ? 'Satisfactory' 
+                                                        : 'Needs Improvement'}
+                                                </Badge>
+                                              </TableCell>
+                                            </TableRow>
+                                          ))}
+                                      </TableBody>
+                                    </Table>
+                                  </div>
+                                </div>
+                                <DialogFooter>
+                                  <Button className="bg-green-500 hover:bg-green-600 text-white">
+                                    Download Complete Report
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </ScrollArea>
+      </Tabs>
+>>>>>>> 7e7aea72160548051ba9943b0005333881208d25
     </div>
   );
 }
