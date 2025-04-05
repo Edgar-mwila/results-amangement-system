@@ -48,7 +48,7 @@ function Root() {
     <>
       <NavBar />
       <hr />
-      <div className='m-auto p-2 text-custom-text'>
+      <div className='m-auto text-custom-text'>
         <Outlet />
       </div>
       <Toaster />
