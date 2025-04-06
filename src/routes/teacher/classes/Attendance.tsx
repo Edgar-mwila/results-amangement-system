@@ -9,11 +9,11 @@ const Attendance_management = () => {
     { id: 3, name: 'Mark Johnson', status: '', notes: '' },
   ])
 
-  const handleDateChange = (e) => {
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDate(e.target.value)
   }
 
-  const handleStatusChange = (e, studentId) => {
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>, studentId: number) => {
     const updatedStudents = students.map((student) =>
       student.id === studentId
         ? { ...student, status: e.target.value }
@@ -22,7 +22,7 @@ const Attendance_management = () => {
     setStudents(updatedStudents)
   }
 
-  const handleNotesChange = (e, studentId) => {
+  const handleNotesChange = (e: React.ChangeEvent<HTMLInputElement>, studentId: number) => {
     const updatedStudents = students.map((student) =>
       student.id === studentId
         ? { ...student, notes: e.target.value }
@@ -88,7 +88,7 @@ const Attendance_management = () => {
         Save Attendance
       </button>
 
-      <style jsx>{`
+      <style >{`
         .attendance-container {
           font-family: Arial, sans-serif;
           padding: 20px;

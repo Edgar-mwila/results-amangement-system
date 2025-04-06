@@ -19,10 +19,10 @@ const StudentProgress = () => {
         <table style={styles.table}>
           <thead>
             <tr>
-              <th style={{ ...styles.tableHeader, backgroundColor: '#F2CC8F' }}>Assessment</th>
-              <th style={{ ...styles.tableHeader, backgroundColor: '#F2CC8F' }}>Date</th>
-              <th style={{ ...styles.tableHeader, backgroundColor: '#F2CC8F' }}>Score</th>
-              <th style={{ ...styles.tableHeader, backgroundColor: '#F2CC8F' }}>Actions</th>
+              <th style={{ ...styles.tableHeader, backgroundColor: '#F2CC8F' } as React.CSSProperties}>Assessment</th>
+              <th style={{ ...styles.tableHeader, backgroundColor: '#F2CC8F', textAlign: 'left' as React.CSSProperties['textAlign'] }}>Date</th>
+              <th style={{ ...styles.tableHeader, backgroundColor: '#F2CC8F' } as React.CSSProperties}>Score</th>
+              <th style={{ ...styles.tableHeader, backgroundColor: '#F2CC8F' } as React.CSSProperties}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -88,7 +88,7 @@ const styles = {
     borderRadius: '5px',
     border: '1px solid #ccc',
     fontSize: '16px',
-    resize: 'none',
+    resize: 'none' as React.CSSProperties['resize'],
   },
   assessmentsBox: {
     border: '1px solid #ccc', // Single border around the assessments box
@@ -105,7 +105,7 @@ const styles = {
   },
   table: {
     width: '100%',
-    borderCollapse: 'collapse', // Ensures borders between cells are merged
+    borderCollapse: 'collapse' as React.CSSProperties['borderCollapse'], // Ensures borders between cells are merged
   },
   tableHeader: {
     border: '1px solid #ccc',
@@ -115,7 +115,7 @@ const styles = {
   tableCell: {
     border: '1px solid #ccc', // Adding borders to the table cells
     padding: '10px',
-    textAlign: 'left',
+    textAlign: 'left' as React.CSSProperties['textAlign'],
   },
   actionButton: {
     padding: '5px 10px',

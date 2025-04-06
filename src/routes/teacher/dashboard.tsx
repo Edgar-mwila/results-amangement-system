@@ -24,7 +24,7 @@ const Dashboard = () => {
     }
   ]
   return (
-    <div>
+    <div className="bg-[#F4F1DE] min-h-screen">
       <div className='p-5 m-2 text-2xl'>
         WELCOME, TEACHER!  
       </div>
@@ -67,8 +67,6 @@ const Dashboard = () => {
 
       <div >Recent Activities</div>
       <div className=''></div>
-
-
     </div>
   )
 }
@@ -77,4 +75,4 @@ export const Route = createRoute({
   path: '/teacher/dashboard',
   getParentRoute: () => RootRoute as AnyRoute,
   component: Dashboard,
-})
+}) 

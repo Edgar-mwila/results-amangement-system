@@ -97,7 +97,7 @@ const Assessments = () => {
         Create Assessment
       </button>
 
-      <style jsx>{`
+      <style>{`
         .assessment-container {
           font-family: Arial, sans-serif;
           padding: 20px;
