@@ -11,7 +11,7 @@ function HomePage() {
       <div className="text-custom-text px-20 py-8 bg-[#F2CC8F] p-10 space-y-8 min-h-[50vh]">
         <h1 className='text-4xl font-semibold'>Transform your results management</h1>
         <p>Comprehensive solution for schools to manage academics,<br/> staff, students and communication.</p>
-        <Button className='bg-green-400 hover:bg-green-600 text-white font-bold'onClick={() => navigate({to: '/admin/dashboard'})}>Get Started</Button>
+        <Button className='bg-green-400 hover:bg-green-600 text-white font-bold'onClick={() => navigate({to: '/auth/register-school'})}>Get Started</Button>
       </div>
       <div className='grid grid-cols-3 p-5 m-10 gap-10'>
         <div className='border border-custom-text p-5'>

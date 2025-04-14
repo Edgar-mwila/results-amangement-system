@@ -36,7 +36,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
 
-interface SchoolData {
+export interface SchoolData {
   id: number
   name: string
   registration_number: string
@@ -72,7 +72,7 @@ interface SchoolData {
   deleted_by?: number
 }
 
-type FieldConfig = {
+export type FieldConfig = {
   label: string
   field: keyof SchoolData
   type?: "text" | "textarea" | "select" | "email" | "tel" | "url"
