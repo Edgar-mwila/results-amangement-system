@@ -1,5 +1,4 @@
-"use client"
-
+import type React from "react"
 import { useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -40,7 +39,7 @@ import {
   PieChartIcon,
   Activity,
 } from "lucide-react"
-import { classData } from "@/data/class-data"
+import type { classData } from "@/data/class-data"
 
 const GRADE_COLORS = {
   A: "#22c55e",
@@ -54,17 +53,26 @@ const GRADE_COLORS = {
   F: "#b91c1c",
 }
 
-const ClassPerformanceAnalytics: React.FC<{classData: typeof classData}> = ({classData}) => {
+const ClassPerformanceAnalytics: React.FC<{
+  classData: typeof classData
+  isAdmin?: boolean
+  teacherSubject?: string
+}> = ({ classData, isAdmin = false, teacherSubject }) => {
   const [activeTab, setActiveTab] = useState("overview")
 
   // Calculate overall class statistics
   const classStats = useMemo(() => {
-    // Get all test scores across all subjects
+    // Get all test scores across all subjects (or just the teacher's subject)
     const allScores: number[] = []
     const subjectAverages: Record<string, number> = {}
     const subjectTestCounts: Record<string, number> = {}
 
-    classData.pastTests.forEach((test) => {
+    // Filter tests based on teacher's subject if not admin
+    const filteredPastTests = isAdmin
+      ? classData.pastTests
+      : classData.pastTests.filter((test) => test.subject === teacherSubject)
+
+    filteredPastTests.forEach((test) => {
       // Add all scores to the array
       test.studentScores.forEach((score) => {
         allScores.push(score.score)
@@ -90,7 +98,8 @@ const ClassPerformanceAnalytics: React.FC<{classData: typeof classData}> = ({cla
       .sort((a, b) => b.average - a.average)
 
     // Calculate overall average
-    const overallAverage = allScores.reduce((sum, score) => sum + score, 0) / allScores.length
+    const overallAverage =
+      allScores.length > 0 ? allScores.reduce((sum, score) => sum + score, 0) / allScores.length : 0
 
     // Calculate grade distribution
     const gradeDistribution = {
@@ -141,7 +150,7 @@ const ClassPerformanceAnalytics: React.FC<{classData: typeof classData}> = ({cla
     const bottomPerformers = sortedStudents.slice(-3).reverse()
 
     // Calculate test performance over time
-    const testPerformanceOverTime = classData.pastTests
+    const testPerformanceOverTime = filteredPastTests
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .map((test) => ({
         name: test.name,
@@ -158,10 +167,10 @@ const ClassPerformanceAnalytics: React.FC<{classData: typeof classData}> = ({cla
       topPerformers,
       bottomPerformers,
       testPerformanceOverTime,
-      totalTests: classData.pastTests.length,
+      totalTests: filteredPastTests.length,
       totalStudents: classData.totalStudents,
     }
-  }, [classData.pastTests, classData.totalStudents])
+  }, [classData.pastTests, classData.totalStudents, isAdmin, teacherSubject])
 
   // Calculate improvement areas
   const improvementAreas = useMemo(() => {
@@ -182,7 +191,7 @@ const ClassPerformanceAnalytics: React.FC<{classData: typeof classData}> = ({cla
   }, [classData.studentPerformance])
 
   return (
-    <div className="container max-w-3/5 space-y-6 mt-5">
+    <div className="container w-[65vw] space-y-6 mt-5">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-[#3D405B]">Class Performance Analytics</h1>
@@ -264,7 +273,7 @@ const ClassPerformanceAnalytics: React.FC<{classData: typeof classData}> = ({cla
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="subjects">Subject Analysis</TabsTrigger>
+          {isAdmin && <TabsTrigger value="subjects">Subject Analysis</TabsTrigger>}
           <TabsTrigger value="students">Student Analysis</TabsTrigger>
         </TabsList>
 
@@ -567,162 +576,269 @@ const ClassPerformanceAnalytics: React.FC<{classData: typeof classData}> = ({cla
         </TabsContent>
 
         <TabsContent value="subjects" className="space-y-6">
-          {/* Subject Performance Radar Chart */}
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                <BookOpen className="mr-2 text-[#3D405B]" />
-                Subject Performance Overview
-              </CardTitle>
-              <CardDescription>Comparative analysis of all subjects</CardDescription>
-            </CardHeader>
-            <CardContent className="h-96">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart
-                  outerRadius={150}
-                  width={730}
-                  height={350}
-                  data={classStats.sortedSubjects.map((subject) => ({
-                    subject: subject.subject,
-                    average: subject.average,
-                  }))}
-                >
-                  <PolarGrid />
-                  <PolarAngleAxis dataKey="subject" />
-                  <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                  <Radar name="Average Score" dataKey="average" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                  <Legend />
-                  <Tooltip />
-                </RadarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* Subject Details Table */}
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                <BookOpen className="mr-2 text-[#3D405B]" />
-                Subject Details
-              </CardTitle>
-              <CardDescription>Detailed performance metrics for each subject</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Subject</TableHead>
-                    <TableHead>Average Score</TableHead>
-                    <TableHead>Tests Conducted</TableHead>
-                    <TableHead>Teacher</TableHead>
-                    <TableHead>Hours per Week</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {classStats.sortedSubjects.map((subjectStat, index) => {
-                    // Find subject in subjects data
-                    const subjectData = classData.subjects.find((s) => s.name === subjectStat.subject)
-
-                    // Count tests for this subject
-                    const testCount = classData.pastTests.filter((test) => test.subject === subjectStat.subject).length
-
-                    return (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{subjectStat.subject}</TableCell>
-                        <TableCell>
-                          <Badge
-                            className={
-                              subjectStat.average >= 90
-                                ? "bg-green-500"
-                                : subjectStat.average >= 80
-                                  ? "bg-blue-500"
-                                  : subjectStat.average >= 70
-                                    ? "bg-amber-500"
-                                    : "bg-red-500"
-                            }
-                          >
-                            {subjectStat.average.toFixed(1)}%
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{testCount}</TableCell>
-                        <TableCell>{subjectData?.teacher || "N/A"}</TableCell>
-                        <TableCell>{subjectData?.hoursPerWeek || "N/A"}</TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-          {/* Subject Test Performance */}
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                <BarChart2 className="mr-2 text-[#3D405B]" />
-                Test Performance by Subject
-              </CardTitle>
-              <CardDescription>Performance in individual tests grouped by subject</CardDescription>
-            </CardHeader>
-            <CardContent className="h-96">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={classData.pastTests.map((test) => ({
-                    name: test.name,
-                    subject: test.subject,
-                    average: test.averageScore,
-                    highest: test.highestScore,
-                    lowest: test.lowestScore,
-                  }))}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis domain={[0, 100]} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="average" name="Average Score" fill="#3b82f6" />
-                  <Bar dataKey="highest" name="Highest Score" fill="#22c55e" />
-                  <Bar dataKey="lowest" name="Lowest Score" fill="#ef4444" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* Subject Correlation Analysis */}
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                <Activity className="mr-2 text-[#3D405B]" />
-                Subject Correlation Analysis
-              </CardTitle>
-              <CardDescription>Relationship between hours per week and performance</CardDescription>
-            </CardHeader>
-            <CardContent className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                  <CartesianGrid />
-                  <XAxis type="number" dataKey="hours" name="Hours per Week" domain={[0, 10]} />
-                  <YAxis type="number" dataKey="average" name="Average Score" domain={[0, 100]} />
-                  <ZAxis range={[100, 500]} />
-                  <Tooltip cursor={{ strokeDasharray: "3 3" }} />
-                  <Legend />
-                  <Scatter
-                    name="Subjects"
-                    data={classStats.sortedSubjects.map((subject) => {
-                      const subjectData = classData.subjects.find((s) => s.name === subject.subject)
-                      return {
+          {isAdmin ? (
+            // Original content for admins
+            <>
+              {/* Subject Performance Radar Chart */}
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
+                    <BookOpen className="mr-2 text-[#3D405B]" />
+                    Subject Performance Overview
+                  </CardTitle>
+                  <CardDescription>Comparative analysis of all subjects</CardDescription>
+                </CardHeader>
+                <CardContent className="h-96">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart
+                      outerRadius={150}
+                      width={730}
+                      height={350}
+                      data={classStats.sortedSubjects.map((subject) => ({
                         subject: subject.subject,
-                        hours: subjectData?.hoursPerWeek || 0,
                         average: subject.average,
-                      }
-                    })}
-                    fill="#8884d8"
-                  />
-                </ScatterChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+                      }))}
+                    >
+                      <PolarGrid />
+                      <PolarAngleAxis dataKey="subject" />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                      <Radar name="Average Score" dataKey="average" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                      <Legend />
+                      <Tooltip />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Subject Details Table */}
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
+                    <BookOpen className="mr-2 text-[#3D405B]" />
+                    Subject Details
+                  </CardTitle>
+                  <CardDescription>Detailed performance metrics for each subject</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Subject</TableHead>
+                        <TableHead>Average Score</TableHead>
+                        <TableHead>Tests Conducted</TableHead>
+                        <TableHead>Teacher</TableHead>
+                        <TableHead>Hours per Week</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {classStats.sortedSubjects.map((subjectStat, index) => {
+                        // Find subject in subjects data
+                        const subjectData = classData.subjects.find((s) => s.name === subjectStat.subject)
+
+                        // Count tests for this subject
+                        const testCount = classData.pastTests.filter(
+                          (test) => test.subject === subjectStat.subject,
+                        ).length
+
+                        return (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">{subjectStat.subject}</TableCell>
+                            <TableCell>
+                              <Badge
+                                className={
+                                  subjectStat.average >= 90
+                                    ? "bg-green-500"
+                                    : subjectStat.average >= 80
+                                      ? "bg-blue-500"
+                                      : subjectStat.average >= 70
+                                        ? "bg-amber-500"
+                                        : "bg-red-500"
+                                }
+                              >
+                                {subjectStat.average.toFixed(1)}%
+                              </Badge>
+                            </TableCell>
+                            <TableCell>{testCount}</TableCell>
+                            <TableCell>{subjectData?.teacher || "N/A"}</TableCell>
+                            <TableCell>{subjectData?.hoursPerWeek || "N/A"}</TableCell>
+                          </TableRow>
+                        )
+                      })}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+
+              {/* Subject Test Performance */}
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
+                    <BarChart2 className="mr-2 text-[#3D405B]" />
+                    Test Performance by Subject
+                  </CardTitle>
+                  <CardDescription>Performance in individual tests grouped by subject</CardDescription>
+                </CardHeader>
+                <CardContent className="h-96">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={classData.pastTests.map((test) => ({
+                        name: test.name,
+                        subject: test.subject,
+                        average: test.averageScore,
+                        highest: test.highestScore,
+                        lowest: test.lowestScore,
+                      }))}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis domain={[0, 100]} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="average" name="Average Score" fill="#3b82f6" />
+                      <Bar dataKey="highest" name="Highest Score" fill="#22c55e" />
+                      <Bar dataKey="lowest" name="Lowest Score" fill="#ef4444" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Subject Correlation Analysis */}
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
+                    <Activity className="mr-2 text-[#3D405B]" />
+                    Subject Correlation Analysis
+                  </CardTitle>
+                  <CardDescription>Relationship between hours per week and performance</CardDescription>
+                </CardHeader>
+                <CardContent className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                      <CartesianGrid />
+                      <XAxis type="number" dataKey="hours" name="Hours per Week" domain={[0, 10]} />
+                      <YAxis type="number" dataKey="average" name="Average Score" domain={[0, 100]} />
+                      <ZAxis range={[100, 500]} />
+                      <Tooltip cursor={{ strokeDasharray: "3 3" }} />
+                      <Legend />
+                      <Scatter
+                        name="Subjects"
+                        data={classStats.sortedSubjects.map((subject) => {
+                          const subjectData = classData.subjects.find((s) => s.name === subject.subject)
+                          return {
+                            subject: subject.subject,
+                            hours: subjectData?.hoursPerWeek || 0,
+                            average: subject.average,
+                          }
+                        })}
+                        fill="#8884d8"
+                      />
+                    </ScatterChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            // Limited content for teachers - only showing their subject
+            <>
+              {/* Subject Details Table */}
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
+                    <BookOpen className="mr-2 text-[#3D405B]" />
+                    Subject Details
+                  </CardTitle>
+                  <CardDescription>Performance metrics for {teacherSubject}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Subject</TableHead>
+                        <TableHead>Average Score</TableHead>
+                        <TableHead>Tests Conducted</TableHead>
+                        <TableHead>Teacher</TableHead>
+                        <TableHead>Hours per Week</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {classStats.sortedSubjects
+                        .filter((subjectStat) => subjectStat.subject === teacherSubject)
+                        .map((subjectStat, index) => {
+                          // Find subject in subjects data
+                          const subjectData = classData.subjects.find((s) => s.name === subjectStat.subject)
+
+                          // Count tests for this subject
+                          const testCount = classData.pastTests.filter(
+                            (test) => test.subject === subjectStat.subject,
+                          ).length
+
+                          return (
+                            <TableRow key={index}>
+                              <TableCell className="font-medium">{subjectStat.subject}</TableCell>
+                              <TableCell>
+                                <Badge
+                                  className={
+                                    subjectStat.average >= 90
+                                      ? "bg-green-500"
+                                      : subjectStat.average >= 80
+                                        ? "bg-blue-500"
+                                        : subjectStat.average >= 70
+                                          ? "bg-amber-500"
+                                          : "bg-red-500"
+                                  }
+                                >
+                                  {subjectStat.average.toFixed(1)}%
+                                </Badge>
+                              </TableCell>
+                              <TableCell>{testCount}</TableCell>
+                              <TableCell>{subjectData?.teacher || "N/A"}</TableCell>
+                              <TableCell>{subjectData?.hoursPerWeek || "N/A"}</TableCell>
+                            </TableRow>
+                          )
+                        })}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+
+              {/* Subject Test Performance */}
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
+                    <BarChart2 className="mr-2 text-[#3D405B]" />
+                    Test Performance
+                  </CardTitle>
+                  <CardDescription>Performance in individual tests for {teacherSubject}</CardDescription>
+                </CardHeader>
+                <CardContent className="h-96">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={classData.pastTests
+                        .filter((test) => test.subject === teacherSubject)
+                        .map((test) => ({
+                          name: test.name,
+                          subject: test.subject,
+                          average: test.averageScore,
+                          highest: test.highestScore,
+                          lowest: test.lowestScore,
+                        }))}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis domain={[0, 100]} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="average" name="Average Score" fill="#3b82f6" />
+                      <Bar dataKey="highest" name="Highest Score" fill="#22c55e" />
+                      <Bar dataKey="lowest" name="Lowest Score" fill="#ef4444" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </TabsContent>
 
         <TabsContent value="students" className="space-y-6">
@@ -1004,4 +1120,4 @@ const ClassPerformanceAnalytics: React.FC<{classData: typeof classData}> = ({cla
   )
 }
 
-export default ClassPerformanceAnalytics;
+export default ClassPerformanceAnalytics

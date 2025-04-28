@@ -8,27 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-type StudentScore = {
-  student: string
-  score: number
-}
+import { UpcomingTest } from "@/data/class-data"
 
 type EditTestDialogProps = {
-  test: {
-    duration: string
-    totalMarks: number
-    name: string
-    date: string
-    subject: string
-    mean: number
-    median: number
-    mode: number
-    bestStudent: string
-    highestScore: number
-    worstStudent: string
-    lowestScore: number
-    studentScores: StudentScore[]
-  }
+  test: UpcomingTest,
   open: boolean
   onOpenChange: (open: boolean) => void
 }

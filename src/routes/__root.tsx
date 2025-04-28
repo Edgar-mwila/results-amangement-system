@@ -14,28 +14,35 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function NavBar() {
-  const router = useRouter()
-  const location = router.state.location.pathname;
-  const [showAuthLinks, setShowAuthLinks] = useState(location === '/' || location.startsWith('/auth'));
-
+  const router = useRouter();
+  const [currentPath, setCurrentPath] = useState(router.state.location.pathname);
+  const [showAboutLinks, setShowAboutLinks] = useState(
+    currentPath === '/' || currentPath.startsWith('/auth')
+  );
+  
+  // Subscribe to router changes
   useEffect(() => {
-    setShowAuthLinks(location === '/' || location.startsWith('/auth'));
-  }, [location]);
-
+    // Create a subscription to router navigation events
+    const unsubscribe = router.history.subscribe(() => {
+      const newPath = router.state.location.pathname;
+      setCurrentPath(newPath);
+      setShowAboutLinks(newPath === '/');
+    });
+    
+    // Clean up subscription when component unmounts
+    return () => {
+      unsubscribe();
+    };
+  }, [router]);
+  
   return (
-    <div className='flex justify-between m-auto items-baseline p-5 bg-[#E07A5F]'>
+    <div className='fixed top-0 left-0 right-0 flex justify-between m-auto items-baseline p-5 bg-[#E07A5F]'>
       <Link to="/" className="text-3xl font-bold text-[#3D405B]">
         Results Management System
       </Link>
       <div className="flex gap-2">
-        {showAuthLinks ? (
+        {showAboutLinks ? (
           <>
-            <Link to="/auth/login" className="font-semibold [&.active]:font-bold mr-5 text-2xl text-custom-text">
-              Login
-            </Link>
-            <Link to="/auth/register" className="font-semibold [&.active]:font-bold mr-5 text-2xl text-custom-text">
-              Register
-            </Link>
             <Link to="/about" className="font-semibold [&.active]:font-bold mr-5 text-2xl text-custom-text">
               About
             </Link>
@@ -45,9 +52,6 @@ function NavBar() {
           </>
         ) : (
           <>
-            <Link to="/about" className="font-semibold [&.active]:font-bold mr-5 text-2xl text-custom-text">
-              About
-            </Link>
             <Link to="/help-desk" className="font-semibold [&.active]:font-bold mr-5 text-custom-text">
               <HelpCircleIcon className='h-8 w-auto' />
             </Link>
@@ -55,7 +59,7 @@ function NavBar() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function Root() {
@@ -63,7 +67,7 @@ function Root() {
     <>
       <NavBar />
       <hr />
-      <div className='m-auto text-custom-text '>
+      <div className='m-auto text-custom-text pt-[76px]'>
         <Outlet />
       </div>
       <Toaster />

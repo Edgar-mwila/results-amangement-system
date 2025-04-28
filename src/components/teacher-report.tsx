@@ -33,7 +33,7 @@ type ClassInfo = {
     role: string | undefined;
     id: number;
     name: string;
-    subject: string;
+    subjects: string[];
     status: 'active' | 'inactive' | 'on-leave'; // You can add more possible statuses if needed
     classes: ClassInfo[];
     qualifications: string;
@@ -118,7 +118,7 @@ const TeacherReport: React.FC<{teacherData: TeacherData}> = ({ teacherData }) =>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Teacher Performance Report</Text>
-        <Text style={styles.subtitle}>{teacherData.name} - {teacherData.subject}</Text>
+        <Text style={styles.subtitle}>{teacherData.name} - {teacherData.subjects.map((subject) => (<span> {subject} | </span>))}</Text>
       </View>
 
       {/* Basic Information */}

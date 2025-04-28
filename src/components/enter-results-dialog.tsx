@@ -7,25 +7,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-type StudentScore = {
-  student: string
-  score: number
-}
+import { UpcomingTest } from "@/data/class-data"
+
 type EnterResultsDialogProps = {
-  test: {
-    totalMarks: number
-    name: string
-    date: string
-    subject: string
-    mean: number
-    median: number
-    mode: number
-    bestStudent: string
-    highestScore: number
-    worstStudent: string
-    lowestScore: number
-    studentScores: StudentScore[]
-  }
+  test: UpcomingTest,
   open: boolean
   onOpenChange: (open: boolean) => void
 }

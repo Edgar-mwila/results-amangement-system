@@ -107,6 +107,7 @@ export const classData = {
         averageScore: 78,
         highestScore: 98,
         lowestScore: 55,
+        totalMarks: 100,
         mean: 78.3,
         median: 80,
         mode: 82,
@@ -133,6 +134,7 @@ export const classData = {
         averageScore: 85,
         highestScore: 100,
         lowestScore: 70,
+        totalMarks: 100,
         mean: 85.2,
         median: 86,
         mode: 88,
@@ -159,6 +161,7 @@ export const classData = {
         averageScore: 80,
         highestScore: 96,
         lowestScore: 65,
+        totalMarks: 100,
         mean: 80.1,
         median: 81,
         mode: 82,
@@ -185,6 +188,7 @@ export const classData = {
         averageScore: 90,
         highestScore: 100,
         lowestScore: 78,
+        totalMarks: 100,
         mean: 90.3,
         median: 92,
         mode: 95,
@@ -211,6 +215,7 @@ export const classData = {
         averageScore: 75,
         highestScore: 92,
         lowestScore: 58,
+        totalMarks: 100,
         mean: 75.2,
         median: 76,
         mode: 78,
@@ -302,4 +307,68 @@ export const classData = {
         behaviorRating: 'Excellent'
       },
     ]
+  };
+  export type StudentScore = {
+    student: string;
+    score: number;
+  };
+
+  export type StudentPerformance = {
+    id: number;
+    name: string;
+    overallGrade: string;
+    improvementAreas: string[];
+    behaviorRating: string;
+  };
+
+  export type Subject = {
+    id: number;
+    name: string;
+    code: string;
+    teacher: string;
+    description: string;
+    examinationType: string;
+    hoursPerWeek: number;
+  };
+
+  export type UpcomingTest = {
+    id: number;
+    name: string;
+    subject: string;
+    date: string;
+    duration: string;
+    totalMarks: number;
+  };
+
+  export type PastTest = {
+    id: number;
+    name: string;
+    subject: string;
+    date: string;
+    averageScore: number;
+    highestScore: number;
+    lowestScore: number;
+    mean: number;
+    median: number;
+    mode: number;
+    totalMarks: number;
+    bestStudent: string;
+    worstStudent: string;
+    studentScores: StudentScore[];
+  };
+
+  export type ClassData = {
+    id: number;
+    name: string;
+    classTeacher: string;
+    occupancy: number;
+    optimumCapacity: number;
+    assignedClassroom: string;
+    description: string;
+    subjects: Subject[];
+    totalStudents: number;
+    averagePerformance: number;
+    upcomingTests: UpcomingTest[];
+    pastTests: PastTest[];
+    studentPerformance: StudentPerformance[];
   };

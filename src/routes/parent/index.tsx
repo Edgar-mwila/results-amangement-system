@@ -2,9 +2,10 @@ import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 
 const Dashboard = () => {
   return (
-    <div className="grid grid-cols-5 p-0 m-0">
-          <div className="bg-[#F2CC8F] h-[85vh] p-4">
-            <ul>
+    <div className="grid grid-cols-4 min-h-[90vh]">
+      <div className="bg-[#F2CC8F] p-4 max-h-[90vh]">
+        <nav>
+          <ul className="space-y-2">
               <li>
                 <Link to="/parent/dashboard">Dashboard</Link>
               </li>
@@ -23,11 +24,12 @@ const Dashboard = () => {
                 <Link to="/teacher/communication">Communications</Link>
               </li>
             </ul>
-          </div>
-          <div className="col-span-4 max-h-[85vh] overflow-y-auto">
-            <Outlet />
-          </div>
+          </nav>
         </div>
+        <div className="col-span-3 p-4 bg-gray-50 max-h-[90vh] overflow-y-scroll">
+          <Outlet />
+        </div>
+      </div>
   )
 }
 

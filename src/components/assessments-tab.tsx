@@ -1,80 +1,53 @@
-"use client"
-
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Clipboard, BarChart2 } from "lucide-react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { TestStatisticsDialog } from "./test-statistics-dialog"
+import { Button } from "@/components/ui/button"
+import { BarChart2 } from "lucide-react"
+import type { UpcomingTest, PastTest } from "@/data/class-data"
 import { CreateTestDialog } from "./create-test-dialog"
 import { EditTestDialog } from "./edit-test-dialog"
 import { EnterResultsDialog } from "./enter-results-dialog"
-type StudentScore = {
-  student: string
-  score: number
-}
-
-type UpcomingTest = { id: number; name: string; subject: string; date: string; duration: string; totalMarks: number; }
-type PastTest = { id: number; name: string; subject: string; date: string; averageScore: number; highestScore: number; lowestScore: number; mean: number; median: number; mode: number; bestStudent: string; worstStudent: string; studentScores: StudentScore[]; }
-
-type ClassData = {
-  upcomingTests: UpcomingTest[]
-  pastTests: PastTest[]
-}
+import { TestStatisticsDialog } from "./test-statistics-dialog"
 
 type AssessmentsTabProps = {
-  classData: ClassData
+  classData: { upcomingTests: UpcomingTest[], pastTests: PastTest[] }
   isAdminPath: boolean
+  isAdmin?: boolean
+  teacherSubject?: string
 }
 
-export function AssessmentsTab({ classData, isAdminPath }: AssessmentsTabProps) {
-  const [createTestOpen, setCreateTestOpen] = useState(false)
-  const [editTestId, setEditTestId] = useState<number | null>(null)
+export function AssessmentsTab({ classData, isAdminPath, isAdmin = false, teacherSubject }: AssessmentsTabProps) {
+  const [createTestOpen, setCreateTestOpen] = useState(false) 
+  const [editTestId, setEditTestId] = useState<number | null>(null) 
   const [enterResultsId, setEnterResultsId] = useState<number | null>(null)
   const [selectedTestId, setSelectedTestId] = useState<number | null>(null)
 
   return (
-    <div className="space-y-6 mt-6">
-      {/* Quick Action Buttons */}
-      <div className="flex space-x-4 mt-6">
-        {!isAdminPath && <Button className="w-full bg-green-500 hover:bg-green-600 text-white">Enter Grades</Button>}
-      </div>
-      {/* Upcoming Tests Section */}
-      <Card className="shadow-md">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center text-[#3D405B]">
-            <Calendar className="mr-2 text-[#3D405B]" />
-            Upcoming Tests
-          </CardTitle>
-          <div className="flex justify-end">
-            {!isAdminPath && (
-              <Button className="bg-green-500 hover:bg-green-600 text-white" onClick={() => setCreateTestOpen(true)}>
-                Create New Test
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Test Name</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Duration</TableHead>
-                {!isAdminPath && (<TableHead>Actions</TableHead>)}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {classData.upcomingTests.map((test: UpcomingTest) => (
+    <div className="w-full space-y-4">
+      <div>
+        <h2 className="text-lg font-semibold">Upcoming Tests</h2>
+        <Table>
+          <TableCaption>A list of your upcoming tests.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Subject</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Duration</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {classData.upcomingTests
+              .filter((test) => isAdmin || test.subject === teacherSubject)
+              .map((test: UpcomingTest) => (
                 <TableRow key={test.id}>
                   <TableCell>{test.name}</TableCell>
                   <TableCell>{test.subject}</TableCell>
                   <TableCell>{test.date}</TableCell>
                   <TableCell>{test.duration}</TableCell>
                   <TableCell className="space-x-2">
-                    {!isAdminPath && (
+                    {!isAdminPath && (isAdmin || test.subject === teacherSubject) && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -84,7 +57,7 @@ export function AssessmentsTab({ classData, isAdminPath }: AssessmentsTabProps) 
                         Edit
                       </Button>
                     )}
-                    {!isAdminPath && (
+                    {!isAdminPath && (isAdmin || test.subject === teacherSubject) && (
                       <Button
                         size="sm"
                         className="bg-green-500 hover:bg-green-600 text-white"
@@ -96,32 +69,27 @@ export function AssessmentsTab({ classData, isAdminPath }: AssessmentsTabProps) 
                   </TableCell>
                 </TableRow>
               ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+          </TableBody>
+        </Table>
+      </div>
 
-      {/* Past Tests Section */}
-      <Card className="shadow-md">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center text-[#3D405B]">
-            <Clipboard className="mr-2 text-[#3D405B]" />
-            Past Tests
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Test Name</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Average Score</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {classData.pastTests.map((test: PastTest) => (
+      <div>
+        <h2 className="text-lg font-semibold">Past Tests</h2>
+        <Table>
+          <TableCaption>A list of past tests and their average scores.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Subject</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Average Score</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {classData.pastTests
+              .filter((test) => isAdmin || test.subject === teacherSubject)
+              .map((test: PastTest) => (
                 <TableRow key={test.id}>
                   <TableCell>{test.name}</TableCell>
                   <TableCell>{test.subject}</TableCell>
@@ -153,11 +121,9 @@ export function AssessmentsTab({ classData, isAdminPath }: AssessmentsTabProps) 
                   </TableCell>
                 </TableRow>
               ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
+          </TableBody>
+        </Table>
+      </div>
       {/* Dialogs */}
       {selectedTestId && (
         <TestStatisticsDialog
@@ -191,4 +157,3 @@ export function AssessmentsTab({ classData, isAdminPath }: AssessmentsTabProps) 
     </div>
   )
 }
-

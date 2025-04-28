@@ -4,9 +4,11 @@ import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import SchoolCalendar from '@/components/school-calendar';
 
 const Dashboard = () => {
+  // Assuming you have a way to get the current user's information
+  const currentUser = 'Mr. Smith'; // This should come from your auth context or state
+
   const totals = {
     assessments: 45,
-    notifications: 12,
     resultsCompleted: 30,
   };
 
@@ -24,7 +26,7 @@ const Dashboard = () => {
       remarks: 'Completed review for Grade 10A',
     },
     {
-      user: 'Ms. Johnson',
+      user: 'Mr. Smith',
       time: '2024-02-09 03:45 PM',
       action: 'Published results',
       remarks: 'Published midterm results for Grade 9B',
@@ -36,16 +38,23 @@ const Dashboard = () => {
       remarks: 'Notified students about upcoming exams',
     },
     {
-      user: 'Mrs. Taylor',
+      user: 'Mr. Smith',
       time: '2024-02-07 09:20 AM',
       action: 'Updated assessment details',
       remarks: 'Corrected errors in Grade 11A assessments',
     },
   ];
 
+  // Filter activity logs for current user
+  const userActivityLogs = activityLogs.filter(log => log.user === currentUser);
+
   return (
     <div className="flex flex-col justify-center min-w-full p-4 space-y-8">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
+        <div className="flex flex-col border border-custom-text text-custom-text p-4 space-y-4">
+          <p>Classes</p>
+          <p className="text-2xl font-semibold">5</p>
+        </div>
         <div className="flex flex-col border border-custom-text text-custom-text p-4 space-y-4">
           <p>Pending Assessments</p>
           <p className="text-2xl font-semibold">{totals.assessments}</p>
@@ -54,36 +63,18 @@ const Dashboard = () => {
           <p>Results Completed</p>
           <p className="text-2xl font-semibold">{totals.resultsCompleted}</p>
         </div>
-        <div className="col-span-2 flex flex-col border border-custom-text text-custom-text p-4 space-y-4 bg-blue-50 rounded-md">
-          <p className="font-semibold text-lg">Notifications</p>
-          <ul className="space-y-2">
-        {activityLogs.slice(0, 3).map((log, index) => (
-          <li key={index} className="text-sm text-gray-700">
-            {log.action} - {log.remarks}
-          </li>
-        ))}
-          </ul>
-          <button
-        onClick={() => alert('Show all notifications in a modal')}
-        className="self-end mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-          >
-        View All
-          </button>
-        </div>
       </div>
       <div>
-        <span className="text-gray-400 font-semibold">Recent Activity</span>
+        <span className="text-gray-400 font-semibold">Your Recent Activity</span>
         <Table className="w-full border border-custom-text rounded-md">
           <TableRow className="bg-[#F2CC8F] hover:bg-[#F2CC8F]">
-            <TableCell className="font-bold text-base">User</TableCell>
             <TableCell className="font-bold text-base">Time</TableCell>
             <TableCell className="font-bold text-base">Action</TableCell>
             <TableCell className="font-bold text-base">Remarks</TableCell>
           </TableRow>
           <TableBody>
-            {activityLogs.map((log, index) => (
+            {userActivityLogs.map((log, index) => (
               <TableRow key={index + 1} className="hover:bg-gray-50">
-                <TableCell className="text-left">{log.user}</TableCell>
                 <TableCell className="text-left">{log.time}</TableCell>
                 <TableCell className="text-left">{log.action}</TableCell>
                 <TableCell className="text-left">{log.remarks}</TableCell>

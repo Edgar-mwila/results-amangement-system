@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input"
 import { TableRow, TableCell, TableBody, Table } from "@/components/ui/table"
-import { AnyRoute, createRoute, Link } from "@tanstack/react-router"
+import { AnyRoute, createRoute, useRouter } from "@tanstack/react-router"
 import { Search, UserPlus } from "lucide-react"
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
@@ -23,9 +23,9 @@ import { Label } from "@/components/ui/label"
 const exampleStaff = [
   { id: 1, firstname: "John", lastname: "Doe", role: "Teacher", email: "john.doe@school.com", status: "Active" },
   { id: 2, firstname: "Jane", lastname: "Smith", role: "Administrator", email: "jane.smith@school.com", status: "Active" },
-  { id: 3, firstname: "Bob", lastname: "Johnson", role: "Counselor", email: "bob.johnson@school.com", status: "On Leave" },
+  { id: 3, firstname: "Bob", lastname: "Johnson", role: "Administrator", email: "bob.johnson@school.com", status: "On Leave" },
   { id: 4, firstname: "Alice", lastname: "Williams", role: "Teacher", email: "alice.williams@school.com", status: "Active" },
-  { id: 5, firstname: "Charlie", lastname: "Brown", role: "Librarian", email: "charlie.brown@school.com", status: "Inactive" },
+  { id: 5, firstname: "Charlie", lastname: "Brown", role: "Teacher", email: "charlie.brown@school.com", status: "Inactive" },
 ]
 
 const AddStaffDialog: React.FC<{open: boolean, onOpenChange: (boolean:boolean) =>void}> = ({ open, onOpenChange }) => {
@@ -100,8 +100,6 @@ const AddStaffDialog: React.FC<{open: boolean, onOpenChange: (boolean:boolean) =
                 <SelectContent>
                   <SelectItem value="Teacher">Teacher</SelectItem>
                   <SelectItem value="Administrator">Administrator</SelectItem>
-                  <SelectItem value="Counselor">Counselor</SelectItem>
-                  <SelectItem value="Librarian">Librarian</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -126,6 +124,7 @@ const AddStaffDialog: React.FC<{open: boolean, onOpenChange: (boolean:boolean) =
 
 const StaffManagement = () => {
   const [search, setSearch] = useState("")
+  const router = useRouter()
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const filteredStaff = useMemo(() => {
@@ -168,38 +167,34 @@ const StaffManagement = () => {
           </TableRow>
           <TableBody>
             {filteredStaff.map((staff) => (
-              <TableRow key={staff.id} className="hover:bg-gray-50">
+                <TableRow 
+                key={staff.id} 
+                className="hover:bg-gray-50 cursor-pointer"
+                onClick={() => router.navigate({to: `/admin/staff-management/staffer/${staff.id}?role=${staff.role.toLowerCase()}`})}
+                >
                 <TableCell className="text-left">
-                  <Link to="/admin/staff-management/staffer/$id" params={{ id: staff.id.toString() }}>
-                    {staff.firstname} {staff.lastname}
-                  </Link>
+                  {staff.firstname} {staff.lastname}
                 </TableCell>
                 <TableCell className="text-left">
-                  <Link to="/admin/staff-management/staffer/$id" params={{ id: staff.id.toString() }}>
-                    {staff.role}
-                  </Link>
+                  {staff.role}
                 </TableCell>
                 <TableCell className="text-left">
-                  <Link to="/admin/staff-management/staffer/$id" params={{ id: staff.id.toString() }}>
-                    {staff.email}
-                  </Link>
+                  {staff.email}
                 </TableCell>
                 <TableCell className="text-left">
-                  <Link to="/admin/staff-management/staffer/$id" params={{ id: staff.id.toString() }}>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        staff.status === "Active"
-                          ? "bg-green-200 text-green-800"
-                          : staff.status === "Inactive"
-                          ? "bg-red-200 text-red-800"
-                          : "bg-yellow-200 text-yellow-800"
-                      }`}
-                    >
-                      {staff.status}
-                    </span>
-                  </Link>
+                  <span
+                  className={`px-2 py-1 rounded-full text-xs ${
+                    staff.status === "Active"
+                    ? "bg-green-200 text-green-800"
+                    : staff.status === "Inactive"
+                    ? "bg-red-200 text-red-800"
+                    : "bg-yellow-200 text-yellow-800"
+                  }`}
+                  >
+                  {staff.status}
+                  </span>
                 </TableCell>
-              </TableRow>
+                </TableRow>
             ))}
           </TableBody>
         </Table>

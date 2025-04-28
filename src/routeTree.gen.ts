@@ -52,6 +52,11 @@ import { Route as AdminClassManagementIdStudentIdImport } from './routes/admin/c
 
 // Create/Update Routes
 
+const SchoolIdRoute = SchoolIdImport.update({
+  path: '/school/$id',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const HelpDeskRoute = HelpDeskImport.update({
   path: '/help-desk',
   getParentRoute: () => rootRoute,
@@ -84,11 +89,6 @@ const AuthIndexRoute = AuthIndexImport.update({
 
 const AdminIndexRoute = AdminIndexImport.update({
   path: '/admin',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const SchoolIdRoute = SchoolIdImport.update({
-  path: '/school/$id',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -200,57 +200,56 @@ const AdminAuthResetPasswordRoute = AdminAuthResetPasswordImport.update({
 } as any)
 
 const TeacherClassesIdIndexRoute = TeacherClassesIdIndexImport.update({
-  path: '$id',
-  getParentRoute: () => TeacherClassesIndexRoute,
+  path: 'classes/$id',
+  getParentRoute: () => TeacherIndexRoute,
 } as any)
 
 const AdminClassManagementIdIndexRoute =
   AdminClassManagementIdIndexImport.update({
-    path: '$id',
-    getParentRoute: () => AdminClassManagementIndexRoute,
+    path: 'class-management/$id',
+    getParentRoute: () => AdminIndexRoute,
   } as any)
 
 const TeacherStudentPerformanceStudentIdRoute =
   TeacherStudentPerformanceStudentIdImport.update({
-    path: 'student/$id',
-    getParentRoute: () => TeacherStudentPerformanceIndexRoute,
+    path: 'student-performance/student/$id',
+    getParentRoute: () => TeacherIndexRoute,
   } as any)
 
 const TeacherClassesIdAssessmentsRoute =
   TeacherClassesIdAssessmentsImport.update({
-    path: 'assessments',
-    getParentRoute: () => TeacherClassesIdIndexRoute,
+    path: 'classes/$id/assessments',
+    getParentRoute: () => TeacherIndexRoute,
   } as any)
 
 const AdminStudentManagementStudentIdRoute =
   AdminStudentManagementStudentIdImport.update({
-    path: 'student/$id',
-    getParentRoute: () => AdminStudentManagementIndexRoute,
+    path: 'student-management/student/$id',
+    getParentRoute: () => AdminIndexRoute,
   } as any)
 
 const AdminStaffManagementStafferIdRoute =
   AdminStaffManagementStafferIdImport.update({
-    path: 'staffer/$id',
-    getParentRoute: () => AdminStaffManagementIndexRoute,
+    path: 'staff-management/staffer/$id',
+    getParentRoute: () => AdminIndexRoute,
   } as any)
 
 const TeacherClassesIdStudentIdRoute = TeacherClassesIdStudentIdImport.update({
-  path: 'student/$id',
-  getParentRoute: () => TeacherClassesIdIndexRoute,
+  path: 'classes/$id/student/$id',
+  getParentRoute: () => TeacherIndexRoute,
 } as any)
 
 const AdminClassManagementIdSubjectIdRoute =
   AdminClassManagementIdSubjectIdImport.update({
-    path: 'subject/$id',
-    getParentRoute: () => AdminClassManagementIdIndexRoute,
+    path: 'class-management/$id/subject/$id',
+    getParentRoute: () => AdminIndexRoute,
   } as any)
 
 const AdminClassManagementIdStudentIdRoute =
   AdminClassManagementIdStudentIdImport.update({
-    path: 'student/$id',
-    getParentRoute: () => AdminClassManagementIdIndexRoute,
+    path: 'class-management/$id/student/$id',
+    getParentRoute: () => AdminIndexRoute,
   } as any)
-
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -325,10 +324,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRegisterSchoolImport
       parentRoute: typeof AuthIndexRoute
     }
-    '/parent': {
-      id: '/parent'
-      path: '/parent'
-      fullPath: '/parent'
+    '/parent/': {
+      id: '/parent/'
+      path: '/parent/'
+      fullPath: '/parent/'
       preLoaderRoute: typeof ParentIndexImport
       parentRoute: typeof rootRoute
     }
@@ -346,10 +345,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ParentDashboardImport
       parentRoute: typeof ParentIndexRoute
     }
-    '/teacher': {
-      id: '/teacher'
-      path: '/teacher'
-      fullPath: '/teacher'
+    '/teacher/': {
+      id: '/teacher/'
+      path: '/teacher/'
+      fullPath: '/teacher/'
       preLoaderRoute: typeof TeacherIndexImport
       parentRoute: typeof rootRoute
     }
@@ -472,10 +471,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminStudentManagementStudentIdImport
       parentRoute: typeof AdminStudentManagementIndexRoute
     }
-    '/teacher/classes/$id': {
-      id: '/teacher/classes/$id'
+    '/teacher/classes/$id/': {
+      id: '/teacher/classes/$id/'
       path: '$id'
-      fullPath: '/teacher/classes/$id'
+      fullPath: '/teacher/classes/$id/'
       preLoaderRoute: typeof TeacherClassesIdIndexImport
       parentRoute: typeof TeacherClassesIndexRoute
     }
@@ -537,10 +536,10 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/register-school': typeof AuthRegisterSchoolRoute
-  '/parent': typeof ParentIndexRoute
+  '/parent/': typeof ParentIndexRoute
   '/parent/communications': typeof ParentCommunicationsRoute
   '/parent/dashboard': typeof ParentDashboardRoute
-  '/teacher': typeof TeacherIndexRoute
+  '/teacher/': typeof TeacherIndexRoute
   '/teacher/dashboard': typeof TeacherDashboardRoute
   '/admin/auth/reset-password': typeof AdminAuthResetPasswordRoute
   '/parent/auth/reset-password': typeof ParentAuthResetPasswordRoute
@@ -558,7 +557,7 @@ export interface FileRoutesByFullPath {
   '/teacher/student-performance': typeof TeacherStudentPerformanceIndexRoute
   '/admin/staff-management/staffer/$id': typeof AdminStaffManagementStafferIdRoute
   '/admin/student-management/student/$id': typeof AdminStudentManagementStudentIdRoute
-  '/teacher/classes/$id': typeof TeacherClassesIdIndexRoute
+  '/teacher/classes/$id/': typeof TeacherClassesIdIndexRoute
   '/teacher/classes/$id/assessments': typeof TeacherClassesIdAssessmentsRoute
   '/teacher/student-performance/student/$id': typeof TeacherStudentPerformanceStudentIdRoute
   '/admin/class-management/$id': typeof AdminClassManagementIdIndexRoute
@@ -578,10 +577,10 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/register-school': typeof AuthRegisterSchoolRoute
-  '/parent': typeof ParentIndexRoute
+  '/parent/': typeof ParentIndexRoute
   '/parent/communications': typeof ParentCommunicationsRoute
   '/parent/dashboard': typeof ParentDashboardRoute
-  '/teacher': typeof TeacherIndexRoute
+  '/teacher/': typeof TeacherIndexRoute
   '/teacher/dashboard': typeof TeacherDashboardRoute
   '/admin/auth/reset-password': typeof AdminAuthResetPasswordRoute
   '/parent/auth/reset-password': typeof ParentAuthResetPasswordRoute
@@ -599,7 +598,7 @@ export interface FileRoutesByTo {
   '/teacher/student-performance': typeof TeacherStudentPerformanceIndexRoute
   '/admin/staff-management/staffer/$id': typeof AdminStaffManagementStafferIdRoute
   '/admin/student-management/student/$id': typeof AdminStudentManagementStudentIdRoute
-  '/teacher/classes/$id': typeof TeacherClassesIdIndexRoute
+  '/teacher/classes/$id/': typeof TeacherClassesIdIndexRoute
   '/teacher/classes/$id/assessments': typeof TeacherClassesIdAssessmentsRoute
   '/teacher/student-performance/student/$id': typeof TeacherStudentPerformanceStudentIdRoute
   '/admin/class-management/$id': typeof AdminClassManagementIdIndexRoute
@@ -620,10 +619,10 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/register-school': typeof AuthRegisterSchoolRoute
-  '/parent': typeof ParentIndexRoute
+  '/parent/': typeof ParentIndexRoute
   '/parent/communications': typeof ParentCommunicationsRoute
   '/parent/dashboard': typeof ParentDashboardRoute
-  '/teacher': typeof TeacherIndexRoute
+  '/teacher/': typeof TeacherIndexRoute
   '/teacher/dashboard': typeof TeacherDashboardRoute
   '/admin/auth/reset-password': typeof AdminAuthResetPasswordRoute
   '/parent/auth/reset-password': typeof ParentAuthResetPasswordRoute
@@ -641,7 +640,7 @@ export interface FileRoutesById {
   '/teacher/student-performance': typeof TeacherStudentPerformanceIndexRoute
   '/admin/staff-management/staffer/$id': typeof AdminStaffManagementStafferIdRoute
   '/admin/student-management/student/$id': typeof AdminStudentManagementStudentIdRoute
-  '/teacher/classes/$id': typeof TeacherClassesIdIndexRoute
+  '/teacher/classes/$id/': typeof TeacherClassesIdIndexRoute
   '/teacher/classes/$id/assessments': typeof TeacherClassesIdAssessmentsRoute
   '/teacher/student-performance/student/$id': typeof TeacherStudentPerformanceStudentIdRoute
   '/admin/class-management/$id': typeof AdminClassManagementIdIndexRoute
@@ -663,10 +662,10 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/auth/register-school'
-    | '/parent'
+    | '/parent/'
     | '/parent/communications'
     | '/parent/dashboard'
-    | '/teacher'
+    | '/teacher/'
     | '/teacher/dashboard'
     | '/admin/auth/reset-password'
     | '/parent/auth/reset-password'
@@ -684,7 +683,7 @@ export interface FileRouteTypes {
     | '/teacher/student-performance'
     | '/admin/staff-management/staffer/$id'
     | '/admin/student-management/student/$id'
-    | '/teacher/classes/$id'
+    | '/teacher/classes/$id/'
     | '/teacher/classes/$id/assessments'
     | '/teacher/student-performance/student/$id'
     | '/admin/class-management/$id'
@@ -703,10 +702,10 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/auth/register-school'
-    | '/parent'
+    | '/parent/'
     | '/parent/communications'
     | '/parent/dashboard'
-    | '/teacher'
+    | '/teacher/'
     | '/teacher/dashboard'
     | '/admin/auth/reset-password'
     | '/parent/auth/reset-password'
@@ -724,7 +723,7 @@ export interface FileRouteTypes {
     | '/teacher/student-performance'
     | '/admin/staff-management/staffer/$id'
     | '/admin/student-management/student/$id'
-    | '/teacher/classes/$id'
+    | '/teacher/classes/$id/'
     | '/teacher/classes/$id/assessments'
     | '/teacher/student-performance/student/$id'
     | '/admin/class-management/$id'
@@ -743,10 +742,10 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/auth/register-school'
-    | '/parent'
+    | '/parent/'
     | '/parent/communications'
     | '/parent/dashboard'
-    | '/teacher'
+    | '/teacher/'
     | '/teacher/dashboard'
     | '/admin/auth/reset-password'
     | '/parent/auth/reset-password'
@@ -764,7 +763,7 @@ export interface FileRouteTypes {
     | '/teacher/student-performance'
     | '/admin/staff-management/staffer/$id'
     | '/admin/student-management/student/$id'
-    | '/teacher/classes/$id'
+    | '/teacher/classes/$id/'
     | '/teacher/classes/$id/assessments'
     | '/teacher/student-performance/student/$id'
     | '/admin/class-management/$id'
@@ -833,7 +832,7 @@ export const routeTree = rootRoute
         "/school/$id",
         "/auth",
         "/admin",
-        "/teacher",
+        "/teacher/",
         "/parent"
       ]
     },
@@ -923,7 +922,7 @@ export const routeTree = rootRoute
     "/admin/class-management/$id/subject/$id": {
       "filePath": "admin/class-management/$id/subject.$id.tsx"
     },
-    "/teacher": {
+    "/teacher/": {
       "filePath": "teacher/index.tsx",
       "children": [
         "dashboard",
@@ -956,7 +955,7 @@ export const routeTree = rootRoute
     "/teacher/student-performance": {
       "filePath": "teacher/student-performance/index.tsx"
     },
-    "/teacher/classes/$id": {
+    "/teacher/classes/$id/": {
       "filePath": "teacher/classes/$id/index.tsx"
     },
     "/teacher/classes/$id/assessments": {

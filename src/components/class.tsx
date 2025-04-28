@@ -1,61 +1,33 @@
-import { useState } from 'react';
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle,
-  CardDescription
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  TrendingUp,
-  BookOpen,
-  Users,
-  School,
-  ChevronRight,
-  List
-} from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader,
-  DialogTitle, 
-  DialogTrigger,
-  DialogFooter
-} from '@/components/ui/dialog';
-import { Link } from '@tanstack/react-router';
-import AddStudentDialog from './add-student-dialog';
-import { AssessmentsTab } from './assessments-tab';
-import { classData } from '@/data/class-data';
-import ClassPerformanceAnalytics from './class-performance';
+import { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { TrendingUp, BookOpen, Users, School, ChevronRight, List } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
+import { Link } from "@tanstack/react-router"
+import AddStudentDialog from "./add-student-dialog"
+import { AssessmentsTab } from "./assessments-tab"
+import { classData } from "@/data/class-data"
+import ClassPerformanceAnalytics from "./class-performance"
 
-export default function ClassView() {
-  const [activeTab, setActiveTab] = useState('overview');
+interface ClassViewProps {
+  isAdmin?: boolean
+  teacherSubject?: string
+}
+
+export default function ClassView({ isAdmin = false, teacherSubject }: ClassViewProps) {
+  const [activeTab, setActiveTab] = useState("overview")
 
   return (
-    <div 
-      className="flex flex-col mx-auto p-2 space-y-6"
-    >
+    <div className="flex flex-col mx-auto p-2 space-y-6">
       {/* Header Section with Dialog for Class Details */}
       <div className="sticky flex justify-between items-center">
         <div>
-          <h1 className="text-4xl font-bold text-[#3D405B]">
-            {classData.name}
-          </h1>
-          <p className="text-lg mt-2 text-gray-600">
-            Class Teacher: {classData.classTeacher}
-          </p>
+          <h1 className="text-4xl font-bold text-[#3D405B]">{classData.name}</h1>
+          <p className="text-lg mt-2 text-gray-600">Class Teacher: {classData.classTeacher}</p>
         </div>
         <div className="flex space-x-4">
           <AddStudentDialog />
@@ -63,30 +35,27 @@ export default function ClassView() {
       </div>
 
       {/* Tabs Navigation */}
-      <Tabs 
-        value={activeTab} 
-        onValueChange={setActiveTab}
-        className="w-full"
-      >
-          <TabsList 
-            className="inline-flex w-full justify-start"
-            style={{ 
-              backgroundColor: 'transparent',
-              borderBottom: '1px solid #A8A8A8' 
-            }}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList
+          className="inline-flex w-full justify-start"
+          style={{
+            backgroundColor: "transparent",
+            borderBottom: "1px solid #A8A8A8",
+          }}
+        >
+          <TabsTrigger
+            value="overview"
+            className="
+              data-[state=active]:text-[#3D405B]
+              data-[state=active]:border-b-2 
+              data-[state=active]:border-[#3D405B]
+              mr-4 pb-2
+            "
           >
-            <TabsTrigger 
-              value="overview"
-              className="
-                data-[state=active]:text-[#3D405B]
-                data-[state=active]:border-b-2 
-                data-[state=active]:border-[#3D405B]
-                mr-4 pb-2
-              "
-            >
-              Overview
-            </TabsTrigger>
-            <TabsTrigger 
+            Overview
+          </TabsTrigger>
+          {isAdmin && (
+            <TabsTrigger
               value="subjects"
               className="
                 data-[state=active]:text-[#3D405B]
@@ -97,8 +66,10 @@ export default function ClassView() {
             >
               Subjects
             </TabsTrigger>
-            <TabsTrigger 
-              value="student-list"
+          )}
+          {!isAdmin && teacherSubject && (
+            <TabsTrigger
+              value="subjects"
               className="
                 data-[state=active]:text-[#3D405B]
                 data-[state=active]:border-b-2 
@@ -106,20 +77,32 @@ export default function ClassView() {
                 mr-4 pb-2
               "
             >
-              Student List
+              My Subject
             </TabsTrigger>
-            <TabsTrigger 
-              value="assessments"
-              className="
-                data-[state=active]:text-[#3D405B]
-                data-[state=active]:border-b-2 
-                data-[state=active]:border-[#3D405B]
-                mr-4 pb-2
-              "
-            >
-              Assessments
-            </TabsTrigger>
-          </TabsList>
+          )}
+          <TabsTrigger
+            value="student-list"
+            className="
+              data-[state=active]:text-[#3D405B]
+              data-[state=active]:border-b-2 
+              data-[state=active]:border-[#3D405B]
+              mr-4 pb-2
+            "
+          >
+            Student List
+          </TabsTrigger>
+          <TabsTrigger
+            value="assessments"
+            className="
+              data-[state=active]:text-[#3D405B]
+              data-[state=active]:border-b-2 
+              data-[state=active]:border-[#3D405B]
+              mr-4 pb-2
+            "
+          >
+            Assessments
+          </TabsTrigger>
+        </TabsList>
 
         <ScrollArea className="whitespace-nowrap">
           {/* Overview Tab */}
@@ -133,15 +116,11 @@ export default function ClassView() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-semibold text-[#3D405B]">
-                    {classData.totalStudents}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Capacity: {classData.optimumCapacity}
-                  </p>
+                  <p className="text-2xl font-semibold text-[#3D405B]">{classData.totalStudents}</p>
+                  <p className="text-sm text-gray-500">Capacity: {classData.optimumCapacity}</p>
                 </CardContent>
               </Card>
-              
+
               <Card className="shadow-md">
                 <CardHeader>
                   <CardTitle className="text-lg text-[#3D405B] flex items-center">
@@ -150,15 +129,11 @@ export default function ClassView() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-semibold text-[#3D405B]">
-                    {classData.subjects.length}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Pure Sciences Curriculum
-                  </p>
+                  <p className="text-2xl font-semibold text-[#3D405B]">{classData.subjects.length}</p>
+                  <p className="text-sm text-gray-500">Pure Sciences Curriculum</p>
                 </CardContent>
               </Card>
-              
+
               <Card className="shadow-md">
                 <CardHeader>
                   <CardTitle className="text-lg text-[#3D405B] flex items-center">
@@ -167,16 +142,12 @@ export default function ClassView() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-semibold text-[#3D405B]">
-                    {classData.averagePerformance}%
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Class Average Grade: B+
-                  </p>
+                  <p className="text-2xl font-semibold text-[#3D405B]">{classData.averagePerformance}%</p>
+                  <p className="text-sm text-gray-500">Class Average Grade: B+</p>
                 </CardContent>
               </Card>
             </div>
-            
+
             <Card className="shadow-md mt-6">
               <CardHeader>
                 <CardTitle className="text-lg text-[#3D405B] flex items-center">
@@ -185,9 +156,7 @@ export default function ClassView() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="mb-4">
-                  {classData.description}
-                </p>
+                <p className="mb-4">{classData.description}</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <h3 className="font-medium text-[#3D405B] mb-1">Class Teacher</h3>
@@ -210,7 +179,7 @@ export default function ClassView() {
                 <hr />
                 <hr />
                 <hr />
-                <ClassPerformanceAnalytics classData={classData} />
+                <ClassPerformanceAnalytics classData={classData} isAdmin={isAdmin} teacherSubject={teacherSubject} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -221,91 +190,87 @@ export default function ClassView() {
               <CardHeader>
                 <CardTitle className="text-lg text-[#3D405B] flex items-center">
                   <BookOpen className="mr-2 text-[#3D405B]" />
-                  Subject List
+                  {isAdmin ? "Subject List" : `My Subject: ${teacherSubject}`}
                 </CardTitle>
                 <CardDescription>
-                  All subjects offered in {classData.name} with ECZ codes
+                  {isAdmin
+                    ? `All subjects offered in ${classData.name} with ECZ codes`
+                    : `Details for ${teacherSubject}`}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 gap-4">
-                  {classData.subjects.map((subject) => (
-                    <div 
-                      key={subject.id}
-                      className="p-4 border rounded-md hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-medium text-[#3D405B]">
-                            {subject.name}
-                            <Badge className="ml-2 bg-[#3D405B]">
-                              {subject.code}
-                            </Badge>
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            Teacher: {subject.teacher}
-                          </p>
+                  {classData.subjects
+                    .filter((subject) => isAdmin || subject.name === teacherSubject)
+                    .map((subject) => (
+                      <div key={subject.id} className="p-4 border rounded-md hover:bg-gray-50 transition-colors">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-medium text-[#3D405B]">
+                              {subject.name}
+                              <Badge className="ml-2 bg-[#3D405B]">{subject.code}</Badge>
+                            </h3>
+                            <p className="text-sm text-gray-500">Teacher: {subject.teacher}</p>
+                          </div>
+                          <Dialog>
+                            <DialogTrigger>
+                              <Button variant="outline" size="sm" className="border-[#3D405B] text-[#3D405B]">
+                                View Details
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle className="text-xl text-[#3D405B]">
+                                  {subject.name} <span className="text-gray-500">({subject.code})</span>
+                                </DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4 py-4">
+                                <div>
+                                  <h3 className="font-medium text-[#3D405B]">Teacher</h3>
+                                  <p>{subject.teacher}</p>
+                                </div>
+                                <div>
+                                  <h3 className="font-medium text-[#3D405B]">Description</h3>
+                                  <p>{subject.description}</p>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <h3 className="font-medium text-[#3D405B]">Examination Type</h3>
+                                    <p>{subject.examinationType}</p>
+                                  </div>
+                                  <div>
+                                    <h3 className="font-medium text-[#3D405B]">Hours per Week</h3>
+                                    <p>{subject.hoursPerWeek}</p>
+                                  </div>
+                                </div>
+                                <div>
+                                  <h3 className="font-medium text-[#3D405B] mb-2">Upcoming Tests</h3>
+                                  <ul className="space-y-1">
+                                    {classData.upcomingTests
+                                      .filter((test) => test.subject === subject.name)
+                                      .map((test) => (
+                                        <li key={test.id} className="text-sm">
+                                          • {test.name} - {test.date}
+                                        </li>
+                                      ))}
+                                  </ul>
+                                </div>
+                              </div>
+                              <DialogFooter className="flex justify-between items-center">
+                                <Link
+                                  to="/admin/class-management/$id/subject/$id"
+                                  params={{ id: subject.id.toString() }}
+                                >
+                                  <Button className="bg-green-500 hover:bg-green-600 text-white">
+                                    View Performance
+                                  </Button>
+                                </Link>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
                         </div>
-                        <Dialog>
-                          <DialogTrigger>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              className="border-[#3D405B] text-[#3D405B]"
-                            >
-                              View Details
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle className="text-xl text-[#3D405B]">
-                                {subject.name} <span className="text-gray-500">({subject.code})</span>
-                              </DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-4 py-4">
-                              <div>
-                                <h3 className="font-medium text-[#3D405B]">Teacher</h3>
-                                <p>{subject.teacher}</p>
-                              </div>
-                              <div>
-                                <h3 className="font-medium text-[#3D405B]">Description</h3>
-                                <p>{subject.description}</p>
-                              </div>
-                              <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                  <h3 className="font-medium text-[#3D405B]">Examination Type</h3>
-                                  <p>{subject.examinationType}</p>
-                                </div>
-                                <div>
-                                  <h3 className="font-medium text-[#3D405B]">Hours per Week</h3>
-                                  <p>{subject.hoursPerWeek}</p>
-                                </div>
-                              </div>
-                              <div>
-                                <h3 className="font-medium text-[#3D405B] mb-2">Upcoming Tests</h3>
-                                <ul className="space-y-1">
-                                  {classData.upcomingTests
-                                    .filter(test => test.subject === subject.name)
-                                    .map(test => (
-                                      <li key={test.id} className="text-sm">
-                                        • {test.name} - {test.date}
-                                      </li>
-                                    ))}
-                                </ul>
-                              </div>
-                            </div>
-                            <DialogFooter className="flex justify-between items-center">
-                              <Link to='/admin/class-management/$id/subject/$id' params={{id: subject.id.toString()}}>
-                                <Button className="bg-green-500 hover:bg-green-600 text-white">
-                                  View Performance
-                                </Button>
-                              </Link>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </CardContent>
             </Card>
@@ -317,7 +282,7 @@ export default function ClassView() {
               <CardHeader>
                 <CardTitle className="text-lg flex items-center text-[#3D405B]">
                   <List className="mr-2 text-[#3D405B]" />
-                  Student List
+                  {isAdmin ? "Student List" : `Students in ${teacherSubject}`}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -325,44 +290,60 @@ export default function ClassView() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Student Name</TableHead>
-                      <TableHead>Overall Grade</TableHead>
+                      <TableHead>{isAdmin ? "Overall Grade" : `${teacherSubject} Grade`}</TableHead>
                       <TableHead>Improvement Areas</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {classData.studentPerformance.map((student) => (
-                      <TableRow key={student.id}>
-                        <TableCell>{student.name}</TableCell>
-                        <TableCell>
-                          <Badge 
-                            className={
-                              student.overallGrade.startsWith('A') 
-                                ? 'bg-green-500' 
-                                : student.overallGrade.startsWith('B') 
-                                  ? 'bg-[#3D405B]' 
-                                  : 'bg-amber-500'
-                            }
-                          >
-                            {student.overallGrade}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {student.improvementAreas.length > 0 
-                            ? student.improvementAreas.join(', ') 
-                            : 'None identified'}
-                        </TableCell>
-                        <TableCell>
-                          <Link 
-                            to='/admin/class-management/$id/student/$id'
-                            params={{ id: student.id.toString()}}
-                            className="text-[#3D405B] hover:underline flex items-center"
-                          >
-                            Detailed Report <ChevronRight className="h-4 w-4 ml-1" />
-                          </Link>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {classData.studentPerformance
+                      .filter((student) => {
+                        if (isAdmin) return true
+
+                        // For teachers, check if the student has taken tests in their subject
+                        const studentHasSubject = classData.pastTests
+                          .filter((test) => test.subject === teacherSubject)
+                          .some((test) => test.studentScores.some((score) => score.student === student.name))
+
+                        return studentHasSubject
+                      })
+                      .map((student) => (
+                        <TableRow key={student.id}>
+                          <TableCell>{student.name}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className={
+                                student.overallGrade.startsWith("A")
+                                  ? "bg-green-500"
+                                  : student.overallGrade.startsWith("B")
+                                    ? "bg-[#3D405B]"
+                                    : "bg-amber-500"
+                              }
+                            >
+                              {student.overallGrade}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {!isAdmin && teacherSubject
+                              ? student.improvementAreas.filter((area) => area.includes(teacherSubject)).join(", ") ||
+                                "None identified"
+                              : student.improvementAreas.length > 0
+                                ? student.improvementAreas.join(", ")
+                                : "None identified"}
+                          </TableCell>
+                          <TableCell>
+                            <Link
+                              to={isAdmin 
+                              ? "/admin/class-management/$id/student/$id"
+                              : "/teacher/classes/$id/student/$id"}
+                              params={{ id: student.id.toString() }}
+                              className="text-[#3D405B] hover:underline flex items-center"
+                            >
+                              Detailed Report <ChevronRight className="h-4 w-4 ml-1" />
+                            </Link>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -371,13 +352,18 @@ export default function ClassView() {
 
           {/* Assessments Tab */}
           <TabsContent value="assessments">
-            <AssessmentsTab classData={{
-              upcomingTests: classData.upcomingTests,
-              pastTests: classData.pastTests
-            }} isAdminPath={true} />
+            <AssessmentsTab
+              classData={{
+                upcomingTests: classData.upcomingTests,
+                pastTests: classData.pastTests,
+              }}
+              isAdminPath={true}
+              isAdmin={isAdmin}
+              teacherSubject={teacherSubject}
+            />
           </TabsContent>
         </ScrollArea>
       </Tabs>
     </div>
-  );
+  )
 }
