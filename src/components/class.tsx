@@ -29,9 +29,9 @@ export default function ClassView({ isAdmin = false, teacherSubject }: ClassView
           <h1 className="text-4xl font-bold text-[#3D405B]">{classData.name}</h1>
           <p className="text-lg mt-2 text-gray-600">Class Teacher: {classData.classTeacher}</p>
         </div>
-        <div className="flex space-x-4">
+        {isAdmin && <div className="flex space-x-4">
           <AddStudentDialog />
-        </div>
+        </div>}
       </div>
 
       {/* Tabs Navigation */}

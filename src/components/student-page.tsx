@@ -173,37 +173,37 @@ const terms: Term[] = [
         participationScore: 85,
         improvementAreas: ["Improve map reading skills"],
       },
-      {
-        name: "French",
-        tests: [
-          { name: "Grammar Quiz 1", score: 90 },
-          { name: "Conversation Mid-term", score: 88 },
-        ],
-        finalExam: 90,
-        criteria: "Tests (45%), Final Exam (55%)",
-        finalGrade: "A",
-        teacherComment: "Très bien! Excellent pronunciation and grammar understanding.",
-        teacherName: "Mme. Isabelle Dupont",
-        teacherEmail: "isabelle.dupont@ph-EduTrack.com",
-        teacherPhone: "+5678901234",
-        attendance: 97,
-        participationScore: 94,
-        improvementAreas: ["Engage more in conversations"],
-      },
-      {
-        name: "Art & Design",
-        tests: [],
-        finalExam: null,
-        criteria: "Project Based (100%)",
-        finalGrade: "A+",
-        teacherComment: "Outstanding creativity and skill shown in all projects.",
-        teacherName: "Ms. Ava Moreno",
-        teacherEmail: "ava.moreno@ph-EduTrack.com",
-        teacherPhone: "+9012345678",
-        attendance: 99,
-        participationScore: 99,
-        improvementAreas: [],
-      },
+      // {
+      //   name: "French",
+      //   tests: [
+      //     { name: "Grammar Quiz 1", score: 90 },
+      //     { name: "Conversation Mid-term", score: 88 },
+      //   ],
+      //   finalExam: 90,
+      //   criteria: "Tests (45%), Final Exam (55%)",
+      //   finalGrade: "A",
+      //   teacherComment: "Très bien! Excellent pronunciation and grammar understanding.",
+      //   teacherName: "Mme. Isabelle Dupont",
+      //   teacherEmail: "isabelle.dupont@ph-EduTrack.com",
+      //   teacherPhone: "+5678901234",
+      //   attendance: 97,
+      //   participationScore: 94,
+      //   improvementAreas: ["Engage more in conversations"],
+      // },
+      // {
+      //   name: "Art & Design",
+      //   tests: [],
+      //   finalExam: null,
+      //   criteria: "Project Based (100%)",
+      //   finalGrade: "A+",
+      //   teacherComment: "Outstanding creativity and skill shown in all projects.",
+      //   teacherName: "Ms. Ava Moreno",
+      //   teacherEmail: "ava.moreno@ph-EduTrack.com",
+      //   teacherPhone: "+9012345678",
+      //   attendance: 99,
+      //   participationScore: 99,
+      //   improvementAreas: [],
+      // },
     ],
     overallComment: "Sarah has shown great improvement this term, especially in Mathematics and English Literature.",
     nextYearStatus: "On track to proceed to the next grade",
@@ -398,10 +398,6 @@ function SubjectTabs({
           className="
           inline-flex 
           w-full 
-          overflow-x-auto 
-          scrollbar-thin 
-          scrollbar-thumb-gray-300 
-          scrollbar-track-transparent 
           pb-2 
           mb-2 
           border-b 

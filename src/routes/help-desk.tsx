@@ -11,6 +11,7 @@ const HelpDesk = () => {
           <h1 className="text-5xl font-bold mb-4 text-gray-800">Help & Support Center</h1>
           <p className="text-xl text-gray-600">We're here to help you succeed with our platform</p>
         </header>
+        
 
         {/* Contact Information */}
         <section className="mb-16">
