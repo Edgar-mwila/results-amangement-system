@@ -1,45 +1,85 @@
-import { AnyRoute, createRoute, Link, Outlet } from '@tanstack/react-router'
-import { Route as RootRoute } from '../../__root'
+import { createRootRoute, Link, Outlet, useNavigate, useParams } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
+import {
+  HomeIcon,
+  UsersIcon,
+  BookOpenIcon,
+  UserIcon,
+  ChartBarIcon,
+  CogIcon,
+  BuildingIcon,
+} from 'lucide-react'
 
 const Layout = () => {
+  const [activeOption, setActiveOption] = useState('dashboard')
+  const { school } = useParams({ from: '/$school/' })
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!school) {
+      navigate({ to: '/' })
+      return
+    }
+    
+    const path = window.location.pathname
+    const pathSegments = path.split('/')
+    const currentOption = pathSegments[pathSegments.length - 1]
+    setActiveOption(currentOption || 'dashboard')
+  }, [school, navigate])
+
   return (
-    <div className="grid grid-cols-4 min-h-[90vh]">
-      <div className="bg-[#F2CC8F] p-4 max-h-[90vh]">
-        <nav>
-          <ul className="space-y-2">
-            <li className="hover:bg-[#E6B56C] p-2 rounded">
-              <Link to="/$school/admin/dashboard" params={{ school: 'school-1' }}>Dashboard</Link>
-            </li>
-            <li className="hover:bg-[#E6B56C] p-2 rounded">
-              <Link to="/$school/admin/school" params={{ school: 'school-1' }}>School Management</Link>
-            </li>
-            <li className="hover:bg-[#E6B56C] p-2 rounded">
-              <Link to="/$school/admin/staff-management" params={{ school: 'school-1' }}>Staff Management</Link>
-            </li>
-            <li className="hover:bg-[#E6B56C] p-2 rounded">
-              <Link to="/$school/admin/class-management" params={{ school: 'school-1' }}>Class Management</Link>
-            </li>
-            <li className="hover:bg-[#E6B56C] p-2 rounded">
-              <Link to="/$school/admin/student-management" params={{ school: 'school-1' }}>Student Management</Link>
-            </li>
-            <li className="hover:bg-[#E6B56C] p-2 rounded">
-              <Link to="/$school/admin/reports" params={{ school: 'school-1' }}>Reports</Link>
-            </li>
-            <li className="hover:bg-[#E6B56C] p-2 rounded">
-              <Link to="/$school/admin/settings" params={{ school: 'school-1' }}>Settings</Link>
-            </li>
+    <div className="flex h-screen bg-gray-100">
+      {/* Sidebar */}
+      <div className="w-64 bg-white shadow-md">
+        {/* Logo/Header */}
+        <div className="px-6 py-4 bg-green-600">
+            <h1 className="text-xl font-bold text-white">
+            {school.split('-').map((word: string) => 
+              word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ')} Admin
+            </h1>
+        </div>
+
+        {/* Navigation */}
+        <nav className="px-2 py-4">
+          <ul className="space-y-1">
+            {[
+              { path: 'dashboard', icon: HomeIcon, label: 'Dashboard' },
+              { path: 'school', icon: BuildingIcon, label: 'School Management' },
+              { path: 'staff-management', icon: UsersIcon, label: 'Staff Management' },
+              { path: 'class-management', icon: BookOpenIcon, label: 'Class Management' },
+              { path: 'student-management', icon: UserIcon, label: 'Student Management' },
+              { path: 'reports', icon: ChartBarIcon, label: 'Reports' },
+              { path: 'settings', icon: CogIcon, label: 'Settings' },
+            ].map(({ path, icon: Icon, label }) => (
+              <li key={path}>
+                <Link
+                  to={`/$school/admin/${path}`}
+                  params={{ school, path }}
+                  className={
+                    `flex items-center px-4 py-3 text-sm rounded-md transition-colors ${
+                      activeOption === path
+                        ? 'bg-green-100 text-green-700 font-medium'
+                        : 'text-gray-700 hover:bg-green-50'
+                    }`
+                  }
+                >
+                  <Icon className="w-5 h-5 mr-3" />
+                  {label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
       </div>
-      <div className="col-span-3 p-4 bg-gray-50 max-h-[90vh] overflow-y-scroll">
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
         <Outlet />
-      </div>
+      </main>
     </div>
   )
 }
-
-export const Route = createRoute({
-    path: '/admin',
-    component: Layout,
-    getParentRoute: () => RootRoute as AnyRoute,
+export const Route = createRootRoute({
+  component: Layout
 })

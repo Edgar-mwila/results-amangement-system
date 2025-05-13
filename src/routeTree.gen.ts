@@ -11,49 +11,48 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as RegisterSchoolImport } from './routes/register-school'
 import { Route as HelpDeskImport } from './routes/help-desk'
-import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
-import { Route as TeacherIndexImport } from './routes/teacher/index'
-import { Route as ParentIndexImport } from './routes/parent/index'
-import { Route as AuthIndexImport } from './routes/auth/index'
-import { Route as AdminIndexImport } from './routes/admin/index'
-import { Route as TeacherDashboardImport } from './routes/teacher/dashboard'
-import { Route as SchoolIdImport } from './routes/school.$id'
-import { Route as ParentDashboardImport } from './routes/parent/dashboard'
-import { Route as ParentCommunicationsImport } from './routes/parent/communications'
-import { Route as AuthRegisterSchoolImport } from './routes/auth/register-school'
-import { Route as AuthRegisterImport } from './routes/auth/register'
-import { Route as AuthLoginImport } from './routes/auth/login'
-import { Route as AdminDashboardImport } from './routes/admin/dashboard'
-import { Route as TeacherStudentPerformanceIndexImport } from './routes/teacher/student-performance/index'
-import { Route as TeacherCommunicationIndexImport } from './routes/teacher/communication/index'
-import { Route as TeacherClassesIndexImport } from './routes/teacher/classes/index'
-import { Route as TeacherAssessmentsIndexImport } from './routes/teacher/assessments/index'
-import { Route as AdminStudentManagementIndexImport } from './routes/admin/student-management/index'
-import { Route as AdminStaffManagementIndexImport } from './routes/admin/staff-management/index'
-import { Route as AdminSettingsIndexImport } from './routes/admin/settings/index'
-import { Route as AdminSchoolIndexImport } from './routes/admin/school/index'
-import { Route as AdminReportsIndexImport } from './routes/admin/reports/index'
-import { Route as AdminClassManagementIndexImport } from './routes/admin/class-management/index'
-import { Route as TeacherAuthResetPasswordImport } from './routes/teacher/auth/reset-password'
-import { Route as ParentStudentIdImport } from './routes/parent/student.$id'
-import { Route as ParentAuthResetPasswordImport } from './routes/parent/auth/reset-password'
-import { Route as AdminAuthResetPasswordImport } from './routes/admin/auth/reset-password'
-import { Route as TeacherClassesIdIndexImport } from './routes/teacher/classes/$id/index'
-import { Route as AdminClassManagementIdIndexImport } from './routes/admin/class-management/$id/index'
-import { Route as TeacherStudentPerformanceStudentIdImport } from './routes/teacher/student-performance/student.$id'
-import { Route as TeacherClassesIdAssessmentsImport } from './routes/teacher/classes/$id/assessments'
-import { Route as AdminStudentManagementStudentIdImport } from './routes/admin/student-management/student.$id'
-import { Route as AdminStaffManagementStafferIdImport } from './routes/admin/staff-management/staffer.$id'
-import { Route as TeacherClassesIdStudentIdImport } from './routes/teacher/classes/$id/student.$id'
-import { Route as AdminClassManagementIdSubjectIdImport } from './routes/admin/class-management/$id/subject.$id'
-import { Route as AdminClassManagementIdStudentIdImport } from './routes/admin/class-management/$id/student.$id'
+import { Route as SchoolIndexImport } from './routes/$school/index'
+import { Route as SchoolTeacherIndexImport } from './routes/$school/teacher/index'
+import { Route as SchoolParentIndexImport } from './routes/$school/parent/index'
+import { Route as SchoolAuthIndexImport } from './routes/$school/auth/index'
+import { Route as SchoolAdminIndexImport } from './routes/$school/admin/index'
+import { Route as SchoolTeacherDashboardImport } from './routes/$school/teacher/dashboard'
+import { Route as SchoolParentDashboardImport } from './routes/$school/parent/dashboard'
+import { Route as SchoolParentCommunicationsImport } from './routes/$school/parent/communications'
+import { Route as SchoolAuthRegisterImport } from './routes/$school/auth/register'
+import { Route as SchoolAuthLoginImport } from './routes/$school/auth/login'
+import { Route as SchoolAdminDashboardImport } from './routes/$school/admin/dashboard'
+import { Route as SchoolTeacherStudentPerformanceIndexImport } from './routes/$school/teacher/student-performance/index'
+import { Route as SchoolTeacherCommunicationIndexImport } from './routes/$school/teacher/communication/index'
+import { Route as SchoolTeacherClassesIndexImport } from './routes/$school/teacher/classes/index'
+import { Route as SchoolTeacherAssessmentsIndexImport } from './routes/$school/teacher/assessments/index'
+import { Route as SchoolAdminStudentManagementIndexImport } from './routes/$school/admin/student-management/index'
+import { Route as SchoolAdminStaffManagementIndexImport } from './routes/$school/admin/staff-management/index'
+import { Route as SchoolAdminSettingsIndexImport } from './routes/$school/admin/settings/index'
+import { Route as SchoolAdminSchoolIndexImport } from './routes/$school/admin/school/index'
+import { Route as SchoolAdminReportsIndexImport } from './routes/$school/admin/reports/index'
+import { Route as SchoolAdminClassManagementIndexImport } from './routes/$school/admin/class-management/index'
+import { Route as SchoolTeacherAuthResetPasswordImport } from './routes/$school/teacher/auth/reset-password'
+import { Route as SchoolParentStudentIdImport } from './routes/$school/parent/student.$id'
+import { Route as SchoolParentAuthResetPasswordImport } from './routes/$school/parent/auth/reset-password'
+import { Route as SchoolAdminAuthResetPasswordImport } from './routes/$school/admin/auth/reset-password'
+import { Route as SchoolTeacherClassesIdIndexImport } from './routes/$school/teacher/classes/$id/index'
+import { Route as SchoolAdminClassManagementIdIndexImport } from './routes/$school/admin/class-management/$id/index'
+import { Route as SchoolTeacherStudentPerformanceStudentIdImport } from './routes/$school/teacher/student-performance/student.$id'
+import { Route as SchoolTeacherClassesIdAssessmentsImport } from './routes/$school/teacher/classes/$id/assessments'
+import { Route as SchoolAdminStudentManagementStudentIdImport } from './routes/$school/admin/student-management/student.$id'
+import { Route as SchoolAdminStaffManagementStafferIdImport } from './routes/$school/admin/staff-management/staffer.$id'
+import { Route as SchoolTeacherClassesIdStudentIdImport } from './routes/$school/teacher/classes/$id/student.$id'
+import { Route as SchoolAdminClassManagementIdSubjectIdImport } from './routes/$school/admin/class-management/$id/subject.$id'
+import { Route as SchoolAdminClassManagementIdStudentIdImport } from './routes/$school/admin/class-management/$id/student.$id'
 
 // Create/Update Routes
 
-const SchoolIdRoute = SchoolIdImport.update({
-  path: '/school/$id',
+const RegisterSchoolRoute = RegisterSchoolImport.update({
+  path: '/register-school',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -62,194 +61,201 @@ const HelpDeskRoute = HelpDeskImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AboutRoute = AboutImport.update({
-  path: '/about',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const TeacherIndexRoute = TeacherIndexImport.update({
-  path: '/teacher',
+const SchoolIndexRoute = SchoolIndexImport.update({
+  path: '/$school/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const ParentIndexRoute = ParentIndexImport.update({
-  path: '/parent',
+const SchoolTeacherIndexRoute = SchoolTeacherIndexImport.update({
+  path: '/$school/teacher/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthIndexRoute = AuthIndexImport.update({
-  path: '/auth',
+const SchoolParentIndexRoute = SchoolParentIndexImport.update({
+  path: '/$school/parent/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const AdminIndexRoute = AdminIndexImport.update({
-  path: '/admin',
+const SchoolAuthIndexRoute = SchoolAuthIndexImport.update({
+  path: '/$school/auth/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const TeacherDashboardRoute = TeacherDashboardImport.update({
-  path: 'dashboard',
-  getParentRoute: () => TeacherIndexRoute,
+const SchoolAdminIndexRoute = SchoolAdminIndexImport.update({
+  path: '/$school/admin/',
+  getParentRoute: () => rootRoute,
 } as any)
 
-const ParentDashboardRoute = ParentDashboardImport.update({
-  path: 'dashboard',
-  getParentRoute: () => ParentIndexRoute,
+const SchoolTeacherDashboardRoute = SchoolTeacherDashboardImport.update({
+  path: '/$school/teacher/dashboard',
+  getParentRoute: () => rootRoute,
 } as any)
 
-const ParentCommunicationsRoute = ParentCommunicationsImport.update({
-  path: 'communications',
-  getParentRoute: () => ParentIndexRoute,
+const SchoolParentDashboardRoute = SchoolParentDashboardImport.update({
+  path: '/$school/parent/dashboard',
+  getParentRoute: () => rootRoute,
 } as any)
 
-const AuthRegisterSchoolRoute = AuthRegisterSchoolImport.update({
-  path: 'register-school',
-  getParentRoute: () => AuthIndexRoute,
+const SchoolParentCommunicationsRoute = SchoolParentCommunicationsImport.update(
+  {
+    path: '/$school/parent/communications',
+    getParentRoute: () => rootRoute,
+  } as any,
+)
+
+const SchoolAuthRegisterRoute = SchoolAuthRegisterImport.update({
+  path: '/$school/auth/register',
+  getParentRoute: () => rootRoute,
 } as any)
 
-const AuthRegisterRoute = AuthRegisterImport.update({
-  path: 'register',
-  getParentRoute: () => AuthIndexRoute,
+const SchoolAuthLoginRoute = SchoolAuthLoginImport.update({
+  path: '/$school/auth/login',
+  getParentRoute: () => rootRoute,
 } as any)
 
-const AuthLoginRoute = AuthLoginImport.update({
-  path: 'login',
-  getParentRoute: () => AuthIndexRoute,
+const SchoolAdminDashboardRoute = SchoolAdminDashboardImport.update({
+  path: '/$school/admin/dashboard',
+  getParentRoute: () => rootRoute,
 } as any)
 
-const AdminDashboardRoute = AdminDashboardImport.update({
-  path: 'dashboard',
-  getParentRoute: () => AdminIndexRoute,
-} as any)
-
-const TeacherStudentPerformanceIndexRoute =
-  TeacherStudentPerformanceIndexImport.update({
-    path: 'student-performance',
-    getParentRoute: () => TeacherIndexRoute,
+const SchoolTeacherStudentPerformanceIndexRoute =
+  SchoolTeacherStudentPerformanceIndexImport.update({
+    path: '/$school/teacher/student-performance/',
+    getParentRoute: () => rootRoute,
   } as any)
 
-const TeacherCommunicationIndexRoute = TeacherCommunicationIndexImport.update({
-  path: 'communication',
-  getParentRoute: () => TeacherIndexRoute,
-} as any)
-
-const TeacherClassesIndexRoute = TeacherClassesIndexImport.update({
-  path: 'classes',
-  getParentRoute: () => TeacherIndexRoute,
-} as any)
-
-const TeacherAssessmentsIndexRoute = TeacherAssessmentsIndexImport.update({
-  path: 'assessments',
-  getParentRoute: () => TeacherIndexRoute,
-} as any)
-
-const AdminStudentManagementIndexRoute =
-  AdminStudentManagementIndexImport.update({
-    path: 'student-management',
-    getParentRoute: () => AdminIndexRoute,
+const SchoolTeacherCommunicationIndexRoute =
+  SchoolTeacherCommunicationIndexImport.update({
+    path: '/$school/teacher/communication/',
+    getParentRoute: () => rootRoute,
   } as any)
 
-const AdminStaffManagementIndexRoute = AdminStaffManagementIndexImport.update({
-  path: 'staff-management',
-  getParentRoute: () => AdminIndexRoute,
+const SchoolTeacherClassesIndexRoute = SchoolTeacherClassesIndexImport.update({
+  path: '/$school/teacher/classes/',
+  getParentRoute: () => rootRoute,
 } as any)
 
-const AdminSettingsIndexRoute = AdminSettingsIndexImport.update({
-  path: 'settings',
-  getParentRoute: () => AdminIndexRoute,
-} as any)
-
-const AdminSchoolIndexRoute = AdminSchoolIndexImport.update({
-  path: 'school',
-  getParentRoute: () => AdminIndexRoute,
-} as any)
-
-const AdminReportsIndexRoute = AdminReportsIndexImport.update({
-  path: 'reports',
-  getParentRoute: () => AdminIndexRoute,
-} as any)
-
-const AdminClassManagementIndexRoute = AdminClassManagementIndexImport.update({
-  path: 'class-management',
-  getParentRoute: () => AdminIndexRoute,
-} as any)
-
-const TeacherAuthResetPasswordRoute = TeacherAuthResetPasswordImport.update({
-  path: 'auth/reset-password',
-  getParentRoute: () => TeacherIndexRoute,
-} as any)
-
-const ParentStudentIdRoute = ParentStudentIdImport.update({
-  path: 'student/$id',
-  getParentRoute: () => ParentIndexRoute,
-} as any)
-
-const ParentAuthResetPasswordRoute = ParentAuthResetPasswordImport.update({
-  path: 'auth/reset-password',
-  getParentRoute: () => ParentIndexRoute,
-} as any)
-
-const AdminAuthResetPasswordRoute = AdminAuthResetPasswordImport.update({
-  path: 'auth/reset-password',
-  getParentRoute: () => AdminIndexRoute,
-} as any)
-
-const TeacherClassesIdIndexRoute = TeacherClassesIdIndexImport.update({
-  path: 'classes/$id',
-  getParentRoute: () => TeacherIndexRoute,
-} as any)
-
-const AdminClassManagementIdIndexRoute =
-  AdminClassManagementIdIndexImport.update({
-    path: 'class-management/$id',
-    getParentRoute: () => AdminIndexRoute,
+const SchoolTeacherAssessmentsIndexRoute =
+  SchoolTeacherAssessmentsIndexImport.update({
+    path: '/$school/teacher/assessments/',
+    getParentRoute: () => rootRoute,
   } as any)
 
-const TeacherStudentPerformanceStudentIdRoute =
-  TeacherStudentPerformanceStudentIdImport.update({
-    path: 'student-performance/student/$id',
-    getParentRoute: () => TeacherIndexRoute,
+const SchoolAdminStudentManagementIndexRoute =
+  SchoolAdminStudentManagementIndexImport.update({
+    path: '/$school/admin/student-management/',
+    getParentRoute: () => rootRoute,
   } as any)
 
-const TeacherClassesIdAssessmentsRoute =
-  TeacherClassesIdAssessmentsImport.update({
-    path: 'classes/$id/assessments',
-    getParentRoute: () => TeacherIndexRoute,
+const SchoolAdminStaffManagementIndexRoute =
+  SchoolAdminStaffManagementIndexImport.update({
+    path: '/$school/admin/staff-management/',
+    getParentRoute: () => rootRoute,
   } as any)
 
-const AdminStudentManagementStudentIdRoute =
-  AdminStudentManagementStudentIdImport.update({
-    path: 'student-management/student/$id',
-    getParentRoute: () => AdminIndexRoute,
-  } as any)
-
-const AdminStaffManagementStafferIdRoute =
-  AdminStaffManagementStafferIdImport.update({
-    path: 'staff-management/staffer/$id',
-    getParentRoute: () => AdminIndexRoute,
-  } as any)
-
-const TeacherClassesIdStudentIdRoute = TeacherClassesIdStudentIdImport.update({
-  path: 'classes/$id/student/$id',
-  getParentRoute: () => TeacherIndexRoute,
+const SchoolAdminSettingsIndexRoute = SchoolAdminSettingsIndexImport.update({
+  path: '/$school/admin/settings/',
+  getParentRoute: () => rootRoute,
 } as any)
 
-const AdminClassManagementIdSubjectIdRoute =
-  AdminClassManagementIdSubjectIdImport.update({
-    path: 'class-management/$id/subject/$id',
-    getParentRoute: () => AdminIndexRoute,
+const SchoolAdminSchoolIndexRoute = SchoolAdminSchoolIndexImport.update({
+  path: '/$school/admin/school/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SchoolAdminReportsIndexRoute = SchoolAdminReportsIndexImport.update({
+  path: '/$school/admin/reports/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SchoolAdminClassManagementIndexRoute =
+  SchoolAdminClassManagementIndexImport.update({
+    path: '/$school/admin/class-management/',
+    getParentRoute: () => rootRoute,
   } as any)
 
-const AdminClassManagementIdStudentIdRoute =
-  AdminClassManagementIdStudentIdImport.update({
-    path: 'class-management/$id/student/$id',
-    getParentRoute: () => AdminIndexRoute,
+const SchoolTeacherAuthResetPasswordRoute =
+  SchoolTeacherAuthResetPasswordImport.update({
+    path: '/$school/teacher/auth/reset-password',
+    getParentRoute: () => rootRoute,
   } as any)
+
+const SchoolParentStudentIdRoute = SchoolParentStudentIdImport.update({
+  path: '/$school/parent/student/$id',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SchoolParentAuthResetPasswordRoute =
+  SchoolParentAuthResetPasswordImport.update({
+    path: '/$school/parent/auth/reset-password',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const SchoolAdminAuthResetPasswordRoute =
+  SchoolAdminAuthResetPasswordImport.update({
+    path: '/$school/admin/auth/reset-password',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const SchoolTeacherClassesIdIndexRoute =
+  SchoolTeacherClassesIdIndexImport.update({
+    path: '/$school/teacher/classes/$id/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const SchoolAdminClassManagementIdIndexRoute =
+  SchoolAdminClassManagementIdIndexImport.update({
+    path: '/$school/admin/class-management/$id/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const SchoolTeacherStudentPerformanceStudentIdRoute =
+  SchoolTeacherStudentPerformanceStudentIdImport.update({
+    path: '/$school/teacher/student-performance/student/$id',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const SchoolTeacherClassesIdAssessmentsRoute =
+  SchoolTeacherClassesIdAssessmentsImport.update({
+    path: '/$school/teacher/classes/$id/assessments',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const SchoolAdminStudentManagementStudentIdRoute =
+  SchoolAdminStudentManagementStudentIdImport.update({
+    path: '/$school/admin/student-management/student/$id',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const SchoolAdminStaffManagementStafferIdRoute =
+  SchoolAdminStaffManagementStafferIdImport.update({
+    path: '/$school/admin/staff-management/staffer/$id',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const SchoolTeacherClassesIdStudentIdRoute =
+  SchoolTeacherClassesIdStudentIdImport.update({
+    path: '/$school/teacher/classes/$id/student/$id',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const SchoolAdminClassManagementIdSubjectIdRoute =
+  SchoolAdminClassManagementIdSubjectIdImport.update({
+    path: '/$school/admin/class-management/$id/subject/$id',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const SchoolAdminClassManagementIdStudentIdRoute =
+  SchoolAdminClassManagementIdStudentIdImport.update({
+    path: '/$school/admin/class-management/$id/student/$id',
+    getParentRoute: () => rootRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -261,13 +267,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
-      parentRoute: typeof rootRoute
-    }
     '/help-desk': {
       id: '/help-desk'
       path: '/help-desk'
@@ -275,250 +274,250 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HelpDeskImport
       parentRoute: typeof rootRoute
     }
-    '/school/$id': {
-      id: '/school/$id'
-      path: '/school/$id'
-      fullPath: '/school/$id'
-      preLoaderRoute: typeof SchoolIdImport
+    '/register-school': {
+      id: '/register-school'
+      path: '/register-school'
+      fullPath: '/register-school'
+      preLoaderRoute: typeof RegisterSchoolImport
       parentRoute: typeof rootRoute
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminIndexImport
+    '/$school/': {
+      id: '/$school/'
+      path: '/$school'
+      fullPath: '/$school'
+      preLoaderRoute: typeof SchoolIndexImport
       parentRoute: typeof rootRoute
     }
-    '/admin/dashboard': {
-      id: '/admin/dashboard'
-      path: 'dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AdminDashboardImport
-      parentRoute: typeof AdminIndexRoute
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthIndexImport
+    '/$school/admin/dashboard': {
+      id: '/$school/admin/dashboard'
+      path: '/$school/admin/dashboard'
+      fullPath: '/$school/admin/dashboard'
+      preLoaderRoute: typeof SchoolAdminDashboardImport
       parentRoute: typeof rootRoute
     }
-    '/auth/login': {
-      id: '/auth/login'
-      path: 'login'
-      fullPath: '/auth/login'
-      preLoaderRoute: typeof AuthLoginImport
-      parentRoute: typeof AuthIndexRoute
-    }
-    '/auth/register': {
-      id: '/auth/register'
-      path: 'register'
-      fullPath: '/auth/register'
-      preLoaderRoute: typeof AuthRegisterImport
-      parentRoute: typeof AuthIndexRoute
-    }
-    '/auth/register-school': {
-      id: '/auth/register-school'
-      path: 'register-school'
-      fullPath: '/auth/register-school'
-      preLoaderRoute: typeof AuthRegisterSchoolImport
-      parentRoute: typeof AuthIndexRoute
-    }
-    '/parent/': {
-      id: '/parent/'
-      path: '/parent/'
-      fullPath: '/parent/'
-      preLoaderRoute: typeof ParentIndexImport
+    '/$school/auth/login': {
+      id: '/$school/auth/login'
+      path: '/$school/auth/login'
+      fullPath: '/$school/auth/login'
+      preLoaderRoute: typeof SchoolAuthLoginImport
       parentRoute: typeof rootRoute
     }
-    '/parent/communications': {
-      id: '/parent/communications'
-      path: 'communications'
-      fullPath: '/parent/communications'
-      preLoaderRoute: typeof ParentCommunicationsImport
-      parentRoute: typeof ParentIndexRoute
-    }
-    '/parent/dashboard': {
-      id: '/parent/dashboard'
-      path: 'dashboard'
-      fullPath: '/parent/dashboard'
-      preLoaderRoute: typeof ParentDashboardImport
-      parentRoute: typeof ParentIndexRoute
-    }
-    '/teacher/': {
-      id: '/teacher/'
-      path: '/teacher/'
-      fullPath: '/teacher/'
-      preLoaderRoute: typeof TeacherIndexImport
+    '/$school/auth/register': {
+      id: '/$school/auth/register'
+      path: '/$school/auth/register'
+      fullPath: '/$school/auth/register'
+      preLoaderRoute: typeof SchoolAuthRegisterImport
       parentRoute: typeof rootRoute
     }
-    '/teacher/dashboard': {
-      id: '/teacher/dashboard'
-      path: 'dashboard'
-      fullPath: '/teacher/dashboard'
-      preLoaderRoute: typeof TeacherDashboardImport
-      parentRoute: typeof TeacherIndexRoute
+    '/$school/parent/communications': {
+      id: '/$school/parent/communications'
+      path: '/$school/parent/communications'
+      fullPath: '/$school/parent/communications'
+      preLoaderRoute: typeof SchoolParentCommunicationsImport
+      parentRoute: typeof rootRoute
     }
-    '/admin/auth/reset-password': {
-      id: '/admin/auth/reset-password'
-      path: 'auth/reset-password'
-      fullPath: '/admin/auth/reset-password'
-      preLoaderRoute: typeof AdminAuthResetPasswordImport
-      parentRoute: typeof AdminIndexRoute
+    '/$school/parent/dashboard': {
+      id: '/$school/parent/dashboard'
+      path: '/$school/parent/dashboard'
+      fullPath: '/$school/parent/dashboard'
+      preLoaderRoute: typeof SchoolParentDashboardImport
+      parentRoute: typeof rootRoute
     }
-    '/parent/auth/reset-password': {
-      id: '/parent/auth/reset-password'
-      path: 'auth/reset-password'
-      fullPath: '/parent/auth/reset-password'
-      preLoaderRoute: typeof ParentAuthResetPasswordImport
-      parentRoute: typeof ParentIndexRoute
+    '/$school/teacher/dashboard': {
+      id: '/$school/teacher/dashboard'
+      path: '/$school/teacher/dashboard'
+      fullPath: '/$school/teacher/dashboard'
+      preLoaderRoute: typeof SchoolTeacherDashboardImport
+      parentRoute: typeof rootRoute
     }
-    '/parent/student/$id': {
-      id: '/parent/student/$id'
-      path: 'student/$id'
-      fullPath: '/parent/student/$id'
-      preLoaderRoute: typeof ParentStudentIdImport
-      parentRoute: typeof ParentIndexRoute
+    '/$school/admin/': {
+      id: '/$school/admin/'
+      path: '/$school/admin'
+      fullPath: '/$school/admin'
+      preLoaderRoute: typeof SchoolAdminIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/teacher/auth/reset-password': {
-      id: '/teacher/auth/reset-password'
-      path: 'auth/reset-password'
-      fullPath: '/teacher/auth/reset-password'
-      preLoaderRoute: typeof TeacherAuthResetPasswordImport
-      parentRoute: typeof TeacherIndexRoute
+    '/$school/auth/': {
+      id: '/$school/auth/'
+      path: '/$school/auth'
+      fullPath: '/$school/auth'
+      preLoaderRoute: typeof SchoolAuthIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/admin/class-management': {
-      id: '/admin/class-management'
-      path: 'class-management'
-      fullPath: '/admin/class-management'
-      preLoaderRoute: typeof AdminClassManagementIndexImport
-      parentRoute: typeof AdminIndexRoute
+    '/$school/parent/': {
+      id: '/$school/parent/'
+      path: '/$school/parent'
+      fullPath: '/$school/parent'
+      preLoaderRoute: typeof SchoolParentIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/admin/reports': {
-      id: '/admin/reports'
-      path: 'reports'
-      fullPath: '/admin/reports'
-      preLoaderRoute: typeof AdminReportsIndexImport
-      parentRoute: typeof AdminIndexRoute
+    '/$school/teacher/': {
+      id: '/$school/teacher/'
+      path: '/$school/teacher'
+      fullPath: '/$school/teacher'
+      preLoaderRoute: typeof SchoolTeacherIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/admin/school': {
-      id: '/admin/school'
-      path: 'school'
-      fullPath: '/admin/school'
-      preLoaderRoute: typeof AdminSchoolIndexImport
-      parentRoute: typeof AdminIndexRoute
+    '/$school/admin/auth/reset-password': {
+      id: '/$school/admin/auth/reset-password'
+      path: '/$school/admin/auth/reset-password'
+      fullPath: '/$school/admin/auth/reset-password'
+      preLoaderRoute: typeof SchoolAdminAuthResetPasswordImport
+      parentRoute: typeof rootRoute
     }
-    '/admin/settings': {
-      id: '/admin/settings'
-      path: 'settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsIndexImport
-      parentRoute: typeof AdminIndexRoute
+    '/$school/parent/auth/reset-password': {
+      id: '/$school/parent/auth/reset-password'
+      path: '/$school/parent/auth/reset-password'
+      fullPath: '/$school/parent/auth/reset-password'
+      preLoaderRoute: typeof SchoolParentAuthResetPasswordImport
+      parentRoute: typeof rootRoute
     }
-    '/admin/staff-management': {
-      id: '/admin/staff-management'
-      path: 'staff-management'
-      fullPath: '/admin/staff-management'
-      preLoaderRoute: typeof AdminStaffManagementIndexImport
-      parentRoute: typeof AdminIndexRoute
+    '/$school/parent/student/$id': {
+      id: '/$school/parent/student/$id'
+      path: '/$school/parent/student/$id'
+      fullPath: '/$school/parent/student/$id'
+      preLoaderRoute: typeof SchoolParentStudentIdImport
+      parentRoute: typeof rootRoute
     }
-    '/admin/student-management': {
-      id: '/admin/student-management'
-      path: 'student-management'
-      fullPath: '/admin/student-management'
-      preLoaderRoute: typeof AdminStudentManagementIndexImport
-      parentRoute: typeof AdminIndexRoute
+    '/$school/teacher/auth/reset-password': {
+      id: '/$school/teacher/auth/reset-password'
+      path: '/$school/teacher/auth/reset-password'
+      fullPath: '/$school/teacher/auth/reset-password'
+      preLoaderRoute: typeof SchoolTeacherAuthResetPasswordImport
+      parentRoute: typeof rootRoute
     }
-    '/teacher/assessments': {
-      id: '/teacher/assessments'
-      path: 'assessments'
-      fullPath: '/teacher/assessments'
-      preLoaderRoute: typeof TeacherAssessmentsIndexImport
-      parentRoute: typeof TeacherIndexRoute
+    '/$school/admin/class-management/': {
+      id: '/$school/admin/class-management/'
+      path: '/$school/admin/class-management'
+      fullPath: '/$school/admin/class-management'
+      preLoaderRoute: typeof SchoolAdminClassManagementIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/teacher/classes': {
-      id: '/teacher/classes'
-      path: 'classes'
-      fullPath: '/teacher/classes'
-      preLoaderRoute: typeof TeacherClassesIndexImport
-      parentRoute: typeof TeacherIndexRoute
+    '/$school/admin/reports/': {
+      id: '/$school/admin/reports/'
+      path: '/$school/admin/reports'
+      fullPath: '/$school/admin/reports'
+      preLoaderRoute: typeof SchoolAdminReportsIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/teacher/communication': {
-      id: '/teacher/communication'
-      path: 'communication'
-      fullPath: '/teacher/communication'
-      preLoaderRoute: typeof TeacherCommunicationIndexImport
-      parentRoute: typeof TeacherIndexRoute
+    '/$school/admin/school/': {
+      id: '/$school/admin/school/'
+      path: '/$school/admin/school'
+      fullPath: '/$school/admin/school'
+      preLoaderRoute: typeof SchoolAdminSchoolIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/teacher/student-performance': {
-      id: '/teacher/student-performance'
-      path: 'student-performance'
-      fullPath: '/teacher/student-performance'
-      preLoaderRoute: typeof TeacherStudentPerformanceIndexImport
-      parentRoute: typeof TeacherIndexRoute
+    '/$school/admin/settings/': {
+      id: '/$school/admin/settings/'
+      path: '/$school/admin/settings'
+      fullPath: '/$school/admin/settings'
+      preLoaderRoute: typeof SchoolAdminSettingsIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/admin/staff-management/staffer/$id': {
-      id: '/admin/staff-management/staffer/$id'
-      path: 'staffer/$id'
-      fullPath: '/admin/staff-management/staffer/$id'
-      preLoaderRoute: typeof AdminStaffManagementStafferIdImport
-      parentRoute: typeof AdminStaffManagementIndexRoute
+    '/$school/admin/staff-management/': {
+      id: '/$school/admin/staff-management/'
+      path: '/$school/admin/staff-management'
+      fullPath: '/$school/admin/staff-management'
+      preLoaderRoute: typeof SchoolAdminStaffManagementIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/admin/student-management/student/$id': {
-      id: '/admin/student-management/student/$id'
-      path: 'student/$id'
-      fullPath: '/admin/student-management/student/$id'
-      preLoaderRoute: typeof AdminStudentManagementStudentIdImport
-      parentRoute: typeof AdminStudentManagementIndexRoute
+    '/$school/admin/student-management/': {
+      id: '/$school/admin/student-management/'
+      path: '/$school/admin/student-management'
+      fullPath: '/$school/admin/student-management'
+      preLoaderRoute: typeof SchoolAdminStudentManagementIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/teacher/classes/$id/': {
-      id: '/teacher/classes/$id/'
-      path: '$id'
-      fullPath: '/teacher/classes/$id/'
-      preLoaderRoute: typeof TeacherClassesIdIndexImport
-      parentRoute: typeof TeacherClassesIndexRoute
+    '/$school/teacher/assessments/': {
+      id: '/$school/teacher/assessments/'
+      path: '/$school/teacher/assessments'
+      fullPath: '/$school/teacher/assessments'
+      preLoaderRoute: typeof SchoolTeacherAssessmentsIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/teacher/classes/$id/assessments': {
-      id: '/teacher/classes/$id/assessments'
-      path: 'assessments'
-      fullPath: '/teacher/classes/$id/assessments'
-      preLoaderRoute: typeof TeacherClassesIdAssessmentsImport
-      parentRoute: typeof TeacherClassesIdIndexRoute
+    '/$school/teacher/classes/': {
+      id: '/$school/teacher/classes/'
+      path: '/$school/teacher/classes'
+      fullPath: '/$school/teacher/classes'
+      preLoaderRoute: typeof SchoolTeacherClassesIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/teacher/student-performance/student/$id': {
-      id: '/teacher/student-performance/student/$id'
-      path: 'student/$id'
-      fullPath: '/teacher/student-performance/student/$id'
-      preLoaderRoute: typeof TeacherStudentPerformanceStudentIdImport
-      parentRoute: typeof TeacherStudentPerformanceIndexRoute
+    '/$school/teacher/communication/': {
+      id: '/$school/teacher/communication/'
+      path: '/$school/teacher/communication'
+      fullPath: '/$school/teacher/communication'
+      preLoaderRoute: typeof SchoolTeacherCommunicationIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/admin/class-management/$id': {
-      id: '/admin/class-management/$id'
-      path: '$id'
-      fullPath: '/admin/class-management/$id'
-      preLoaderRoute: typeof AdminClassManagementIdIndexImport
-      parentRoute: typeof AdminClassManagementIndexRoute
+    '/$school/teacher/student-performance/': {
+      id: '/$school/teacher/student-performance/'
+      path: '/$school/teacher/student-performance'
+      fullPath: '/$school/teacher/student-performance'
+      preLoaderRoute: typeof SchoolTeacherStudentPerformanceIndexImport
+      parentRoute: typeof rootRoute
     }
-    '/admin/class-management/$id/student/$id': {
-      id: '/admin/class-management/$id/student/$id'
-      path: 'student/$id'
-      fullPath: '/admin/class-management/$id/student/$id'
-      preLoaderRoute: typeof AdminClassManagementIdStudentIdImport
-      parentRoute: typeof AdminClassManagementIdIndexRoute
+    '/$school/admin/staff-management/staffer/$id': {
+      id: '/$school/admin/staff-management/staffer/$id'
+      path: '/$school/admin/staff-management/staffer/$id'
+      fullPath: '/$school/admin/staff-management/staffer/$id'
+      preLoaderRoute: typeof SchoolAdminStaffManagementStafferIdImport
+      parentRoute: typeof rootRoute
     }
-    '/admin/class-management/$id/subject/$id': {
-      id: '/admin/class-management/$id/subject/$id'
-      path: 'subject/$id'
-      fullPath: '/admin/class-management/$id/subject/$id'
-      preLoaderRoute: typeof AdminClassManagementIdSubjectIdImport
-      parentRoute: typeof AdminClassManagementIdIndexRoute
+    '/$school/admin/student-management/student/$id': {
+      id: '/$school/admin/student-management/student/$id'
+      path: '/$school/admin/student-management/student/$id'
+      fullPath: '/$school/admin/student-management/student/$id'
+      preLoaderRoute: typeof SchoolAdminStudentManagementStudentIdImport
+      parentRoute: typeof rootRoute
     }
-    '/teacher/classes/$id/student/$id': {
-      id: '/teacher/classes/$id/student/$id'
-      path: 'student/$id'
-      fullPath: '/teacher/classes/$id/student/$id'
-      preLoaderRoute: typeof TeacherClassesIdStudentIdImport
-      parentRoute: typeof TeacherClassesIdIndexRoute
+    '/$school/teacher/classes/$id/assessments': {
+      id: '/$school/teacher/classes/$id/assessments'
+      path: '/$school/teacher/classes/$id/assessments'
+      fullPath: '/$school/teacher/classes/$id/assessments'
+      preLoaderRoute: typeof SchoolTeacherClassesIdAssessmentsImport
+      parentRoute: typeof rootRoute
+    }
+    '/$school/teacher/student-performance/student/$id': {
+      id: '/$school/teacher/student-performance/student/$id'
+      path: '/$school/teacher/student-performance/student/$id'
+      fullPath: '/$school/teacher/student-performance/student/$id'
+      preLoaderRoute: typeof SchoolTeacherStudentPerformanceStudentIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/$school/admin/class-management/$id/': {
+      id: '/$school/admin/class-management/$id/'
+      path: '/$school/admin/class-management/$id'
+      fullPath: '/$school/admin/class-management/$id'
+      preLoaderRoute: typeof SchoolAdminClassManagementIdIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/$school/teacher/classes/$id/': {
+      id: '/$school/teacher/classes/$id/'
+      path: '/$school/teacher/classes/$id'
+      fullPath: '/$school/teacher/classes/$id'
+      preLoaderRoute: typeof SchoolTeacherClassesIdIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/$school/admin/class-management/$id/student/$id': {
+      id: '/$school/admin/class-management/$id/student/$id'
+      path: '/$school/admin/class-management/$id/student/$id'
+      fullPath: '/$school/admin/class-management/$id/student/$id'
+      preLoaderRoute: typeof SchoolAdminClassManagementIdStudentIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/$school/admin/class-management/$id/subject/$id': {
+      id: '/$school/admin/class-management/$id/subject/$id'
+      path: '/$school/admin/class-management/$id/subject/$id'
+      fullPath: '/$school/admin/class-management/$id/subject/$id'
+      preLoaderRoute: typeof SchoolAdminClassManagementIdSubjectIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/$school/teacher/classes/$id/student/$id': {
+      id: '/$school/teacher/classes/$id/student/$id'
+      path: '/$school/teacher/classes/$id/student/$id'
+      fullPath: '/$school/teacher/classes/$id/student/$id'
+      preLoaderRoute: typeof SchoolTeacherClassesIdStudentIdImport
+      parentRoute: typeof rootRoute
     }
   }
 }
@@ -527,295 +526,337 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/help-desk': typeof HelpDeskRoute
-  '/school/$id': typeof SchoolIdRoute
-  '/admin': typeof AdminIndexRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/auth': typeof AuthIndexRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/auth/register': typeof AuthRegisterRoute
-  '/auth/register-school': typeof AuthRegisterSchoolRoute
-  '/parent/': typeof ParentIndexRoute
-  '/parent/communications': typeof ParentCommunicationsRoute
-  '/parent/dashboard': typeof ParentDashboardRoute
-  '/teacher/': typeof TeacherIndexRoute
-  '/teacher/dashboard': typeof TeacherDashboardRoute
-  '/admin/auth/reset-password': typeof AdminAuthResetPasswordRoute
-  '/parent/auth/reset-password': typeof ParentAuthResetPasswordRoute
-  '/parent/student/$id': typeof ParentStudentIdRoute
-  '/teacher/auth/reset-password': typeof TeacherAuthResetPasswordRoute
-  '/admin/class-management': typeof AdminClassManagementIndexRoute
-  '/admin/reports': typeof AdminReportsIndexRoute
-  '/admin/school': typeof AdminSchoolIndexRoute
-  '/admin/settings': typeof AdminSettingsIndexRoute
-  '/admin/staff-management': typeof AdminStaffManagementIndexRoute
-  '/admin/student-management': typeof AdminStudentManagementIndexRoute
-  '/teacher/assessments': typeof TeacherAssessmentsIndexRoute
-  '/teacher/classes': typeof TeacherClassesIndexRoute
-  '/teacher/communication': typeof TeacherCommunicationIndexRoute
-  '/teacher/student-performance': typeof TeacherStudentPerformanceIndexRoute
-  '/admin/staff-management/staffer/$id': typeof AdminStaffManagementStafferIdRoute
-  '/admin/student-management/student/$id': typeof AdminStudentManagementStudentIdRoute
-  '/teacher/classes/$id/': typeof TeacherClassesIdIndexRoute
-  '/teacher/classes/$id/assessments': typeof TeacherClassesIdAssessmentsRoute
-  '/teacher/student-performance/student/$id': typeof TeacherStudentPerformanceStudentIdRoute
-  '/admin/class-management/$id': typeof AdminClassManagementIdIndexRoute
-  '/admin/class-management/$id/student/$id': typeof AdminClassManagementIdStudentIdRoute
-  '/admin/class-management/$id/subject/$id': typeof AdminClassManagementIdSubjectIdRoute
-  '/teacher/classes/$id/student/$id': typeof TeacherClassesIdStudentIdRoute
+  '/register-school': typeof RegisterSchoolRoute
+  '/$school': typeof SchoolIndexRoute
+  '/$school/admin/dashboard': typeof SchoolAdminDashboardRoute
+  '/$school/auth/login': typeof SchoolAuthLoginRoute
+  '/$school/auth/register': typeof SchoolAuthRegisterRoute
+  '/$school/parent/communications': typeof SchoolParentCommunicationsRoute
+  '/$school/parent/dashboard': typeof SchoolParentDashboardRoute
+  '/$school/teacher/dashboard': typeof SchoolTeacherDashboardRoute
+  '/$school/admin': typeof SchoolAdminIndexRoute
+  '/$school/auth': typeof SchoolAuthIndexRoute
+  '/$school/parent': typeof SchoolParentIndexRoute
+  '/$school/teacher': typeof SchoolTeacherIndexRoute
+  '/$school/admin/auth/reset-password': typeof SchoolAdminAuthResetPasswordRoute
+  '/$school/parent/auth/reset-password': typeof SchoolParentAuthResetPasswordRoute
+  '/$school/parent/student/$id': typeof SchoolParentStudentIdRoute
+  '/$school/teacher/auth/reset-password': typeof SchoolTeacherAuthResetPasswordRoute
+  '/$school/admin/class-management': typeof SchoolAdminClassManagementIndexRoute
+  '/$school/admin/reports': typeof SchoolAdminReportsIndexRoute
+  '/$school/admin/school': typeof SchoolAdminSchoolIndexRoute
+  '/$school/admin/settings': typeof SchoolAdminSettingsIndexRoute
+  '/$school/admin/staff-management': typeof SchoolAdminStaffManagementIndexRoute
+  '/$school/admin/student-management': typeof SchoolAdminStudentManagementIndexRoute
+  '/$school/teacher/assessments': typeof SchoolTeacherAssessmentsIndexRoute
+  '/$school/teacher/classes': typeof SchoolTeacherClassesIndexRoute
+  '/$school/teacher/communication': typeof SchoolTeacherCommunicationIndexRoute
+  '/$school/teacher/student-performance': typeof SchoolTeacherStudentPerformanceIndexRoute
+  '/$school/admin/staff-management/staffer/$id': typeof SchoolAdminStaffManagementStafferIdRoute
+  '/$school/admin/student-management/student/$id': typeof SchoolAdminStudentManagementStudentIdRoute
+  '/$school/teacher/classes/$id/assessments': typeof SchoolTeacherClassesIdAssessmentsRoute
+  '/$school/teacher/student-performance/student/$id': typeof SchoolTeacherStudentPerformanceStudentIdRoute
+  '/$school/admin/class-management/$id': typeof SchoolAdminClassManagementIdIndexRoute
+  '/$school/teacher/classes/$id': typeof SchoolTeacherClassesIdIndexRoute
+  '/$school/admin/class-management/$id/student/$id': typeof SchoolAdminClassManagementIdStudentIdRoute
+  '/$school/admin/class-management/$id/subject/$id': typeof SchoolAdminClassManagementIdSubjectIdRoute
+  '/$school/teacher/classes/$id/student/$id': typeof SchoolTeacherClassesIdStudentIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/help-desk': typeof HelpDeskRoute
-  '/school/$id': typeof SchoolIdRoute
-  '/admin': typeof AdminIndexRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/auth': typeof AuthIndexRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/auth/register': typeof AuthRegisterRoute
-  '/auth/register-school': typeof AuthRegisterSchoolRoute
-  '/parent/': typeof ParentIndexRoute
-  '/parent/communications': typeof ParentCommunicationsRoute
-  '/parent/dashboard': typeof ParentDashboardRoute
-  '/teacher/': typeof TeacherIndexRoute
-  '/teacher/dashboard': typeof TeacherDashboardRoute
-  '/admin/auth/reset-password': typeof AdminAuthResetPasswordRoute
-  '/parent/auth/reset-password': typeof ParentAuthResetPasswordRoute
-  '/parent/student/$id': typeof ParentStudentIdRoute
-  '/teacher/auth/reset-password': typeof TeacherAuthResetPasswordRoute
-  '/admin/class-management': typeof AdminClassManagementIndexRoute
-  '/admin/reports': typeof AdminReportsIndexRoute
-  '/admin/school': typeof AdminSchoolIndexRoute
-  '/admin/settings': typeof AdminSettingsIndexRoute
-  '/admin/staff-management': typeof AdminStaffManagementIndexRoute
-  '/admin/student-management': typeof AdminStudentManagementIndexRoute
-  '/teacher/assessments': typeof TeacherAssessmentsIndexRoute
-  '/teacher/classes': typeof TeacherClassesIndexRoute
-  '/teacher/communication': typeof TeacherCommunicationIndexRoute
-  '/teacher/student-performance': typeof TeacherStudentPerformanceIndexRoute
-  '/admin/staff-management/staffer/$id': typeof AdminStaffManagementStafferIdRoute
-  '/admin/student-management/student/$id': typeof AdminStudentManagementStudentIdRoute
-  '/teacher/classes/$id/': typeof TeacherClassesIdIndexRoute
-  '/teacher/classes/$id/assessments': typeof TeacherClassesIdAssessmentsRoute
-  '/teacher/student-performance/student/$id': typeof TeacherStudentPerformanceStudentIdRoute
-  '/admin/class-management/$id': typeof AdminClassManagementIdIndexRoute
-  '/admin/class-management/$id/student/$id': typeof AdminClassManagementIdStudentIdRoute
-  '/admin/class-management/$id/subject/$id': typeof AdminClassManagementIdSubjectIdRoute
-  '/teacher/classes/$id/student/$id': typeof TeacherClassesIdStudentIdRoute
+  '/register-school': typeof RegisterSchoolRoute
+  '/$school': typeof SchoolIndexRoute
+  '/$school/admin/dashboard': typeof SchoolAdminDashboardRoute
+  '/$school/auth/login': typeof SchoolAuthLoginRoute
+  '/$school/auth/register': typeof SchoolAuthRegisterRoute
+  '/$school/parent/communications': typeof SchoolParentCommunicationsRoute
+  '/$school/parent/dashboard': typeof SchoolParentDashboardRoute
+  '/$school/teacher/dashboard': typeof SchoolTeacherDashboardRoute
+  '/$school/admin': typeof SchoolAdminIndexRoute
+  '/$school/auth': typeof SchoolAuthIndexRoute
+  '/$school/parent': typeof SchoolParentIndexRoute
+  '/$school/teacher': typeof SchoolTeacherIndexRoute
+  '/$school/admin/auth/reset-password': typeof SchoolAdminAuthResetPasswordRoute
+  '/$school/parent/auth/reset-password': typeof SchoolParentAuthResetPasswordRoute
+  '/$school/parent/student/$id': typeof SchoolParentStudentIdRoute
+  '/$school/teacher/auth/reset-password': typeof SchoolTeacherAuthResetPasswordRoute
+  '/$school/admin/class-management': typeof SchoolAdminClassManagementIndexRoute
+  '/$school/admin/reports': typeof SchoolAdminReportsIndexRoute
+  '/$school/admin/school': typeof SchoolAdminSchoolIndexRoute
+  '/$school/admin/settings': typeof SchoolAdminSettingsIndexRoute
+  '/$school/admin/staff-management': typeof SchoolAdminStaffManagementIndexRoute
+  '/$school/admin/student-management': typeof SchoolAdminStudentManagementIndexRoute
+  '/$school/teacher/assessments': typeof SchoolTeacherAssessmentsIndexRoute
+  '/$school/teacher/classes': typeof SchoolTeacherClassesIndexRoute
+  '/$school/teacher/communication': typeof SchoolTeacherCommunicationIndexRoute
+  '/$school/teacher/student-performance': typeof SchoolTeacherStudentPerformanceIndexRoute
+  '/$school/admin/staff-management/staffer/$id': typeof SchoolAdminStaffManagementStafferIdRoute
+  '/$school/admin/student-management/student/$id': typeof SchoolAdminStudentManagementStudentIdRoute
+  '/$school/teacher/classes/$id/assessments': typeof SchoolTeacherClassesIdAssessmentsRoute
+  '/$school/teacher/student-performance/student/$id': typeof SchoolTeacherStudentPerformanceStudentIdRoute
+  '/$school/admin/class-management/$id': typeof SchoolAdminClassManagementIdIndexRoute
+  '/$school/teacher/classes/$id': typeof SchoolTeacherClassesIdIndexRoute
+  '/$school/admin/class-management/$id/student/$id': typeof SchoolAdminClassManagementIdStudentIdRoute
+  '/$school/admin/class-management/$id/subject/$id': typeof SchoolAdminClassManagementIdSubjectIdRoute
+  '/$school/teacher/classes/$id/student/$id': typeof SchoolTeacherClassesIdStudentIdRoute
 }
 
 export interface FileRoutesById {
-  '__root__': typeof rootRoute
+  __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/help-desk': typeof HelpDeskRoute
-  '/school/$id': typeof SchoolIdRoute
-  '/admin': typeof AdminIndexRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/auth': typeof AuthIndexRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/auth/register': typeof AuthRegisterRoute
-  '/auth/register-school': typeof AuthRegisterSchoolRoute
-  '/parent/': typeof ParentIndexRoute
-  '/parent/communications': typeof ParentCommunicationsRoute
-  '/parent/dashboard': typeof ParentDashboardRoute
-  '/teacher/': typeof TeacherIndexRoute
-  '/teacher/dashboard': typeof TeacherDashboardRoute
-  '/admin/auth/reset-password': typeof AdminAuthResetPasswordRoute
-  '/parent/auth/reset-password': typeof ParentAuthResetPasswordRoute
-  '/parent/student/$id': typeof ParentStudentIdRoute
-  '/teacher/auth/reset-password': typeof TeacherAuthResetPasswordRoute
-  '/admin/class-management': typeof AdminClassManagementIndexRoute
-  '/admin/reports': typeof AdminReportsIndexRoute
-  '/admin/school': typeof AdminSchoolIndexRoute
-  '/admin/settings': typeof AdminSettingsIndexRoute
-  '/admin/staff-management': typeof AdminStaffManagementIndexRoute
-  '/admin/student-management': typeof AdminStudentManagementIndexRoute
-  '/teacher/assessments': typeof TeacherAssessmentsIndexRoute
-  '/teacher/classes': typeof TeacherClassesIndexRoute
-  '/teacher/communication': typeof TeacherCommunicationIndexRoute
-  '/teacher/student-performance': typeof TeacherStudentPerformanceIndexRoute
-  '/admin/staff-management/staffer/$id': typeof AdminStaffManagementStafferIdRoute
-  '/admin/student-management/student/$id': typeof AdminStudentManagementStudentIdRoute
-  '/teacher/classes/$id/': typeof TeacherClassesIdIndexRoute
-  '/teacher/classes/$id/assessments': typeof TeacherClassesIdAssessmentsRoute
-  '/teacher/student-performance/student/$id': typeof TeacherStudentPerformanceStudentIdRoute
-  '/admin/class-management/$id': typeof AdminClassManagementIdIndexRoute
-  '/admin/class-management/$id/student/$id': typeof AdminClassManagementIdStudentIdRoute
-  '/admin/class-management/$id/subject/$id': typeof AdminClassManagementIdSubjectIdRoute
-  '/teacher/classes/$id/student/$id': typeof TeacherClassesIdStudentIdRoute
+  '/register-school': typeof RegisterSchoolRoute
+  '/$school/': typeof SchoolIndexRoute
+  '/$school/admin/dashboard': typeof SchoolAdminDashboardRoute
+  '/$school/auth/login': typeof SchoolAuthLoginRoute
+  '/$school/auth/register': typeof SchoolAuthRegisterRoute
+  '/$school/parent/communications': typeof SchoolParentCommunicationsRoute
+  '/$school/parent/dashboard': typeof SchoolParentDashboardRoute
+  '/$school/teacher/dashboard': typeof SchoolTeacherDashboardRoute
+  '/$school/admin/': typeof SchoolAdminIndexRoute
+  '/$school/auth/': typeof SchoolAuthIndexRoute
+  '/$school/parent/': typeof SchoolParentIndexRoute
+  '/$school/teacher/': typeof SchoolTeacherIndexRoute
+  '/$school/admin/auth/reset-password': typeof SchoolAdminAuthResetPasswordRoute
+  '/$school/parent/auth/reset-password': typeof SchoolParentAuthResetPasswordRoute
+  '/$school/parent/student/$id': typeof SchoolParentStudentIdRoute
+  '/$school/teacher/auth/reset-password': typeof SchoolTeacherAuthResetPasswordRoute
+  '/$school/admin/class-management/': typeof SchoolAdminClassManagementIndexRoute
+  '/$school/admin/reports/': typeof SchoolAdminReportsIndexRoute
+  '/$school/admin/school/': typeof SchoolAdminSchoolIndexRoute
+  '/$school/admin/settings/': typeof SchoolAdminSettingsIndexRoute
+  '/$school/admin/staff-management/': typeof SchoolAdminStaffManagementIndexRoute
+  '/$school/admin/student-management/': typeof SchoolAdminStudentManagementIndexRoute
+  '/$school/teacher/assessments/': typeof SchoolTeacherAssessmentsIndexRoute
+  '/$school/teacher/classes/': typeof SchoolTeacherClassesIndexRoute
+  '/$school/teacher/communication/': typeof SchoolTeacherCommunicationIndexRoute
+  '/$school/teacher/student-performance/': typeof SchoolTeacherStudentPerformanceIndexRoute
+  '/$school/admin/staff-management/staffer/$id': typeof SchoolAdminStaffManagementStafferIdRoute
+  '/$school/admin/student-management/student/$id': typeof SchoolAdminStudentManagementStudentIdRoute
+  '/$school/teacher/classes/$id/assessments': typeof SchoolTeacherClassesIdAssessmentsRoute
+  '/$school/teacher/student-performance/student/$id': typeof SchoolTeacherStudentPerformanceStudentIdRoute
+  '/$school/admin/class-management/$id/': typeof SchoolAdminClassManagementIdIndexRoute
+  '/$school/teacher/classes/$id/': typeof SchoolTeacherClassesIdIndexRoute
+  '/$school/admin/class-management/$id/student/$id': typeof SchoolAdminClassManagementIdStudentIdRoute
+  '/$school/admin/class-management/$id/subject/$id': typeof SchoolAdminClassManagementIdSubjectIdRoute
+  '/$school/teacher/classes/$id/student/$id': typeof SchoolTeacherClassesIdStudentIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
     | '/help-desk'
-    | '/school/$id'
-    | '/admin'
-    | '/admin/dashboard'
-    | '/auth'
-    | '/auth/login'
-    | '/auth/register'
-    | '/auth/register-school'
-    | '/parent/'
-    | '/parent/communications'
-    | '/parent/dashboard'
-    | '/teacher/'
-    | '/teacher/dashboard'
-    | '/admin/auth/reset-password'
-    | '/parent/auth/reset-password'
-    | '/parent/student/$id'
-    | '/teacher/auth/reset-password'
-    | '/admin/class-management'
-    | '/admin/reports'
-    | '/admin/school'
-    | '/admin/settings'
-    | '/admin/staff-management'
-    | '/admin/student-management'
-    | '/teacher/assessments'
-    | '/teacher/classes'
-    | '/teacher/communication'
-    | '/teacher/student-performance'
-    | '/admin/staff-management/staffer/$id'
-    | '/admin/student-management/student/$id'
-    | '/teacher/classes/$id/'
-    | '/teacher/classes/$id/assessments'
-    | '/teacher/student-performance/student/$id'
-    | '/admin/class-management/$id'
-    | '/admin/class-management/$id/student/$id'
-    | '/admin/class-management/$id/subject/$id'
-    | '/teacher/classes/$id/student/$id'
+    | '/register-school'
+    | '/$school'
+    | '/$school/admin/dashboard'
+    | '/$school/auth/login'
+    | '/$school/auth/register'
+    | '/$school/parent/communications'
+    | '/$school/parent/dashboard'
+    | '/$school/teacher/dashboard'
+    | '/$school/admin'
+    | '/$school/auth'
+    | '/$school/parent'
+    | '/$school/teacher'
+    | '/$school/admin/auth/reset-password'
+    | '/$school/parent/auth/reset-password'
+    | '/$school/parent/student/$id'
+    | '/$school/teacher/auth/reset-password'
+    | '/$school/admin/class-management'
+    | '/$school/admin/reports'
+    | '/$school/admin/school'
+    | '/$school/admin/settings'
+    | '/$school/admin/staff-management'
+    | '/$school/admin/student-management'
+    | '/$school/teacher/assessments'
+    | '/$school/teacher/classes'
+    | '/$school/teacher/communication'
+    | '/$school/teacher/student-performance'
+    | '/$school/admin/staff-management/staffer/$id'
+    | '/$school/admin/student-management/student/$id'
+    | '/$school/teacher/classes/$id/assessments'
+    | '/$school/teacher/student-performance/student/$id'
+    | '/$school/admin/class-management/$id'
+    | '/$school/teacher/classes/$id'
+    | '/$school/admin/class-management/$id/student/$id'
+    | '/$school/admin/class-management/$id/subject/$id'
+    | '/$school/teacher/classes/$id/student/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
     | '/help-desk'
-    | '/school/$id'
-    | '/admin'
-    | '/admin/dashboard'
-    | '/auth'
-    | '/auth/login'
-    | '/auth/register'
-    | '/auth/register-school'
-    | '/parent/'
-    | '/parent/communications'
-    | '/parent/dashboard'
-    | '/teacher/'
-    | '/teacher/dashboard'
-    | '/admin/auth/reset-password'
-    | '/parent/auth/reset-password'
-    | '/parent/student/$id'
-    | '/teacher/auth/reset-password'
-    | '/admin/class-management'
-    | '/admin/reports'
-    | '/admin/school'
-    | '/admin/settings'
-    | '/admin/staff-management'
-    | '/admin/student-management'
-    | '/teacher/assessments'
-    | '/teacher/classes'
-    | '/teacher/communication'
-    | '/teacher/student-performance'
-    | '/admin/staff-management/staffer/$id'
-    | '/admin/student-management/student/$id'
-    | '/teacher/classes/$id/'
-    | '/teacher/classes/$id/assessments'
-    | '/teacher/student-performance/student/$id'
-    | '/admin/class-management/$id'
-    | '/admin/class-management/$id/student/$id'
-    | '/admin/class-management/$id/subject/$id'
-    | '/teacher/classes/$id/student/$id'
+    | '/register-school'
+    | '/$school'
+    | '/$school/admin/dashboard'
+    | '/$school/auth/login'
+    | '/$school/auth/register'
+    | '/$school/parent/communications'
+    | '/$school/parent/dashboard'
+    | '/$school/teacher/dashboard'
+    | '/$school/admin'
+    | '/$school/auth'
+    | '/$school/parent'
+    | '/$school/teacher'
+    | '/$school/admin/auth/reset-password'
+    | '/$school/parent/auth/reset-password'
+    | '/$school/parent/student/$id'
+    | '/$school/teacher/auth/reset-password'
+    | '/$school/admin/class-management'
+    | '/$school/admin/reports'
+    | '/$school/admin/school'
+    | '/$school/admin/settings'
+    | '/$school/admin/staff-management'
+    | '/$school/admin/student-management'
+    | '/$school/teacher/assessments'
+    | '/$school/teacher/classes'
+    | '/$school/teacher/communication'
+    | '/$school/teacher/student-performance'
+    | '/$school/admin/staff-management/staffer/$id'
+    | '/$school/admin/student-management/student/$id'
+    | '/$school/teacher/classes/$id/assessments'
+    | '/$school/teacher/student-performance/student/$id'
+    | '/$school/admin/class-management/$id'
+    | '/$school/teacher/classes/$id'
+    | '/$school/admin/class-management/$id/student/$id'
+    | '/$school/admin/class-management/$id/subject/$id'
+    | '/$school/teacher/classes/$id/student/$id'
   id:
     | '__root__'
     | '/'
-    | '/about'
     | '/help-desk'
-    | '/school/$id'
-    | '/admin'
-    | '/admin/dashboard'
-    | '/auth'
-    | '/auth/login'
-    | '/auth/register'
-    | '/auth/register-school'
-    | '/parent/'
-    | '/parent/communications'
-    | '/parent/dashboard'
-    | '/teacher/'
-    | '/teacher/dashboard'
-    | '/admin/auth/reset-password'
-    | '/parent/auth/reset-password'
-    | '/parent/student/$id'
-    | '/teacher/auth/reset-password'
-    | '/admin/class-management'
-    | '/admin/reports'
-    | '/admin/school'
-    | '/admin/settings'
-    | '/admin/staff-management'
-    | '/admin/student-management'
-    | '/teacher/assessments'
-    | '/teacher/classes'
-    | '/teacher/communication'
-    | '/teacher/student-performance'
-    | '/admin/staff-management/staffer/$id'
-    | '/admin/student-management/student/$id'
-    | '/teacher/classes/$id/'
-    | '/teacher/classes/$id/assessments'
-    | '/teacher/student-performance/student/$id'
-    | '/admin/class-management/$id'
-    | '/admin/class-management/$id/student/$id'
-    | '/admin/class-management/$id/subject/$id'
-    | '/teacher/classes/$id/student/$id'
+    | '/register-school'
+    | '/$school/'
+    | '/$school/admin/dashboard'
+    | '/$school/auth/login'
+    | '/$school/auth/register'
+    | '/$school/parent/communications'
+    | '/$school/parent/dashboard'
+    | '/$school/teacher/dashboard'
+    | '/$school/admin/'
+    | '/$school/auth/'
+    | '/$school/parent/'
+    | '/$school/teacher/'
+    | '/$school/admin/auth/reset-password'
+    | '/$school/parent/auth/reset-password'
+    | '/$school/parent/student/$id'
+    | '/$school/teacher/auth/reset-password'
+    | '/$school/admin/class-management/'
+    | '/$school/admin/reports/'
+    | '/$school/admin/school/'
+    | '/$school/admin/settings/'
+    | '/$school/admin/staff-management/'
+    | '/$school/admin/student-management/'
+    | '/$school/teacher/assessments/'
+    | '/$school/teacher/classes/'
+    | '/$school/teacher/communication/'
+    | '/$school/teacher/student-performance/'
+    | '/$school/admin/staff-management/staffer/$id'
+    | '/$school/admin/student-management/student/$id'
+    | '/$school/teacher/classes/$id/assessments'
+    | '/$school/teacher/student-performance/student/$id'
+    | '/$school/admin/class-management/$id/'
+    | '/$school/teacher/classes/$id/'
+    | '/$school/admin/class-management/$id/student/$id'
+    | '/$school/admin/class-management/$id/subject/$id'
+    | '/$school/teacher/classes/$id/student/$id'
   fileRoutesById: FileRoutesById
 }
 
-const routeChildren = {
-  IndexRoute,
-  AboutRoute,
-  HelpDeskRoute,
-  SchoolIdRoute,
-  AuthIndexRoute,
-  AdminIndexRoute,
-  TeacherIndexRoute,
-  ParentIndexRoute,
-  AuthLoginRoute,
-  AuthRegisterRoute,
-  AuthRegisterSchoolRoute,
-  AdminDashboardRoute,
-  AdminAuthResetPasswordRoute,
-  AdminClassManagementIndexRoute,
-  AdminReportsIndexRoute,
-  AdminSchoolIndexRoute,
-  AdminSettingsIndexRoute,
-  AdminStaffManagementIndexRoute,
-  AdminStudentManagementIndexRoute,
-  AdminClassManagementIdIndexRoute,
-  AdminClassManagementIdStudentIdRoute,
-  AdminClassManagementIdSubjectIdRoute,
-  AdminStaffManagementStafferIdRoute,
-  AdminStudentManagementStudentIdRoute,
-  TeacherDashboardRoute,
-  TeacherAuthResetPasswordRoute,
-  TeacherAssessmentsIndexRoute,
-  TeacherClassesIndexRoute,
-  TeacherCommunicationIndexRoute,
-  TeacherStudentPerformanceIndexRoute,
-  TeacherClassesIdIndexRoute,
-  TeacherClassesIdAssessmentsRoute,
-  TeacherClassesIdStudentIdRoute,
-  TeacherStudentPerformanceStudentIdRoute,
-  ParentDashboardRoute,
-  ParentCommunicationsRoute,
-  ParentAuthResetPasswordRoute,
-  ParentStudentIdRoute,
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  HelpDeskRoute: typeof HelpDeskRoute
+  RegisterSchoolRoute: typeof RegisterSchoolRoute
+  SchoolIndexRoute: typeof SchoolIndexRoute
+  SchoolAdminDashboardRoute: typeof SchoolAdminDashboardRoute
+  SchoolAuthLoginRoute: typeof SchoolAuthLoginRoute
+  SchoolAuthRegisterRoute: typeof SchoolAuthRegisterRoute
+  SchoolParentCommunicationsRoute: typeof SchoolParentCommunicationsRoute
+  SchoolParentDashboardRoute: typeof SchoolParentDashboardRoute
+  SchoolTeacherDashboardRoute: typeof SchoolTeacherDashboardRoute
+  SchoolAdminIndexRoute: typeof SchoolAdminIndexRoute
+  SchoolAuthIndexRoute: typeof SchoolAuthIndexRoute
+  SchoolParentIndexRoute: typeof SchoolParentIndexRoute
+  SchoolTeacherIndexRoute: typeof SchoolTeacherIndexRoute
+  SchoolAdminAuthResetPasswordRoute: typeof SchoolAdminAuthResetPasswordRoute
+  SchoolParentAuthResetPasswordRoute: typeof SchoolParentAuthResetPasswordRoute
+  SchoolParentStudentIdRoute: typeof SchoolParentStudentIdRoute
+  SchoolTeacherAuthResetPasswordRoute: typeof SchoolTeacherAuthResetPasswordRoute
+  SchoolAdminClassManagementIndexRoute: typeof SchoolAdminClassManagementIndexRoute
+  SchoolAdminReportsIndexRoute: typeof SchoolAdminReportsIndexRoute
+  SchoolAdminSchoolIndexRoute: typeof SchoolAdminSchoolIndexRoute
+  SchoolAdminSettingsIndexRoute: typeof SchoolAdminSettingsIndexRoute
+  SchoolAdminStaffManagementIndexRoute: typeof SchoolAdminStaffManagementIndexRoute
+  SchoolAdminStudentManagementIndexRoute: typeof SchoolAdminStudentManagementIndexRoute
+  SchoolTeacherAssessmentsIndexRoute: typeof SchoolTeacherAssessmentsIndexRoute
+  SchoolTeacherClassesIndexRoute: typeof SchoolTeacherClassesIndexRoute
+  SchoolTeacherCommunicationIndexRoute: typeof SchoolTeacherCommunicationIndexRoute
+  SchoolTeacherStudentPerformanceIndexRoute: typeof SchoolTeacherStudentPerformanceIndexRoute
+  SchoolAdminStaffManagementStafferIdRoute: typeof SchoolAdminStaffManagementStafferIdRoute
+  SchoolAdminStudentManagementStudentIdRoute: typeof SchoolAdminStudentManagementStudentIdRoute
+  SchoolTeacherClassesIdAssessmentsRoute: typeof SchoolTeacherClassesIdAssessmentsRoute
+  SchoolTeacherStudentPerformanceStudentIdRoute: typeof SchoolTeacherStudentPerformanceStudentIdRoute
+  SchoolAdminClassManagementIdIndexRoute: typeof SchoolAdminClassManagementIdIndexRoute
+  SchoolTeacherClassesIdIndexRoute: typeof SchoolTeacherClassesIdIndexRoute
+  SchoolAdminClassManagementIdStudentIdRoute: typeof SchoolAdminClassManagementIdStudentIdRoute
+  SchoolAdminClassManagementIdSubjectIdRoute: typeof SchoolAdminClassManagementIdSubjectIdRoute
+  SchoolTeacherClassesIdStudentIdRoute: typeof SchoolTeacherClassesIdStudentIdRoute
+}
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  HelpDeskRoute: HelpDeskRoute,
+  RegisterSchoolRoute: RegisterSchoolRoute,
+  SchoolIndexRoute: SchoolIndexRoute,
+  SchoolAdminDashboardRoute: SchoolAdminDashboardRoute,
+  SchoolAuthLoginRoute: SchoolAuthLoginRoute,
+  SchoolAuthRegisterRoute: SchoolAuthRegisterRoute,
+  SchoolParentCommunicationsRoute: SchoolParentCommunicationsRoute,
+  SchoolParentDashboardRoute: SchoolParentDashboardRoute,
+  SchoolTeacherDashboardRoute: SchoolTeacherDashboardRoute,
+  SchoolAdminIndexRoute: SchoolAdminIndexRoute,
+  SchoolAuthIndexRoute: SchoolAuthIndexRoute,
+  SchoolParentIndexRoute: SchoolParentIndexRoute,
+  SchoolTeacherIndexRoute: SchoolTeacherIndexRoute,
+  SchoolAdminAuthResetPasswordRoute: SchoolAdminAuthResetPasswordRoute,
+  SchoolParentAuthResetPasswordRoute: SchoolParentAuthResetPasswordRoute,
+  SchoolParentStudentIdRoute: SchoolParentStudentIdRoute,
+  SchoolTeacherAuthResetPasswordRoute: SchoolTeacherAuthResetPasswordRoute,
+  SchoolAdminClassManagementIndexRoute: SchoolAdminClassManagementIndexRoute,
+  SchoolAdminReportsIndexRoute: SchoolAdminReportsIndexRoute,
+  SchoolAdminSchoolIndexRoute: SchoolAdminSchoolIndexRoute,
+  SchoolAdminSettingsIndexRoute: SchoolAdminSettingsIndexRoute,
+  SchoolAdminStaffManagementIndexRoute: SchoolAdminStaffManagementIndexRoute,
+  SchoolAdminStudentManagementIndexRoute:
+    SchoolAdminStudentManagementIndexRoute,
+  SchoolTeacherAssessmentsIndexRoute: SchoolTeacherAssessmentsIndexRoute,
+  SchoolTeacherClassesIndexRoute: SchoolTeacherClassesIndexRoute,
+  SchoolTeacherCommunicationIndexRoute: SchoolTeacherCommunicationIndexRoute,
+  SchoolTeacherStudentPerformanceIndexRoute:
+    SchoolTeacherStudentPerformanceIndexRoute,
+  SchoolAdminStaffManagementStafferIdRoute:
+    SchoolAdminStaffManagementStafferIdRoute,
+  SchoolAdminStudentManagementStudentIdRoute:
+    SchoolAdminStudentManagementStudentIdRoute,
+  SchoolTeacherClassesIdAssessmentsRoute:
+    SchoolTeacherClassesIdAssessmentsRoute,
+  SchoolTeacherStudentPerformanceStudentIdRoute:
+    SchoolTeacherStudentPerformanceStudentIdRoute,
+  SchoolAdminClassManagementIdIndexRoute:
+    SchoolAdminClassManagementIdIndexRoute,
+  SchoolTeacherClassesIdIndexRoute: SchoolTeacherClassesIdIndexRoute,
+  SchoolAdminClassManagementIdStudentIdRoute:
+    SchoolAdminClassManagementIdStudentIdRoute,
+  SchoolAdminClassManagementIdSubjectIdRoute:
+    SchoolAdminClassManagementIdSubjectIdRoute,
+  SchoolTeacherClassesIdStudentIdRoute: SchoolTeacherClassesIdStudentIdRoute,
 }
 
 export const routeTree = rootRoute
-  ._addFileChildren(routeChildren)
+  ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
 /* prettier-ignore-end */
@@ -827,166 +868,154 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about",
         "/help-desk",
-        "/school/$id",
-        "/auth",
-        "/admin",
-        "/teacher/",
-        "/parent"
+        "/register-school",
+        "/$school/",
+        "/$school/admin/dashboard",
+        "/$school/auth/login",
+        "/$school/auth/register",
+        "/$school/parent/communications",
+        "/$school/parent/dashboard",
+        "/$school/teacher/dashboard",
+        "/$school/admin/",
+        "/$school/auth/",
+        "/$school/parent/",
+        "/$school/teacher/",
+        "/$school/admin/auth/reset-password",
+        "/$school/parent/auth/reset-password",
+        "/$school/parent/student/$id",
+        "/$school/teacher/auth/reset-password",
+        "/$school/admin/class-management/",
+        "/$school/admin/reports/",
+        "/$school/admin/school/",
+        "/$school/admin/settings/",
+        "/$school/admin/staff-management/",
+        "/$school/admin/student-management/",
+        "/$school/teacher/assessments/",
+        "/$school/teacher/classes/",
+        "/$school/teacher/communication/",
+        "/$school/teacher/student-performance/",
+        "/$school/admin/staff-management/staffer/$id",
+        "/$school/admin/student-management/student/$id",
+        "/$school/teacher/classes/$id/assessments",
+        "/$school/teacher/student-performance/student/$id",
+        "/$school/admin/class-management/$id/",
+        "/$school/teacher/classes/$id/",
+        "/$school/admin/class-management/$id/student/$id",
+        "/$school/admin/class-management/$id/subject/$id",
+        "/$school/teacher/classes/$id/student/$id"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/about": {
-      "filePath": "about.tsx"
-    },
     "/help-desk": {
       "filePath": "help-desk.tsx"
     },
-    "/school/$id": {
-      "filePath": "school.$id.tsx"
+    "/register-school": {
+      "filePath": "register-school.tsx"
     },
-    "/auth": {
-      "filePath": "auth/index.tsx",
-      "children": [
-        "login",
-        "register",
-        "register-school"
-      ]
+    "/$school/": {
+      "filePath": "$school/index.tsx"
     },
-    "/auth/login": {
-      "filePath": "auth/login.tsx"
+    "/$school/admin/dashboard": {
+      "filePath": "$school/admin/dashboard.tsx"
     },
-    "/auth/register": {
-      "filePath": "auth/register.tsx"
+    "/$school/auth/login": {
+      "filePath": "$school/auth/login.tsx"
     },
-    "/auth/register-school": {
-      "filePath": "auth/register-school.tsx"
+    "/$school/auth/register": {
+      "filePath": "$school/auth/register.tsx"
     },
-    "/admin": {
-      "filePath": "admin/index.tsx",
-      "children": [
-        "dashboard",
-        "auth/reset-password",
-        "class-management",
-        "reports",
-        "school",
-        "settings",
-        "staff-management",
-        "student-management",
-        "staff-management/staffer/$id",
-        "student-management/student/$id",
-        "class-management/$id",
-        "class-management/$id/student/$id",
-        "class-management/$id/subject/$id"
-      ]
+    "/$school/parent/communications": {
+      "filePath": "$school/parent/communications.tsx"
     },
-    "/admin/dashboard": {
-      "filePath": "admin/dashboard.tsx"
+    "/$school/parent/dashboard": {
+      "filePath": "$school/parent/dashboard.tsx"
     },
-    "/admin/auth/reset-password": {
-      "filePath": "admin/auth/reset-password.tsx"
+    "/$school/teacher/dashboard": {
+      "filePath": "$school/teacher/dashboard.tsx"
     },
-    "/admin/class-management": {
-      "filePath": "admin/class-management/index.tsx"
+    "/$school/admin/": {
+      "filePath": "$school/admin/index.tsx"
     },
-    "/admin/reports": {
-      "filePath": "admin/reports/index.tsx"
+    "/$school/auth/": {
+      "filePath": "$school/auth/index.tsx"
     },
-    "/admin/school": {
-      "filePath": "admin/school/index.tsx"
+    "/$school/parent/": {
+      "filePath": "$school/parent/index.tsx"
     },
-    "/admin/settings": {
-      "filePath": "admin/settings/index.tsx"
+    "/$school/teacher/": {
+      "filePath": "$school/teacher/index.tsx"
     },
-    "/admin/staff-management": {
-      "filePath": "admin/staff-management/index.tsx"
+    "/$school/admin/auth/reset-password": {
+      "filePath": "$school/admin/auth/reset-password.tsx"
     },
-    "/admin/student-management": {
-      "filePath": "admin/student-management/index.tsx"
+    "/$school/parent/auth/reset-password": {
+      "filePath": "$school/parent/auth/reset-password.tsx"
     },
-    "/admin/staff-management/staffer/$id": {
-      "filePath": "admin/staff-management/staffer.$id.tsx"
+    "/$school/parent/student/$id": {
+      "filePath": "$school/parent/student.$id.tsx"
     },
-    "/admin/student-management/student/$id": {
-      "filePath": "admin/student-management/student.$id.tsx"
+    "/$school/teacher/auth/reset-password": {
+      "filePath": "$school/teacher/auth/reset-password.tsx"
     },
-    "/admin/class-management/$id": {
-      "filePath": "admin/class-management/$id/index.tsx"
+    "/$school/admin/class-management/": {
+      "filePath": "$school/admin/class-management/index.tsx"
     },
-    "/admin/class-management/$id/student/$id": {
-      "filePath": "admin/class-management/$id/student.$id.tsx"
+    "/$school/admin/reports/": {
+      "filePath": "$school/admin/reports/index.tsx"
     },
-    "/admin/class-management/$id/subject/$id": {
-      "filePath": "admin/class-management/$id/subject.$id.tsx"
+    "/$school/admin/school/": {
+      "filePath": "$school/admin/school/index.tsx"
     },
-    "/teacher/": {
-      "filePath": "teacher/index.tsx",
-      "children": [
-        "dashboard",
-        "auth/reset-password",
-        "assessments",
-        "classes",
-        "communication",
-        "student-performance",
-        "classes/$id",
-        "classes/$id/assessments",
-        "classes/$id/student/$id",
-        "student-performance/student/$id"
-      ]
+    "/$school/admin/settings/": {
+      "filePath": "$school/admin/settings/index.tsx"
     },
-    "/teacher/dashboard": {
-      "filePath": "teacher/dashboard.tsx"
+    "/$school/admin/staff-management/": {
+      "filePath": "$school/admin/staff-management/index.tsx"
     },
-    "/teacher/auth/reset-password": {
-      "filePath": "teacher/auth/reset-password.tsx"
+    "/$school/admin/student-management/": {
+      "filePath": "$school/admin/student-management/index.tsx"
     },
-    "/teacher/assessments": {
-      "filePath": "teacher/assessments/index.tsx"
+    "/$school/teacher/assessments/": {
+      "filePath": "$school/teacher/assessments/index.tsx"
     },
-    "/teacher/classes": {
-      "filePath": "teacher/classes/index.tsx"
+    "/$school/teacher/classes/": {
+      "filePath": "$school/teacher/classes/index.tsx"
     },
-    "/teacher/communication": {
-      "filePath": "teacher/communication/index.tsx"
+    "/$school/teacher/communication/": {
+      "filePath": "$school/teacher/communication/index.tsx"
     },
-    "/teacher/student-performance": {
-      "filePath": "teacher/student-performance/index.tsx"
+    "/$school/teacher/student-performance/": {
+      "filePath": "$school/teacher/student-performance/index.tsx"
     },
-    "/teacher/classes/$id/": {
-      "filePath": "teacher/classes/$id/index.tsx"
+    "/$school/admin/staff-management/staffer/$id": {
+      "filePath": "$school/admin/staff-management/staffer.$id.tsx"
     },
-    "/teacher/classes/$id/assessments": {
-      "filePath": "teacher/classes/$id/assessments.tsx"
+    "/$school/admin/student-management/student/$id": {
+      "filePath": "$school/admin/student-management/student.$id.tsx"
     },
-    "/teacher/classes/$id/student/$id": {
-      "filePath": "teacher/classes/$id/student.$id.tsx"
+    "/$school/teacher/classes/$id/assessments": {
+      "filePath": "$school/teacher/classes/$id/assessments.tsx"
     },
-    "/teacher/student-performance/student/$id": {
-      "filePath": "teacher/student-performance/student.$id.tsx"
+    "/$school/teacher/student-performance/student/$id": {
+      "filePath": "$school/teacher/student-performance/student.$id.tsx"
     },
-    "/parent": {
-      "filePath": "parent/index.tsx",
-      "children": [
-        "dashboard",
-        "communications",
-        "auth/reset-password",
-        "student/$id"
-      ]
+    "/$school/admin/class-management/$id/": {
+      "filePath": "$school/admin/class-management/$id/index.tsx"
     },
-    "/parent/dashboard": {
-      "filePath": "parent/dashboard.tsx"
+    "/$school/teacher/classes/$id/": {
+      "filePath": "$school/teacher/classes/$id/index.tsx"
     },
-    "/parent/communications": {
-      "filePath": "parent/communications.tsx"
+    "/$school/admin/class-management/$id/student/$id": {
+      "filePath": "$school/admin/class-management/$id/student.$id.tsx"
     },
-    "/parent/auth/reset-password": {
-      "filePath": "parent/auth/reset-password.tsx"
+    "/$school/admin/class-management/$id/subject/$id": {
+      "filePath": "$school/admin/class-management/$id/subject.$id.tsx"
     },
-    "/parent/student/$id": {
-      "filePath": "parent/student.$id.tsx"
+    "/$school/teacher/classes/$id/student/$id": {
+      "filePath": "$school/teacher/classes/$id/student.$id.tsx"
     }
   }
 }

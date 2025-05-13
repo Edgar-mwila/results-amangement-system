@@ -8,8 +8,17 @@ import {
   Mail,
   Globe,
   Building,
+  BookOpen,
+  MapPinned,
+  Flag,
+  Building2,
+  Save,
+  ArrowRight,
 } from 'lucide-react'
-import { FieldConfig } from '@/components/school-profile'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
@@ -19,151 +28,537 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs'
+import { toast } from '@/hooks/use-toast'
 
-const schoolInfoFields: FieldConfig[] = [
-  { label: 'School Name', field: 'name', icon: <School className="h-4 w-4" /> },
-  {
-    label: 'Registration Number',
-    field: 'registration_number',
-    icon: <FileText className="h-4 w-4" />,
-  },
-  {
-    label: 'Address',
-    field: 'address',
-    type: 'textarea',
-    icon: <MapPin className="h-4 w-4" />,
-  },
-  {
-    label: 'Phone',
-    field: 'phone',
-    type: 'tel',
-    icon: <Phone className="h-4 w-4" />,
-  },
-  {
-    label: 'Email',
-    field: 'email',
-    type: 'email',
-    icon: <Mail className="h-4 w-4" />,
-  },
-  {
-    label: 'Website',
-    field: 'website_url',
-    type: 'url',
-    icon: <Globe className="h-4 w-4" />,
-  },
-  {
-    label: 'Type',
-    field: 'type',
-    type: 'select',
-    icon: <Building className="h-4 w-4" />,
-    options: [
-      { value: 'primary', label: 'Primary' },
-      { value: 'secondary', label: 'Secondary' },
-      { value: 'mixed', label: 'Mixed' },
-    ],
-  },
-  {
-    label: 'Category',
-    field: 'category',
-    type: 'select',
-    icon: <Building className="h-4 w-4" />,
-    options: [
-      { value: 'public', label: 'Public' },
-      { value: 'private', label: 'Private' },
-      { value: 'international', label: 'International' },
-    ],
-  },
-  {
-    label: 'Curriculum',
-    field: 'curriculum',
-    type: 'select',
-    icon: <FileText className="h-4 w-4" />,
-    options: [
-      { value: 'national', label: 'National' },
-      { value: 'international', label: 'International' },
-      { value: 'mixed', label: 'Mixed' },
-    ],
-  },
-]
+// Schema for form validation
+const schoolFormSchema = z.object({
+  // Basic Info
+  name: z.string().min(3, { message: "School name must be at least 3 characters" }),
+  registration_number: z.string().min(1, { message: "Registration number is required" }),
+  motto: z.string().min(3, { message: "School motto must be at least 3 characters" }),
+  about: z.string().min(10, { message: "Please provide a brief description of the school" }).max(500, { message: "Description must be less than 500 characters" }),
+  
+  // Contact Info
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  phone: z.string().min(10, { message: "Phone number must be at least 10 digits" }),
+  subdomain: z.string()
+    .regex(/^[a-zA-Z0-9-]+$/, { message: "Subdomain can only contain letters, numbers, and hyphens" })
+    .min(3, { message: "Subdomain must be at least 3 characters" })
+    .optional()
+    .or(z.literal('')),
+  
+  // Address
+  street_address: z.string().min(3, { message: "Street address is required" }),
+  city: z.string().min(2, { message: "City is required" }),
+  province: z.string().min(2, { message: "Province is required" }),
+  postal_code: z.string().optional(),
+  country: z.string().default("Zambia"),
+  
+  // School Details
+  school_type: z.enum(["primary", "secondary", "combined"], {
+    required_error: "Please select a school type",
+  }),
+  ownership: z.enum(["public", "private", "international"], {
+    required_error: "Please select an ownership type",
+  }),
+  curriculum: z.enum(["ECZ", "Cambridge", "Both"], {
+    required_error: "Please select a curriculum",
+  }),
+})
+
+type SchoolFormValues = z.infer<typeof schoolFormSchema>
+
+// Default values for the form
+const defaultValues: Partial<SchoolFormValues> = {
+  name: "",
+  registration_number: "",
+  motto: "",
+  about: "",
+  email: "",
+  phone: "",
+  subdomain: "",
+  street_address: "",
+  city: "",
+  province: "",
+  postal_code: "",
+  country: "Zambia",
+  school_type: undefined,
+  ownership: undefined,
+  curriculum: undefined,
+}
+
+// API function to submit school data
+// const submitSchoolData = async (data: SchoolFormValues): Promise<{ success: boolean; message: string }> => {
+//   try {
+//     // Replace with your actual API endpoint
+//     const response = await fetch('/api/schools/register', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify(data),
+//     })
+    
+//     const result = await response.json()
+    
+//     if (!response.ok) {
+//       throw new Error(result.message || 'Failed to register school')
+//     }
+    
+//     return { success: true, message: 'School registered successfully' }
+//   } catch (error) {
+//     console.error('Error registering school:', error)
+//     return { 
+//       success: false, 
+//       message: error instanceof Error ? error.message : 'Failed to register school' 
+//     }
+//   }
+// }
 
 const RegisterSchoolPage = () => {
   const navigate = useNavigate()
-  const [schoolData, setSchoolData] = useState<Record<string, unknown>>({})
-  const readOnlyFields: string[] = []
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  
+  // Initialize form with react-hook-form and zod validation
+  const form = useForm<SchoolFormValues>({
+    resolver: zodResolver(schoolFormSchema),
+    defaultValues,
+    mode: "onChange",
+  })
 
-  const renderField = (fieldConfig: FieldConfig) => {
-    const { label, field, type, icon, options } = fieldConfig
-    const value = schoolData[field]
-    const isReadOnly = readOnlyFields.includes(field)
-
-    return (
-      <div key={field} className="space-y-2">
-        <label className="flex items-center text-sm font-medium text-[#3D405B]">
-          {icon && <span className="mr-2 text-gray-500">{icon}</span>}
-          {label}
-        </label>
-        {!isReadOnly ? (
-          type === 'textarea' ? (
-            <Textarea
-              value={value as string}
-              onChange={(e) =>
-                setSchoolData({ ...schoolData, [field]: e.target.value })
-              }
-              className="resize-none"
-              rows={3}
-            />
-          ) : type === 'select' && options ? (
-            <Select
-              value={value as string}
-              onValueChange={(value) =>
-                setSchoolData({ ...schoolData, [field]: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {options.map(({ value, label }) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          ) : (
-            <Input
-              type={type || 'text'}
-              value={value as string}
-              onChange={(e) =>
-                setSchoolData({ ...schoolData, [field]: e.target.value })
-              }
-            />
-          )
-        ) : (
-          <div className="py-2 px-3 bg-gray-50 rounded-md text-gray-900 min-h-[40px] flex items-center">
-            {String(value || 'N/A')}
-          </div>
-        )}
-      </div>
-    )
+  const onSubmit = async (data: SchoolFormValues) => {
+    setIsSubmitting(true)
+    
+    try {
+      // const result = await submitSchoolData(data)
+      
+      // if (result.success) {
+        toast({
+          title: "Success",
+          description: "School registered successfully",
+        })
+        
+        // Format school name for URL (simple slug)
+        const schoolSlug = data.name.toLowerCase().replace(/\s+/g, '-')
+        navigate({ to: '/$school', params: { school: schoolSlug } })
+      // } else {
+      //   toast({
+      //     title: "Error",
+      //     description: result.message,
+      //     variant: "destructive",
+      //   })
+      // }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6 bg-white shadow-md rounded-md">
-      <h1 className="text-2xl font-bold text-gray-800">Register School</h1>
-      <p className="text-gray-600">
-        Please fill in the details below to register a new school.
-      </p>
-      <form className="space-y-4">
-        {schoolInfoFields.map(renderField)}
-        <button
-          type="submit"
-          className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700"
-          onClick={() => navigate({ to: '/$school/admin/dashboard' })}
-        >
-          Submit
-        </button>
-      </form>
+    <div className="max-w-4xl mx-auto p-6">
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="bg-blue-50 rounded-t-lg">
+          <CardTitle className="text-2xl font-bold text-blue-800">Register New School</CardTitle>
+          <CardDescription>
+            Please complete all required fields to register your school in our system.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <Tabs defaultValue="basic" className="w-full" onValueChange={(value) => console.log(value)}>
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="basic">Basic Information</TabsTrigger>
+                  <TabsTrigger value="contact">Contact & Address</TabsTrigger>
+                  <TabsTrigger value="details">School Details</TabsTrigger>
+                </TabsList>
+                
+                {/* Basic Information Tab */}
+                <TabsContent value="basic" className="space-y-6 pt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <School className="h-4 w-4 text-blue-600" />
+                            School Name
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter school name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="registration_number"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-blue-600" />
+                            Registration Number
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter official registration number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="motto"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-blue-600" />
+                          School Motto
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter school motto" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="about"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-blue-600" />
+                          About the School
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Enter a brief description of the school" 
+                            {...field} 
+                            className="resize-none"
+                            rows={3}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="flex justify-end">
+                    <Button type="button" onClick={() => document.querySelector('[value="contact"]')?.dispatchEvent(new MouseEvent("click"))} variant="outline" className="flex items-center gap-2">
+                      Next <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TabsContent>
+                
+                {/* Contact & Address Tab */}
+                <TabsContent value="contact" className="space-y-6 pt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Mail className="h-4 w-4 text-blue-600" />
+                            Email Address
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="school@example.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Phone className="h-4 w-4 text-blue-600" />
+                            Phone Number
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="tel" placeholder="+260 XXX XXX XXX" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="subdomain"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Globe className="h-4 w-4 text-blue-600" />
+                          Subdomain
+                        </FormLabel>
+                        <FormControl>
+                          <Input type="url" placeholder="school-name-without-space" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="space-y-4 border p-4 rounded-md bg-slate-50">
+                    <h3 className="text-md font-medium flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-blue-600" />
+                      Physical Address
+                    </h3>
+                    
+                    <FormField
+                      control={form.control}
+                      name="street_address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <MapPinned className="h-4 w-4 text-blue-600" />
+                            Street Address
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Enter street address" 
+                              {...field} 
+                              className="resize-none"
+                              rows={2}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="city"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <Building2 className="h-4 w-4 text-blue-600" />
+                              City/Town
+                            </FormLabel>
+                            <FormControl>
+                              <Input placeholder="City or town name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="province"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Province</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select province" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="Central">Central</SelectItem>
+                                <SelectItem value="Copperbelt">Copperbelt</SelectItem>
+                                <SelectItem value="Eastern">Eastern</SelectItem>
+                                <SelectItem value="Luapula">Luapula</SelectItem>
+                                <SelectItem value="Lusaka">Lusaka</SelectItem>
+                                <SelectItem value="Muchinga">Muchinga</SelectItem>
+                                <SelectItem value="Northern">Northern</SelectItem>
+                                <SelectItem value="North-Western">North-Western</SelectItem>
+                                <SelectItem value="Southern">Southern</SelectItem>
+                                <SelectItem value="Western">Western</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="postal_code"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Postal Code (Optional)</FormLabel>
+                            <FormControl>
+                              <Input placeholder="10101" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="country"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <Flag className="h-4 w-4 text-blue-600" />
+                              Country
+                            </FormLabel>
+                            <FormControl>
+                              <Input {...field} readOnly className="bg-gray-50" />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* <div className="flex justify-between">
+                    <Button type="button" onClick={() => form.setValue('currentTab', 'basic')} variant="outline">
+                      Back
+                    </Button>
+                    <Button type="button" onClick={() => form.setValue('currentTab', 'details')} variant="outline" className="flex items-center gap-2">
+                      Next <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div> */}
+                </TabsContent>
+                
+                {/* School Details Tab */}
+                <TabsContent value="details" className="space-y-6 pt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="school_type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <School className="h-4 w-4 text-blue-600" />
+                            School Category
+                          </FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="primary">Primary</SelectItem>
+                              <SelectItem value="secondary">Secondary</SelectItem>
+                              <SelectItem value="combined">Combined</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="ownership"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Building className="h-4 w-4 text-blue-600" />
+                            Ownership
+                          </FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select ownership" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="public">Public</SelectItem>
+                              <SelectItem value="private">Private</SelectItem>
+                              <SelectItem value="international">International</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="curriculum"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <BookOpen className="h-4 w-4 text-blue-600" />
+                            Curriculum
+                          </FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select curriculum" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="ECZ">ECZ</SelectItem>
+                              <SelectItem value="Cambridge">Cambridge</SelectItem>
+                              <SelectItem value="Both">Both</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <div className="flex justify-between pt-4">
+                    <Button type="button" onClick={() => document.querySelector('[value="contact"]')?.dispatchEvent(new MouseEvent("click"))} variant="outline">
+                      Back
+                    </Button>
+                    <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
+                      <Save className="h-4 w-4" />
+                      {isSubmitting ? "Registering..." : "Register School"}
+                    </Button>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter className="bg-gray-50 border-t py-4 text-sm text-gray-500 flex justify-center">
+          All fields are required
+        </CardFooter>
+      </Card>
     </div>
   )
 }

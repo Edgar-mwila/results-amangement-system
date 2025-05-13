@@ -19,11 +19,9 @@ function NavBar() {
         Edu-Track
       </Link>
       <div className="flex gap-2">
-          <>
             <Link to="/help-desk" className="font-semibold [&.active]:font-bold mr-5 text-custom-text">
               <HelpCircleIcon className='h-8 w-auto' />
             </Link>
-          </>
       </div>
     </div>
   );
