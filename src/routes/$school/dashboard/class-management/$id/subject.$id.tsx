@@ -1,9 +1,8 @@
-import { SubjectPerformance } from '@/components/subject-performance'
+import SubjectPerformance from '@/components/subject-performance'
 import { createFileRoute } from '@tanstack/react-router'
 
 const Subject: React.FC = () => {
-  const subjectId = Route.useParams().id
-  return <SubjectPerformance subjectId={subjectId} />
+  return <SubjectPerformance />
 }
 
 export const Route = createFileRoute(

@@ -1,8 +1,11 @@
 import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useRouter, useParams } from '@tanstack/react-router'
+import { useState } from 'react'
 
 const Login = () => {
   const navigate = useRouter()
+  const { school } = useParams({ from: '/$school/auth/login' })
+  const [user, setUser] = useState('')
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md p-6 bg-white rounded-xl shadow-lg">
@@ -42,6 +45,7 @@ const Login = () => {
                   <input
                     type="text"
                     name={`${role}-username`}
+                    onChange={(e) => setUser(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                     placeholder="Enter your email"
                   />
@@ -77,16 +81,18 @@ const Login = () => {
                 <button
                   type="submit"
                   className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  onClick={() =>
+                  onClick={() => {
+                  try {
+                    localStorage.setItem('userRole', role);
+                    localStorage.setItem('user', user);
+                    localStorage.setItem('isAuthenticated', 'true');
                     navigate.navigate({
-                      to:
-                        role === 'admin'
-                          ? '/$school/admin/dashboard'
-                          : role === 'teacher'
-                            ? '/$school/teacher/dashboard'
-                            : '/$school/parent/dashboard',
-                    })
-                  } // Adjust the navigation based on role
+                    to: '/$school/dashboard', params: { school },
+                    });
+                  } catch (error) {
+                    console.error('Error saving user role:', error);
+                  }
+                  }}
                 >
                   Login as {role.charAt(0).toUpperCase() + role.slice(1)}
                 </button>

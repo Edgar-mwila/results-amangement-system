@@ -190,50 +190,48 @@ function SchoolPage() {
             >
               Get Started
             </Button>
-            <>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="font-semibold px-8 py-6 bg-transparent border-2 border-white text-white hover:bg-white/10 transition-all"
-                  >
-                    Contact Us
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Contact Information</DialogTitle>
-                    <DialogDescription>
-                      Get in touch with {schoolName}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="flex flex-col gap-2">
-                      <h3 className="font-semibold">Address</h3>
-                      <p className="text-gray-600">123 School Street<br/>City, State 12345</p>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <h3 className="font-semibold">Phone</h3>
-                      <p className="text-gray-600">(555) 123-4567</p>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <h3 className="font-semibold">Email</h3>
-                      <p className="text-gray-600">support@{schoolName.toLowerCase().replace(/\s+/g, '')}school.com</p>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <h3 className="font-semibold">Office Hours</h3>
-                      <p className="text-gray-600">Monday - Friday<br/>8:00 AM - 4:00 PM</p>
-                    </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="font-semibold px-8 py-6 bg-transparent border-2 border-white text-white hover:bg-white/10 transition-all"
+                >
+                  Contact Us
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Contact Information</DialogTitle>
+                  <DialogDescription>
+                    Get in touch with {schoolName}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-semibold">Address</h3>
+                    <p className="text-gray-600">123 School Street<br/>City, State 12345</p>
                   </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => window.location.href = `mailto:support@${schoolName.toLowerCase().replace(/\s+/g, '')}school.com`}>
-                      Send Email
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </>
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-semibold">Phone</h3>
+                    <p className="text-gray-600">(555) 123-4567</p>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-semibold">Email</h3>
+                    <p className="text-gray-600">support@{schoolName.toLowerCase().replace(/\s+/g, '')}school.com</p>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-semibold">Office Hours</h3>
+                    <p className="text-gray-600">Monday - Friday<br/>8:00 AM - 4:00 PM</p>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => window.location.href = `mailto:support@${schoolName.toLowerCase().replace(/\s+/g, '')}school.com`}>
+                    Send Email
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </section>

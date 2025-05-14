@@ -1,53 +1,90 @@
-import { Input } from "@/components/ui/input"
-import { TableRow, TableCell, TableBody, Table } from "@/components/ui/table"
-import { AnyRoute, createRoute, useRouter } from "@tanstack/react-router"
-import { Search, UserPlus } from "lucide-react"
-import { useState, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Route as AdminRoute } from '../index'
+import { Input } from '@/components/ui/input'
+import { TableRow, TableCell, TableBody, Table } from '@/components/ui/table'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { Search, UserPlus } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
+} from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
 
 const exampleStaff = [
-  { id: 1, firstname: "John", lastname: "Doe", role: "Teacher", email: "john.doe@school.com", status: "Active" },
-  { id: 2, firstname: "Jane", lastname: "Smith", role: "Administrator", email: "jane.smith@school.com", status: "Active" },
-  { id: 3, firstname: "Bob", lastname: "Johnson", role: "Administrator", email: "bob.johnson@school.com", status: "On Leave" },
-  { id: 4, firstname: "Alice", lastname: "Williams", role: "Teacher", email: "alice.williams@school.com", status: "Active" },
-  { id: 5, firstname: "Charlie", lastname: "Brown", role: "Teacher", email: "charlie.brown@school.com", status: "Inactive" },
+  {
+    id: 1,
+    firstname: 'John',
+    lastname: 'Doe',
+    role: 'Teacher',
+    email: 'john.doe@school.com',
+    status: 'Active',
+  },
+  {
+    id: 2,
+    firstname: 'Jane',
+    lastname: 'Smith',
+    role: 'Administrator',
+    email: 'jane.smith@school.com',
+    status: 'Active',
+  },
+  {
+    id: 3,
+    firstname: 'Bob',
+    lastname: 'Johnson',
+    role: 'Administrator',
+    email: 'bob.johnson@school.com',
+    status: 'On Leave',
+  },
+  {
+    id: 4,
+    firstname: 'Alice',
+    lastname: 'Williams',
+    role: 'Teacher',
+    email: 'alice.williams@school.com',
+    status: 'Active',
+  },
+  {
+    id: 5,
+    firstname: 'Charlie',
+    lastname: 'Brown',
+    role: 'Teacher',
+    email: 'charlie.brown@school.com',
+    status: 'Inactive',
+  },
 ]
 
-const AddStaffDialog: React.FC<{open: boolean, onOpenChange: (boolean:boolean) =>void}> = ({ open, onOpenChange }) => {
+const AddStaffDialog: React.FC<{
+  open: boolean
+  onOpenChange: (boolean: boolean) => void
+}> = ({ open, onOpenChange }) => {
   const [newStaff, setNewStaff] = useState({
-    firstname: "",
-    lastname: "",
-    email: "",
-    role: "",
-    status: "Active"
+    firstname: '',
+    lastname: '',
+    email: '',
+    role: '',
+    status: 'Active',
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Here you would typically make an API call to add the new staff member
-    console.log("New staff member:", newStaff)
+    console.log('New staff member:', newStaff)
     onOpenChange(false)
     setNewStaff({
-      firstname: "",
-      lastname: "",
-      email: "",
-      role: "",
-      status: "Active"
+      firstname: '',
+      lastname: '',
+      email: '',
+      role: '',
+      status: 'Active',
     })
   }
 
@@ -64,7 +101,9 @@ const AddStaffDialog: React.FC<{open: boolean, onOpenChange: (boolean:boolean) =
               <Input
                 id="firstname"
                 value={newStaff.firstname}
-                onChange={(e) => setNewStaff({ ...newStaff, firstname: e.target.value })}
+                onChange={(e) =>
+                  setNewStaff({ ...newStaff, firstname: e.target.value })
+                }
                 required
               />
             </div>
@@ -73,7 +112,9 @@ const AddStaffDialog: React.FC<{open: boolean, onOpenChange: (boolean:boolean) =
               <Input
                 id="lastname"
                 value={newStaff.lastname}
-                onChange={(e) => setNewStaff({ ...newStaff, lastname: e.target.value })}
+                onChange={(e) =>
+                  setNewStaff({ ...newStaff, lastname: e.target.value })
+                }
                 required
               />
             </div>
@@ -83,7 +124,9 @@ const AddStaffDialog: React.FC<{open: boolean, onOpenChange: (boolean:boolean) =
                 id="email"
                 type="email"
                 value={newStaff.email}
-                onChange={(e) => setNewStaff({ ...newStaff, email: e.target.value })}
+                onChange={(e) =>
+                  setNewStaff({ ...newStaff, email: e.target.value })
+                }
                 required
               />
             </div>
@@ -91,7 +134,9 @@ const AddStaffDialog: React.FC<{open: boolean, onOpenChange: (boolean:boolean) =
               <Label htmlFor="role">Role</Label>
               <Select
                 value={newStaff.role}
-                onValueChange={(value) => setNewStaff({ ...newStaff, role: value })}
+                onValueChange={(value) =>
+                  setNewStaff({ ...newStaff, role: value })
+                }
                 required
               >
                 <SelectTrigger>
@@ -112,7 +157,10 @@ const AddStaffDialog: React.FC<{open: boolean, onOpenChange: (boolean:boolean) =
             >
               Cancel
             </Button>
-            <Button type="submit" className="bg-[#F2CC8F] hover:bg-green-600 text-custom-text">
+            <Button
+              type="submit"
+              className="bg-[#F2CC8F] hover:bg-green-600 text-custom-text"
+            >
               Add Staff
             </Button>
           </div>
@@ -123,7 +171,7 @@ const AddStaffDialog: React.FC<{open: boolean, onOpenChange: (boolean:boolean) =
 }
 
 const StaffManagement = () => {
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState('')
   const router = useRouter()
   const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -131,7 +179,7 @@ const StaffManagement = () => {
     return exampleStaff.filter(
       (staff) =>
         staff.firstname.toLowerCase().includes(search.toLowerCase()) ||
-        staff.lastname.toLowerCase().includes(search.toLowerCase())
+        staff.lastname.toLowerCase().includes(search.toLowerCase()),
     )
   }, [search])
 
@@ -148,7 +196,7 @@ const StaffManagement = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Button 
+        <Button
           className="bg-[#F2CC8F] hover:bg-green-600 text-custom-text"
           onClick={() => setDialogOpen(true)}
         >
@@ -167,34 +215,34 @@ const StaffManagement = () => {
           </TableRow>
           <TableBody>
             {filteredStaff.map((staff) => (
-                <TableRow 
-                key={staff.id} 
+              <TableRow
+                key={staff.id}
                 className="hover:bg-gray-50 cursor-pointer"
-                onClick={() => router.navigate({to: `/admin/staff-management/staffer/${staff.id}?role=${staff.role.toLowerCase()}`})}
-                >
+                onClick={() =>
+                  router.navigate({
+                    to: `/admin/staff-management/staffer/${staff.id}?role=${staff.role.toLowerCase()}`,
+                  })
+                }
+              >
                 <TableCell className="text-left">
                   {staff.firstname} {staff.lastname}
                 </TableCell>
-                <TableCell className="text-left">
-                  {staff.role}
-                </TableCell>
-                <TableCell className="text-left">
-                  {staff.email}
-                </TableCell>
+                <TableCell className="text-left">{staff.role}</TableCell>
+                <TableCell className="text-left">{staff.email}</TableCell>
                 <TableCell className="text-left">
                   <span
-                  className={`px-2 py-1 rounded-full text-xs ${
-                    staff.status === "Active"
-                    ? "bg-green-200 text-green-800"
-                    : staff.status === "Inactive"
-                    ? "bg-red-200 text-red-800"
-                    : "bg-yellow-200 text-yellow-800"
-                  }`}
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      staff.status === 'Active'
+                        ? 'bg-green-200 text-green-800'
+                        : staff.status === 'Inactive'
+                          ? 'bg-red-200 text-red-800'
+                          : 'bg-yellow-200 text-yellow-800'
+                    }`}
                   >
-                  {staff.status}
+                    {staff.status}
                   </span>
                 </TableCell>
-                </TableRow>
+              </TableRow>
             ))}
           </TableBody>
         </Table>
@@ -204,8 +252,6 @@ const StaffManagement = () => {
   )
 }
 
-export const Route = createRoute({
-  path: '/admin/staff-management/',
+export const Route = createFileRoute('/$school/dashboard/staff-management/')({
   component: StaffManagement,
-  getParentRoute: () => AdminRoute as AnyRoute,
 })

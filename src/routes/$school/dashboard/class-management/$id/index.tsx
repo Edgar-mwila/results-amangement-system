@@ -3,7 +3,7 @@ import ClassView from '@/components/class'
 import { Route as AdminRoute } from '../../index'
 
 const AdminClassView = () => {
-  return <ClassView isAdmin={true} />
+  return <ClassView />
 }
 
 export const Route = createRoute({

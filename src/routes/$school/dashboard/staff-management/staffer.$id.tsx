@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { TeacherDetailView } from '@/components/teacher-profile'
-import { AdminDetailView } from '@/components/admin-profile'
+import TeacherDetailView from '@/components/teacher-profile'
+import AdminDetailView from '@/components/admin-profile'
 
 // Define the search params interface
 interface StafferSearchParams {

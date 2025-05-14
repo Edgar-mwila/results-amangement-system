@@ -1,14 +1,9 @@
-import { StudentPage } from '@/components/student-page'
+import StudentDetails from '@/components/student-details'
 import { createFileRoute } from '@tanstack/react-router'
 
 const TeacherStudentView = () => {
-  const { id } = Route.useParams({})
   return (
-    <StudentPage
-      userRole="subjectTeacher"
-      studentId={id}
-      studentName={'Edgar Mwila'}
-      teacherSubject="Mathematics"
+    <StudentDetails
     />
   )
 }
