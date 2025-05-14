@@ -608,7 +608,7 @@ const Assessments = () => {
                     key={assessment.id}
                     className="hover:bg-gray-50 cursor-pointer"
                     onClick={() =>
-                      navigate({ to: `/teacher/assessments/${assessment.id}` })
+                      navigate({ to: `/$school/dashboard/assessments/${assessment.id}` })
                     }
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -685,7 +685,7 @@ const Assessments = () => {
                           e.stopPropagation()
                           // Navigate to edit page
                           navigate({
-                            to: `/teacher/assessments/${assessment.id}/edit`,
+                            to: `/$school/dashboard/assessments/${assessment.id}/edit`,
                           })
                         }}
                       >
@@ -703,7 +703,7 @@ const Assessments = () => {
                           if (assessment.status === 'Grading') {
                             // Navigate to grading page
                             navigate({
-                              to: `/teacher/assessments/${assessment.id}/grade`,
+                              to: `/$school/dashboard/assessments/${assessment.id}/grade`,
                             })
                           }
                         }}

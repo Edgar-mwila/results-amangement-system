@@ -13,7 +13,6 @@ import {
   Flag,
   Building2,
   Save,
-  ArrowRight,
 } from 'lucide-react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -276,14 +275,8 @@ const RegisterSchoolPage = () => {
                       </FormItem>
                     )}
                   />
-                  
-                  <div className="flex justify-end">
-                    <Button type="button" onClick={() => document.querySelector('[value="contact"]')?.dispatchEvent(new MouseEvent("click"))} variant="outline" className="flex items-center gap-2">
-                      Next <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </div>
                 </TabsContent>
-                
+
                 {/* Contact & Address Tab */}
                 <TabsContent value="contact" className="space-y-6 pt-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -542,9 +535,6 @@ const RegisterSchoolPage = () => {
                   </div>
                   
                   <div className="flex justify-between pt-4">
-                    <Button type="button" onClick={() => document.querySelector('[value="contact"]')?.dispatchEvent(new MouseEvent("click"))} variant="outline">
-                      Back
-                    </Button>
                     <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
                       <Save className="h-4 w-4" />
                       {isSubmitting ? "Registering..." : "Register School"}

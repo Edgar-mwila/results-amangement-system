@@ -253,7 +253,7 @@ const ClassAssessment = () => {
           <div>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => navigate({ to: `/teacher/classes/${id}` })}
+                onClick={() => navigate({ to: `/$school/dashboard/classes/${id}` })}
                 className="p-1.5 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
               >
                 <ChevronLeft className="w-5 h-5 text-gray-600" />
@@ -267,7 +267,7 @@ const ClassAssessment = () => {
           <div className="flex gap-3">
             <button
               className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
-              onClick={() => navigate({ to: `/teacher/classes/${id}` })}
+              onClick={() => navigate({ to: `/$school/dashboard/classes/${id}` })}
             >
               <Home className="w-4 h-4" />
               Class Overview
@@ -624,7 +624,7 @@ const ClassAssessment = () => {
                         className="hover:bg-gray-50 cursor-pointer transition-colors"
                         onClick={() =>
                           navigate({
-                            to: `/teacher/assessments/${assessment.id}`,
+                            to: `/$school/dashboard/assessments/${assessment.id}`,
                           })
                         }
                       >
@@ -688,7 +688,7 @@ const ClassAssessment = () => {
                                 e.stopPropagation()
                                 // Navigate to edit page
                                 navigate({
-                                  to: `/teacher/assessments/${assessment.id}/edit`,
+                                  to: `/$school/dashboard/assessments/${assessment.id}/edit`,
                                 })
                               }}
                               title="Edit assessment"
@@ -702,7 +702,7 @@ const ClassAssessment = () => {
                                   e.stopPropagation()
                                   // Navigate to grading page
                                   navigate({
-                                    to: `/teacher/assessments/${assessment.id}/grade`,
+                                    to: `/$school/dashboard/assessments/${assessment.id}/grade`,
                                   })
                                 }}
                                 title="Grade assessment"
@@ -742,7 +742,7 @@ const ClassAssessment = () => {
                 <div
                   key={assessment.id}
                   className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => navigate({ to: `/teacher/assessments/${assessment.id}` })}
+                  onClick={() => navigate({ to: `/$school/dashboard/assessments/${assessment.id}` })}
                 >
                   <div className={`h-2 ${getStatusColor(assessment.status)}`}></div>
                   <div className="p-5">
@@ -815,7 +815,7 @@ const ClassAssessment = () => {
                         className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
                         onClick={(e) => {
                           e.stopPropagation()
-                          navigate({ to: `/teacher/assessments/${assessment.id}/edit` })
+                          navigate({ to: `/$school/dashboard/assessments/${assessment.id}/edit` })
                         }}
                         title="Edit assessment"
                       >
@@ -826,7 +826,7 @@ const ClassAssessment = () => {
                           className="p-1.5 rounded-lg text-yellow-600 hover:bg-yellow-50 transition-colors"
                           onClick={(e) => {
                             e.stopPropagation()
-                            navigate({ to: `/teacher/assessments/${assessment.id}/grade` })
+                            navigate({ to: `/$school/dashboard/assessments/${assessment.id}/grade` })
                           }}
                           title="Grade assessment"
                         >

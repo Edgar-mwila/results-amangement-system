@@ -11,7 +11,7 @@ const SchoolManagement = () => {
 }
 
 export const Route = createRoute({
-  path: '/$school/admin/school/',
+  path: '/$school/dashboard/school/',
   component: SchoolManagement,
   getParentRoute: () => AdminRoute as AnyRoute,
 })

@@ -1,4 +1,4 @@
-import { createFileRoute, useParams, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
@@ -12,8 +12,8 @@ const SCHOOLS = [
 // Expanded dummy valid student IDs for testing
 const VALID_STUDENTS = [
   { id: 'ABC1-12345A', name: 'John Doe', grade: '10' },
-  { id: 'ABC1-67890B', name: 'Jane Smith', grade: '11' },
-  { id: 'ABC1-23456C', name: 'Emily Davis', grade: '9' },
+  { id: 'XYZ2-67890B', name: 'Jane Smith', grade: '11' },
+  { id: 'XYZ2-23456C', name: 'Emily Davis', grade: '9' },
   { id: 'XYZ2-11111C', name: 'Mike Johnson', grade: '9' },
   { id: 'XYZ2-22222D', name: 'Sarah Wilson', grade: '10' },
   { id: 'XYZ2-33333E', name: 'Robert Brown', grade: '12' },
@@ -54,7 +54,6 @@ export const Route = createFileRoute('/$school/auth/register')({
 
 function Register() {
   const router = useRouter()
-  const { school } = useParams({ from: '/$school/auth/register'})
   
   const [submitting, setSubmitting] = useState(false)
   const [serverError, setServerError] = useState('')
@@ -117,43 +116,43 @@ function Register() {
   }
 
   // Mock API call function
-  const submitToAPI = async (data: RegisterFormData): Promise<{ success: boolean, message?: string }> => {
-    // Simulate API request
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // Check if all student IDs are valid
-        const allStudentsValid = data.students.every(student => 
-          validateStudentId(student.studentId)
-        )
+  // const submitToAPI = async (data: RegisterFormData): Promise<{ success: boolean, message?: string }> => {
+  //   // Simulate API request
+  //   return new Promise((resolve) => {
+  //     setTimeout(() => {
+  //       // Check if all student IDs are valid
+  //       const allStudentsValid = data.students.every(student => 
+  //         validateStudentId(student.studentId)
+  //       )
         
-        if (allStudentsValid) {
-          resolve({ success: true })
-        } else {
-          resolve({ 
-            success: false, 
-            message: 'One or more student IDs are invalid'
-          })
-        }
-      }, 1000)
-    })
-  }
+  //       if (allStudentsValid) {
+  //         resolve({ success: true })
+  //       } else {
+  //         resolve({ 
+  //           success: false, 
+  //           message: 'One or more student IDs are invalid'
+  //         })
+  //       }
+  //     }, 1000)
+  //   })
+  // }
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
       setSubmitting(true)
       setServerError('')
       
-      const response = await submitToAPI(data)
+      // const response = await submitToAPI(data)
       
-      if (response.success) {
+      // if (response.success) {
         // Redirect to dashboard on success
         localStorage.setItem('userRole', 'parent');
         localStorage.setItem('user', data.fullName);
         localStorage.setItem('isAuthenticated', 'true');
-        router.navigate({ to: '/$school/dashboard', params: { school }})
-      } else {
-        setServerError(response.message || 'Registration failed')
-      }
+        router.navigate({ to: '/$school/dashboard', params: { school: SCHOOLS[0].name }})
+      // } else {
+      //   setServerError(response.message || 'Registration failed')
+      // }
     } catch (error) {
       setServerError('Network error. Please try again.')
       console.error('Registration error:', error)
@@ -210,7 +209,7 @@ function Register() {
               }}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-400 focus:border-green-400"
             >
-              <option value="">Select a school...</option>
+              <option value=" ">Select a school...</option>
               {SCHOOLS.map((school) => (
                 <option key={school.id} value={school.id}>
                   {school.name} - {school.location}
@@ -340,7 +339,7 @@ function Register() {
                       {...register(`students.${index}.relationship`)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-400 focus:border-green-400"
                     >
-                      <option value="">Select relationship...</option>
+                      <option value=" ">Select relationship...</option>
                       {relationshipTypes.map((type) => (
                         <option key={type} value={type}>
                           {type}

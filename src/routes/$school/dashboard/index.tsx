@@ -1,7 +1,6 @@
 import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack/react-router"
 import { useEffect, useState } from "react"
 import {
-  HomeIcon,
   UsersIcon,
   BookOpenIcon,
   UserIcon,
@@ -48,17 +47,17 @@ const Layout = () => {
 
   // Define all possible routes with role-based access
   const allRoutes: RouteConfig[] = [
-    { path: "", icon: HomeIcon, label: "Dashboard", roles: ["admin", "teacher", "parent"] },
     { path: "school", icon: BuildingIcon, label: "School Management", roles: ["admin"] },
     { path: "staff-management", icon: UsersIcon, label: "Staff Management", roles: ["admin"] },
     { path: "class-management", icon: BookOpenIcon, label: "Class Management", roles: ["admin"] },
     { path: "student-management", icon: UserIcon, label: "Student Management", roles: ["admin"] },
+    { path: "subject-management", icon: UserIcon, label: "Subject Management", roles: ["admin"] },
     { path: "reports", icon: ChartBarIcon, label: "Reports", roles: ["admin", "teacher"] },
     { path: "settings", icon: CogIcon, label: "Settings", roles: ["admin", "teacher", "parent"] },
     { path: "communication", icon: MessageSquareIcon, label: "Communication", roles: ["admin", "teacher", "parent"] },
     { path: "classes", icon: BookmarkIcon, label: "My Classes", roles: ["teacher"] },
     { path: "assessments", icon: ClipboardCheckIcon, label: "Assessments", roles: ["teacher"] },
-    { path: "my-children", icon: UserIcon, label: "My Children", roles: ["parent"] },
+    { path: "student/1", icon: UserIcon, label: "My Children", roles: ["parent"] },
   ]
 
   // Filter routes based on user role
@@ -81,7 +80,7 @@ const Layout = () => {
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-md">
         {/* Logo/Header */}
-        <div className="px-6 py-4 bg-green-400">
+        <div className="px-6 py-4 bg-green-400" onClick={() => navigate({ to: `/${school}` })}>
           <h1 className="text-xl font-bold text-white">
             {school
               .split("-")

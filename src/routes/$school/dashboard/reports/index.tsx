@@ -379,7 +379,7 @@ const DetailedReportDialog: React.FC<DetailedReportDialogProps> = ({ title, type
                         <TableCell>{student.grade}</TableCell>
                         <TableCell>{student.gpa}</TableCell>
                         <TableCell>
-                          <Link to="/admin/student-management/student/$id" params={{ id: student.id.toString() }}>
+                          <Link to="/$school/dashboard/student-management/student/$id" params={{ id: student.id.toString() }}>
                             <Button variant="ghost" size="sm">
                               <ChevronRight className="h-4 w-4" />
                             </Button>
@@ -416,7 +416,7 @@ const DetailedReportDialog: React.FC<DetailedReportDialogProps> = ({ title, type
                         <TableCell>{cls.averageGPA}</TableCell>
                         <TableCell>{cls.attendance}</TableCell>
                         <TableCell>
-                          <Link to="/admin/class-management/$id" params={{ id: cls.id.toString() }}>
+                          <Link to="/$school/dashboard/class-management/$id" params={{ id: cls.id.toString() }}>
                             <Button variant="ghost" size="sm">
                               <ChevronRight className="h-4 w-4" />
                             </Button>
@@ -519,7 +519,7 @@ const DetailedReportDialog: React.FC<DetailedReportDialogProps> = ({ title, type
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Link to="/admin/student-management/student/$id" params={{ id: student.id.toString() }}>
+                      <Link to="/$school/dashboard/student-management/student/$id" params={{ id: student.id.toString() }}>
                         <Button variant="outline" size="sm">
                           View Profile
                         </Button>
@@ -586,7 +586,7 @@ const DetailedReportDialog: React.FC<DetailedReportDialogProps> = ({ title, type
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Link to="/admin/staff-management/staffer/$id" params={{ id: teacher.id.toString() }}>
+                      <Link to="/$school/dashboard/staff-management/staffer/$id" params={{ id: teacher.id.toString() }}>
                         <Button variant="outline" size="sm">
                           View Profile
                         </Button>
@@ -653,7 +653,7 @@ const DetailedReportDialog: React.FC<DetailedReportDialogProps> = ({ title, type
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Link to="/admin/class-management/$id" params={{ id: cls.id.toString() }}>
+                      <Link to="/$school/dashboard/class-management/$id" params={{ id: cls.id.toString() }}>
                         <Button variant="outline" size="sm">
                           View Class
                         </Button>
@@ -1053,7 +1053,7 @@ const Reports: React.FC = () => {
                         <p className="text-xl font-semibold">Class 10A</p>
                         <p className="text-sm text-gray-500">Average GPA: 3.8</p>
                       </div>
-                      <Link to="/admin/class-management/$id" params={{id: '2'}}>
+                      <Link to="/$school/dashboard/class-management/$id" params={{id: '2'}}>
                         <Button variant="outline" size="sm">
                           View Class
                         </Button>
@@ -1068,7 +1068,7 @@ const Reports: React.FC = () => {
                         <p className="text-xl font-semibold">Mr. Smith</p>
                         <p className="text-sm text-gray-500">Science Department, Rating: 4.9</p>
                       </div>
-                      <Link to="/admin/staff-management/staffer/$id" params={{ id: '3'}}>
+                      <Link to="/$school/dashboard/staff-management/staffer/$id" params={{ id: '3'}}>
                         <Button variant="outline" size="sm">
                           View Profile
                         </Button>
@@ -1213,7 +1213,7 @@ const Reports: React.FC = () => {
 }
 
 export const Route = createRoute({
-  path: "/admin/reports/",
+  path: "/$school/dashboard/reports/",
   component: Reports,
   getParentRoute: () => AdminRoute as AnyRoute,
 })

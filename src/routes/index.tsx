@@ -178,7 +178,7 @@ function HomePage() {
 
       <div className="max-w-6xl mx-auto px-6 py-20">
         <header className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-6 text-gray-800">About Results Management System</h1>
+          <h1 className="text-5xl font-bold mb-6 text-gray-800">About My Edu-track</h1>
           <div className="w-24 h-1 bg-green-600 mx-auto"></div>
         </header>
 
@@ -188,7 +188,7 @@ function HomePage() {
               <div className="md:w-1/2 bg-gradient-to-br from-green-200 to-green-400 p-12 text-white">
                 <h2 className="text-3xl font-bold mb-6">Transforming School Results Management</h2>
                 <p className="text-lg opacity-90 leading-relaxed">
-                  Welcome to our comprehensive Results Management System, designed specifically for schools 
+                  Welcome to our comprehensive My Edu-track, designed specifically for schools 
                   seeking to modernize their academic record-keeping and reporting processes.
                 </p>
               </div>

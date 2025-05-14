@@ -7,7 +7,7 @@ const AdminClassView = () => {
 }
 
 export const Route = createRoute({
-  path: '/admin/class-management/$id/',
+  path: '/$school/dashboard/class-management/$id/',
   component: AdminClassView,
   getParentRoute: () => AdminRoute as AnyRoute,
 })
