@@ -1,858 +1,858 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  User,
-  Mail,
-  Phone,
-  Award,
+  BarChart,
+  Bell,
+  Building,
+  Calendar,
   Clock,
-  Shield,
-  AlertTriangle,
-  CheckCircle,
-  FileText,
-  LayoutDashboard,
-  UserCog,
+  Download,
   Edit,
-  Plus,
-  Trash2,
+  FileText,
+  GraduationCap,
   Key,
   Lock,
+  Mail,
+  MapPin,
+  Phone,
   Settings,
-  Calendar,
+  Shield,
+  User,
+  Users,
 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { EmailDialog } from "./email-dialog"
+import { themeColors } from "./ui/theme-config"
 
-// Define types
-type AdminRole = "super_admin" | "admin" | "system_admin" | "department_admin"
-type AdminStatus = "active" | "inactive" | "suspended"
-type AdminPermission = "full_access" | "view_only" | "edit" | "create" | "delete"
-
-type Department = {
-  id: number
-  name: string
-  teachers: number
-  students: number
-}
-
-type Module = {
-  id: number
-  name: string
-  access: AdminPermission
-}
-
-type Activity = {
-  id: number
-  type: "action" | "alert" | "success"
-  message: string
-  date: string
-}
-
-type AdminData = {
-  id: number
-  role: AdminRole
-  name: string
-  status: AdminStatus
-  departments: Department[]
-  permissions: AdminPermission
-  modules: Module[]
-  qualifications: string
-  yearsOfExperience: number
-  contactInfo: {
-    email: string
-    phone: string
-  }
-  lastLogin: string
-  accountCreated: string
-  recentActivities: Activity[]
-}
-
-// Mock data for admin
-const adminData: AdminData = {
-  id: 1,
-  role: "admin",
-  name: "Jane Smith",
-  status: "active",
-  departments: [
-    {
-      id: 1,
-      name: "Science Department",
-      teachers: 12,
-      students: 350,
-    },
-    {
-      id: 2,
-      name: "Mathematics Department",
-      teachers: 8,
-      students: 280,
-    },
-  ],
-  permissions: "full_access",
-  modules: [
-    {
-      id: 1,
-      name: "User Management",
-      access: "full_access",
-    },
-    {
-      id: 2,
-      name: "Class Management",
-      access: "full_access",
-    },
-    {
-      id: 3,
-      name: "Reports",
-      access: "view_only",
-    },
-    {
-      id: 4,
-      name: "System Settings",
-      access: "edit",
-    },
-  ],
-  qualifications: "M.Ed. Educational Administration, B.Sc. Computer Science",
-  yearsOfExperience: 10,
-  contactInfo: {
-    email: "jane.smith@ph-EduTrack.com",
-    phone: "+1987654321",
-  },
-  lastLogin: "2024-03-25 09:15:22",
-  accountCreated: "2022-08-15",
-  recentActivities: [
-    {
-      id: 1,
-      type: "action",
-      message: "Updated system settings",
-      date: "2024-03-25",
-    },
-    {
-      id: 2,
-      type: "alert",
-      message: "Reset password for teacher John Doe",
-      date: "2024-03-24",
-    },
-    {
-      id: 3,
-      type: "success",
-      message: "Generated end-of-term reports",
-      date: "2024-03-22",
-    },
-  ],
-}
-
-// Available modules for assignment
-const availableModules = [
-  { id: 1, name: "Staff Management" },
-  { id: 2, name: "Class Management" },
-  { id: 3, name: "Reports" },
-  { id: 4, name: "System Settings" },
-  { id: 5, name: "Student Management" },
-  { id: 6, name: "School Administration" }
-]
-
-export function AdminDetailView() {
-  const [admin, setAdmin] = useState<AdminData>(adminData)
-  const [roleDialogOpen, setRoleDialogOpen] = useState(false)
-  const [personalInfoDialogOpen, setPersonalInfoDialogOpen] = useState(false)
-  const [moduleDialogOpen, setModuleDialogOpen] = useState(false)
-  const [role, setRole] = useState<AdminRole>(admin.role)
-  const [status, setStatus] = useState<AdminStatus>(admin.status)
-  const [permissions, setPermissions] = useState<AdminPermission>(admin.permissions)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [newModule, setNewModule] = useState("")
-  const [newModuleAccess, setNewModuleAccess] = useState<AdminPermission>("view_only")
-
-  // Personal info form state
-  const [personalInfo, setPersonalInfo] = useState({
-    name: admin.name,
-    email: admin.contactInfo.email,
-    phone: admin.contactInfo.phone,
-    qualifications: admin.qualifications,
-    yearsOfExperience: admin.yearsOfExperience.toString(),
-  })
-
-  const { toast } = useToast()
-
-  const handleRoleSubmit = async () => {
-    setIsSubmitting(true)
-
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Update the admin data with new role and status
-      setAdmin((prev) => ({
-        ...prev,
-        role,
-        status,
-        permissions,
-      }))
-
-      // Show success toast
-      toast({
-        title: "Role updated",
-        description: `${admin.name}'s role has been updated successfully.`,
-      })
-
-      // Close the dialog
-      setRoleDialogOpen(false)
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update role. Please try again.",
-        variant: "destructive",
-      })
-      console.log(error)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handlePersonalInfoSubmit = async () => {
-    setIsSubmitting(true)
-
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Update admin data
-      setAdmin((prev) => ({
-        ...prev,
-        name: personalInfo.name,
-        contactInfo: {
-          email: personalInfo.email,
-          phone: personalInfo.phone,
-        },
-        qualifications: personalInfo.qualifications,
-        yearsOfExperience: Number.parseInt(personalInfo.yearsOfExperience) || 0,
-      }))
-
-      toast({
-        title: "Information updated",
-        description: "Personal information has been updated successfully.",
-      })
-
-      setPersonalInfoDialogOpen(false)
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update information. Please try again.",
-        variant: "destructive",
-      })
-      console.error(error)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleAddModule = async () => {
-    if (!newModule) return
-
-    setIsSubmitting(true)
-
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Check if module already exists
-      if (admin.modules.some((module) => module.name === newModule)) {
-        toast({
-          title: "Module already exists",
-          description: `${newModule} is already assigned to this admin.`,
-          variant: "destructive",
-        })
-        return
-      }
-
-      // Find the module from available modules
-      const moduleToAdd = availableModules.find((module) => module.name === newModule)
-
-      if (!moduleToAdd) {
-        toast({
-          title: "Module not found",
-          description: "The selected module could not be found.",
-          variant: "destructive",
-        })
-        return
-      }
-
-      // Update admin data
-      setAdmin((prev) => ({
-        ...prev,
-        modules: [
-          ...prev.modules,
-          {
-            id: moduleToAdd.id,
-            name: moduleToAdd.name,
-            access: newModuleAccess,
-          },
-        ],
-      }))
-
-      toast({
-        title: "Module added",
-        description: `${newModule} has been added to ${admin.name}'s modules.`,
-      })
-
-      setNewModule("")
-      setNewModuleAccess("view_only")
-      setModuleDialogOpen(false)
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add module. Please try again.",
-        variant: "destructive",
-      })
-      console.error(error)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleRemoveModule = async (moduleId: number) => {
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      // Update admin data
-      setAdmin((prev) => ({
-        ...prev,
-        modules: prev.modules.filter((module) => module.id !== moduleId),
-      }))
-
-      toast({
-        title: "Module removed",
-        description: "Module has been removed successfully.",
-      })
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to remove module. Please try again.",
-        variant: "destructive",
-      })
-      console.error(error)
-    }
-  }
-
-  const handleUpdateModuleAccess = async (moduleId: number, access: AdminPermission) => {
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      // Update admin data
-      setAdmin((prev) => ({
-        ...prev,
-        modules: prev.modules.map((module) => (module.id === moduleId ? { ...module, access } : module)),
-      }))
-
-      toast({
-        title: "Access updated",
-        description: "Module access has been updated successfully.",
-      })
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update module access. Please try again.",
-        variant: "destructive",
-      })
-      console.error(error)
-    }
-  }
-
-  const getStatusBadge = (status: AdminStatus) => {
-    const styles = {
-      active: "bg-green-500 text-white",
-      inactive: "bg-red-500 text-white",
-      suspended: "bg-amber-500 text-white",
-    }
-    return <Badge className={styles[status]}>{status}</Badge>
-  }
-
-  const getRoleBadge = (role: AdminRole) => {
-    const roleLabels = {
-      super_admin: "Super Administrator",
-      admin: "Administrator",
-      system_admin: "System Administrator",
-      department_admin: "Department Administrator",
-    }
-    return <Badge className="bg-[#3D405B]">{roleLabels[role]}</Badge>
-  }
-
-  const getPermissionBadge = (permission: AdminPermission) => {
-    const styles = {
-      full_access: "bg-green-500 text-white",
-      view_only: "bg-blue-500 text-white",
-      edit: "bg-amber-500 text-white",
-      create: "bg-purple-500 text-white",
-      delete: "bg-red-500 text-white",
-    }
-    return <Badge className={styles[permission]}>{permission.replace("_", " ")}</Badge>
-  }
-
-  // Filter out modules that are already assigned
-  const unassignedModules = availableModules.filter(
-    (availableModule) => !admin.modules.some((adminModule) => adminModule.id === availableModule.id),
-  )
-
+export default function AdminProfile() {
   return (
-    <div className="min-h-screen">
-      {/* Header Section */}
-      <Button
-        variant="outline"
-        onClick={() => window.history.back()}
-        className="flex items-center gap-2 border-[#F2CC8F] text-[#264653] hover:bg-[#F2CC8F]/10 mb-4"
-      >
-        <LayoutDashboard className="h-4 w-4" />
-        Back to Dashboard
-      </Button>
-
-      <div className="flex justify-between items-start shadow-sm p-6 mb-6 bg-white rounded-lg">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-bold text-[#264653]">{admin.name}</h1>
-            {getStatusBadge(admin.status)}
-            {getRoleBadge(admin.role)}
+    <div className="container mx-auto p-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <div className="flex items-center">
+          <Avatar className="h-16 w-16 mr-4">
+            <AvatarImage src="/placeholder.svg?height=64&width=64" />
+            <AvatarFallback>RW</AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="text-3xl font-bold">Robert Williams</h1>
+            <p className="text-gray-500">School Administrator • ID: A10012</p>
           </div>
-          <p className="text-[#A8A8A8] flex items-center">
-            <Shield className="w-4 h-4 mr-2" />
-            {admin.permissions === "full_access" ? "Full System Access" : "Limited System Access"}
-          </p>
         </div>
-        <div className="flex gap-3">
-          <Dialog open={roleDialogOpen} onOpenChange={setRoleDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="bg-[#3D405B] text-white hover:bg-[#3D405B]/80">
-                <UserCog className="mr-2 h-4 w-4" />
-                Alter Role
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle className="text-[#3D405B]">Change Admin Role</DialogTitle>
-                <DialogDescription>Update the role, status, and permissions for {admin.name}.</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="role" className="text-right">
-                    Role
-                  </Label>
-                  <Select value={role} onValueChange={(value: string) => setRole(value as AdminRole)}>
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="super_admin">Super Administrator</SelectItem>
-                      <SelectItem value="admin">Administrator</SelectItem>
-                      <SelectItem value="system_admin">System Administrator</SelectItem>
-                      <SelectItem value="department_admin">Department Administrator</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="status" className="text-right">
-                    Status
-                  </Label>
-                  <Select value={status} onValueChange={(value: string) => setStatus(value as AdminStatus)}>
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                      <SelectItem value="suspended">Suspended</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="permissions" className="text-right">
-                    Permissions
-                  </Label>
-                  <Select
-                    value={permissions}
-                    onValueChange={(value: string) => setPermissions(value as AdminPermission)}
-                  >
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select permissions" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="full_access">Full Access</SelectItem>
-                      <SelectItem value="view_only">View Only</SelectItem>
-                      <SelectItem value="edit">Edit</SelectItem>
-                      <SelectItem value="create">Create</SelectItem>
-                      <SelectItem value="delete">Delete</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <DialogFooter className="gap-2">
-                <Button variant="outline" onClick={() => setRoleDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleRoleSubmit} className="bg-green-500 hover:bg-green-600" disabled={isSubmitting}>
-                  {isSubmitting ? "Saving..." : "Save changes"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          <EmailDialog teacherEmail={admin.contactInfo.email} teacherName={admin.name} />
+        <div className="flex gap-2 mt-4 md:mt-0">
+          <Button variant="outline" className="flex items-center gap-2">
+            <Download size={16} />
+            Export
+          </Button>
+          <Button className={`flex items-center gap-2 ${themeColors.accentBg} ${themeColors.accentHover} text-white`}>
+            <Edit size={16} />
+            Edit Profile
+          </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left Column - Personal Info */}
-        <div className="space-y-6">
-          <Card className="bg-white shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-[#264653] flex items-center">
-                <User className="w-5 h-5 mr-2" />
-                Personal Information
-              </CardTitle>
-              <Dialog open={personalInfoDialogOpen} onOpenChange={setPersonalInfoDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Edit Personal Information</DialogTitle>
-                    <DialogDescription>Update {admin.name}'s personal information.</DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="name" className="text-right">
-                        Name
-                      </Label>
-                      <Input
-                        id="name"
-                        value={personalInfo.name}
-                        onChange={(e) => setPersonalInfo({ ...personalInfo, name: e.target.value })}
-                        className="col-span-3"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="email" className="text-right">
-                        Email
-                      </Label>
-                      <Input
-                        id="email"
-                        value={personalInfo.email}
-                        onChange={(e) => setPersonalInfo({ ...personalInfo, email: e.target.value })}
-                        className="col-span-3"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="phone" className="text-right">
-                        Phone
-                      </Label>
-                      <Input
-                        id="phone"
-                        value={personalInfo.phone}
-                        onChange={(e) => setPersonalInfo({ ...personalInfo, phone: e.target.value })}
-                        className="col-span-3"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="qualifications" className="text-right">
-                        Qualifications
-                      </Label>
-                      <Input
-                        id="qualifications"
-                        value={personalInfo.qualifications}
-                        onChange={(e) => setPersonalInfo({ ...personalInfo, qualifications: e.target.value })}
-                        className="col-span-3"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="experience" className="text-right">
-                        Years of Experience
-                      </Label>
-                      <Input
-                        id="experience"
-                        type="number"
-                        value={personalInfo.yearsOfExperience}
-                        onChange={(e) => setPersonalInfo({ ...personalInfo, yearsOfExperience: e.target.value })}
-                        className="col-span-3"
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setPersonalInfoDialogOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handlePersonalInfoSubmit}
-                      className="bg-green-500 hover:bg-green-600"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Saving..." : "Save changes"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </CardHeader>
-            <CardContent>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Role</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <div className={`mr-2 rounded-full p-2 ${themeColors.accentBg}`}>
+                <Shield className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold">Principal</div>
+                <p className="text-xs text-gray-500">School Administration</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Experience</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <div className={`mr-2 rounded-full p-2 ${themeColors.secondaryBg}`}>
+                <Clock className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold">15 Years</div>
+                <p className="text-xs text-gray-500">In education administration</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Next Meeting</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <div className={`mr-2 rounded-full p-2 ${themeColors.accentBg}`}>
+                <Calendar className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold">2:00 PM</div>
+                <p className="text-xs text-gray-500">School Board Meeting</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Administrator Information</CardTitle>
+            <CardDescription>Personal and professional details</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-[#A8A8A8]">Email</Label>
-                  <div className="flex items-center text-[#264653]">
-                    <Mail className="w-4 h-4 mr-2" />
-                    {admin.contactInfo.email}
+                <div className="flex items-start">
+                  <User className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-medium">Full Name</h3>
+                    <p className="text-sm text-gray-500">Robert James Williams</p>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-[#A8A8A8]">Phone</Label>
-                  <div className="flex items-center text-[#264653]">
-                    <Phone className="w-4 h-4 mr-2" />
-                    {admin.contactInfo.phone}
+
+                <div className="flex items-start">
+                  <GraduationCap className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-medium">Education</h3>
+                    <p className="text-sm text-gray-500">Ed.D. Educational Leadership, Harvard University</p>
+                    <p className="text-sm text-gray-500">M.Ed. School Administration, Columbia University</p>
+                    <p className="text-sm text-gray-500">B.A. Education, University of Michigan</p>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-[#A8A8A8]">Qualifications</Label>
-                  <div className="flex items-center text-[#264653]">
-                    <Award className="w-4 h-4 mr-2" />
-                    {admin.qualifications}
+
+                <div className="flex items-start">
+                  <MapPin className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-medium">Address</h3>
+                    <p className="text-sm text-gray-500">1234 Maple Avenue, Springfield, IL 62701</p>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-[#A8A8A8]">Experience</Label>
-                  <div className="flex items-center text-[#264653]">
-                    <Clock className="w-4 h-4 mr-2" />
-                    {admin.yearsOfExperience} years
+
+                <div className="flex items-start">
+                  <Phone className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-medium">Phone</h3>
+                    <p className="text-sm text-gray-500">(555) 123-4567</p>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-[#A8A8A8]">Account Created</Label>
-                  <div className="flex items-center text-[#264653]">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    {admin.accountCreated}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[#A8A8A8]">Last Login</Label>
-                  <div className="flex items-center text-[#264653]">
-                    <Clock className="w-4 h-4 mr-2" />
-                    {admin.lastLogin}
+
+                <div className="flex items-start">
+                  <Mail className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-medium">Email</h3>
+                    <p className="text-sm text-gray-500">robert.williams@westviewhigh.edu</p>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          <Card className="bg-white shadow-sm">
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <Building className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-medium">School</h3>
+                    <p className="text-sm text-gray-500">Westview High School</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <Calendar className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-medium">Start Date</h3>
+                    <p className="text-sm text-gray-500">August 1, 2015</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <GraduationCap className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-medium">Certifications</h3>
+                    <p className="text-sm text-gray-500">State Principal Certification</p>
+                    <p className="text-sm text-gray-500">Educational Leadership Certification</p>
+                    <p className="text-sm text-gray-500">School Management and Leadership</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <Users className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-medium">Reports To</h3>
+                    <p className="text-sm text-gray-500">Dr. Elizabeth Carter, Superintendent</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <Key className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-medium">System Access</h3>
+                    <p className="text-sm text-gray-500">Full Administrative Access</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Notifications</CardTitle>
+            <CardDescription>Recent alerts and messages</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-start">
+                  <div className={`rounded-full p-1.5 ${themeColors.accentBg} text-white mr-2 mt-0.5`}>
+                    <Bell size={14} />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-sm">Budget Approval Required</h3>
+                    <p className="text-xs text-gray-500 mt-1">Science department budget needs approval</p>
+                    <p className="text-xs text-gray-400 mt-1">Today, 9:30 AM</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-start">
+                  <div className={`rounded-full p-1.5 ${themeColors.secondaryBg} text-white mr-2 mt-0.5`}>
+                    <Users size={14} />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-sm">New Teacher Onboarding</h3>
+                    <p className="text-xs text-gray-500 mt-1">3 new teachers need onboarding approval</p>
+                    <p className="text-xs text-gray-400 mt-1">Yesterday, 2:15 PM</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-start">
+                  <div className={`rounded-full p-1.5 ${themeColors.accentBg} text-white mr-2 mt-0.5`}>
+                    <Calendar size={14} />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-sm">School Board Meeting</h3>
+                    <p className="text-xs text-gray-500 mt-1">Agenda and materials are ready for review</p>
+                    <p className="text-xs text-gray-400 mt-1">May 10, 4:00 PM</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-start">
+                  <div className={`rounded-full p-1.5 bg-red-500 text-white mr-2 mt-0.5`}>
+                    <Bell size={14} />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-sm">Facility Maintenance Alert</h3>
+                    <p className="text-xs text-gray-500 mt-1">Gym roof repair needs immediate attention</p>
+                    <p className="text-xs text-gray-400 mt-1">May 9, 11:20 AM</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-start">
+                  <div className={`rounded-full p-1.5 ${themeColors.secondaryBg} text-white mr-2 mt-0.5`}>
+                    <FileText size={14} />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-sm">Annual Report Draft</h3>
+                    <p className="text-xs text-gray-500 mt-1">Annual report is ready for your review</p>
+                    <p className="text-xs text-gray-400 mt-1">May 8, 9:45 AM</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Button variant="outline" className="w-full mt-4">
+              View All Notifications
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="responsibilities" className="mb-6">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsTrigger
+            value="responsibilities"
+            className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
+          >
+            Responsibilities
+          </TabsTrigger>
+          <TabsTrigger
+            value="performance"
+            className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
+          >
+            Performance
+          </TabsTrigger>
+          <TabsTrigger
+            value="activities"
+            className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
+          >
+            Activities
+          </TabsTrigger>
+          <TabsTrigger
+            value="settings"
+            className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
+          >
+            Settings
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="responsibilities">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-[#264653] flex items-center">
-                <FileText className="w-5 h-5 mr-2" />
-                Recent Activities
-              </CardTitle>
+              <CardTitle>Administrative Responsibilities</CardTitle>
+              <CardDescription>Key areas of oversight and management</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {admin.recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-start gap-3">
-                    {activity.type === "alert" && <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />}
-                    {activity.type === "success" && <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />}
-                    {activity.type === "action" && <Settings className="w-4 h-4 text-[#264653] flex-shrink-0" />}
-                    <div>
-                      <p className="text-[#264653] text-sm">{activity.message}</p>
-                      <p className="text-[#A8A8A8] text-xs">{activity.date}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-medium mb-3">School Leadership</h3>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-medium">Strategic Planning</h4>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Develop and implement the school's strategic plan, including setting goals, objectives, and
+                        performance metrics.
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-medium">Policy Development</h4>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Create, review, and update school policies and procedures to ensure compliance with district,
+                        state, and federal regulations.
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-medium">Budget Management</h4>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Oversee the school's budget, including allocation of resources, financial planning, and fiscal
+                        responsibility.
+                      </p>
                     </div>
                   </div>
-                ))}
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-3">Staff & Student Management</h3>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-medium">Staff Supervision</h4>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Recruit, hire, evaluate, and support teaching and administrative staff. Provide professional
+                        development opportunities.
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-medium">Student Affairs</h4>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Oversee student discipline, attendance, and academic progress. Implement programs to support
+                        student achievement and well-being.
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-medium">Curriculum & Instruction</h4>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Guide curriculum development and instructional practices. Monitor and evaluate educational
+                        programs for effectiveness.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="font-medium mb-3 mt-6">External Relations</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-medium">Community Engagement</h4>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Build relationships with parents, community members, and local organizations. Represent the school
+                    at community events.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-medium">District Coordination</h4>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Collaborate with district administration and other school principals. Implement district initiatives
+                    at the school level.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-medium">Public Relations</h4>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Manage the school's public image and communications. Address media inquiries and promote school
+                    achievements.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
-        </div>
+        </TabsContent>
 
-        {/* Middle and Right Columns - Modules and Departments */}
-        <div className="col-span-2 space-y-6">
-          <Card className="bg-white shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-[#264653] flex items-center">
-                <Key className="w-5 h-5 mr-2" />
-                System Access & Modules
-              </CardTitle>
-              <Dialog open={moduleDialogOpen} onOpenChange={setModuleDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="bg-green-500 hover:bg-green-600 text-white">
-                    <Plus className="h-4 w-4 mr-1" /> Add Module
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add Module Access</DialogTitle>
-                    <DialogDescription>Add a new module access for {admin.name}.</DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="module" className="text-right">
-                        Module
-                      </Label>
-                      <Select value={newModule} onValueChange={setNewModule}>
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Select module" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {unassignedModules.map((module) => (
-                            <SelectItem key={module.id} value={module.name}>
-                              {module.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="access" className="text-right">
-                        Access Level
-                      </Label>
-                      <Select
-                        value={newModuleAccess}
-                        onValueChange={(value: string) => setNewModuleAccess(value as AdminPermission)}
-                      >
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Select access level" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="full_access">Full Access</SelectItem>
-                          <SelectItem value="view_only">View Only</SelectItem>
-                          <SelectItem value="edit">Edit</SelectItem>
-                          <SelectItem value="create">Create</SelectItem>
-                          <SelectItem value="delete">Delete</SelectItem>
-                        </SelectContent>
-                      </Select>
+        <TabsContent value="performance">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>Performance Metrics</CardTitle>
+                <CardDescription>School performance under leadership</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px] flex items-center justify-center bg-gray-100 rounded-md">
+                  <BarChart className={`h-16 w-16 ${themeColors.accent}`} />
+                  <span className="ml-2 text-gray-500">School Performance Chart</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                  <div>
+                    <h3 className="font-medium mb-3">Academic Performance</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <div className="flex justify-between text-sm">
+                          <span>Graduation Rate</span>
+                          <span className="font-medium">94%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                          <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "94%" }}></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between text-sm">
+                          <span>College Acceptance</span>
+                          <span className="font-medium">88%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                          <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "88%" }}></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between text-sm">
+                          <span>Standardized Test Scores</span>
+                          <span className="font-medium">+12% above state average</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                          <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "85%" }}></div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setModuleDialogOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleAddModule}
-                      className="bg-green-500 hover:bg-green-600"
-                      disabled={isSubmitting || !newModule}
-                    >
-                      {isSubmitting ? "Adding..." : "Add Module"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+
+                  <div>
+                    <h3 className="font-medium mb-3">Operational Metrics</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <div className="flex justify-between text-sm">
+                          <span>Teacher Retention</span>
+                          <span className="font-medium">92%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                          <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "92%" }}></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between text-sm">
+                          <span>Budget Compliance</span>
+                          <span className="font-medium">99.5%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                          <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "99.5%" }}></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between text-sm">
+                          <span>Parent Satisfaction</span>
+                          <span className="font-medium">4.7/5.0</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                          <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "94%" }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Annual Evaluation</CardTitle>
+                <CardDescription>Most recent performance review</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <div className="flex justify-between">
+                      <h4 className="font-medium">Leadership</h4>
+                      <span className="font-medium">4.8/5.0</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "96%" }}></div>
+                    </div>
+                    <p className="text-sm mt-2 text-gray-500">
+                      "Exceptional leadership skills with clear vision and direction for the school."
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <div className="flex justify-between">
+                      <h4 className="font-medium">Staff Management</h4>
+                      <span className="font-medium">4.7/5.0</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "94%" }}></div>
+                    </div>
+                    <p className="text-sm mt-2 text-gray-500">
+                      "Effectively manages staff, promotes professional development, and maintains high morale."
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <div className="flex justify-between">
+                      <h4 className="font-medium">Budget Management</h4>
+                      <span className="font-medium">4.9/5.0</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "98%" }}></div>
+                    </div>
+                    <p className="text-sm mt-2 text-gray-500">
+                      "Excellent fiscal management with strategic allocation of resources."
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <div className="flex justify-between">
+                      <h4 className="font-medium">Overall Rating</h4>
+                      <span className="font-medium">4.8/5.0</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "96%" }}></div>
+                    </div>
+                    <p className="text-sm mt-2 text-gray-500">
+                      "An outstanding administrator who consistently exceeds expectations in all areas."
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="activities">
+          <Card>
+            <CardHeader>
+              <CardTitle>Professional Activities</CardTitle>
+              <CardDescription>Committees, boards, and professional development</CardDescription>
             </CardHeader>
             <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-medium mb-3">Committees & Boards</h3>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between">
+                        <h4 className="font-medium">District Leadership Council</h4>
+                        <Badge className={`${themeColors.secondaryBg} text-white`}>Chair</Badge>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">Since 2018</p>
+                      <p className="text-sm mt-2">
+                        Leads monthly meetings of all district principals to coordinate initiatives, share best
+                        practices, and address district-wide challenges.
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between">
+                        <h4 className="font-medium">State Education Advisory Board</h4>
+                        <Badge className={`${themeColors.secondaryBg} text-white`}>Member</Badge>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">Since 2020</p>
+                      <p className="text-sm mt-2">
+                        Appointed to advise the State Department of Education on policy matters, curriculum standards,
+                        and educational initiatives.
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between">
+                        <h4 className="font-medium">School Safety Committee</h4>
+                        <Badge className={`${themeColors.secondaryBg} text-white`}>Chair</Badge>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">Since 2016</p>
+                      <p className="text-sm mt-2">
+                        Oversees the development and implementation of school safety protocols, emergency response
+                        plans, and security measures.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-3">Professional Development</h3>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between">
+                        <h4 className="font-medium">National Association of Secondary School Principals</h4>
+                        <Badge className={`${themeColors.accentBg} text-white`}>Member</Badge>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">Since 2010</p>
+                      <p className="text-sm mt-2">
+                        Active member attending annual conferences and leadership workshops. Presented on "Building a
+                        Positive School Culture" at the 2022 conference.
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between">
+                        <h4 className="font-medium">Harvard Principal Leadership Institute</h4>
+                        <Badge className={`${themeColors.accentBg} text-white`}>Participant</Badge>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">Summer 2021</p>
+                      <p className="text-sm mt-2">
+                        Completed intensive leadership training focused on instructional leadership, organizational
+                        management, and school improvement strategies.
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between">
+                        <h4 className="font-medium">Educational Technology Leadership</h4>
+                        <Badge className={`${themeColors.accentBg} text-white`}>Certificate</Badge>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">Completed 2022</p>
+                      <p className="text-sm mt-2">
+                        Earned certification in educational technology leadership. Implemented comprehensive technology
+                        plan for the school, including 1:1 device program.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="font-medium mb-3 mt-6">Recent Achievements</h3>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Module</TableHead>
-                    <TableHead>Access Level</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Achievement</TableHead>
+                    <TableHead>Organization</TableHead>
+                    <TableHead>Description</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {admin.modules.length > 0 ? (
-                    admin.modules.map((module) => (
-                      <TableRow key={module.id}>
-                        <TableCell className="font-medium">{module.name}</TableCell>
-                        <TableCell>{getPermissionBadge(module.access)}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Select
-                              value={module.access}
-                              onValueChange={(value: string) =>
-                                handleUpdateModuleAccess(module.id, value as AdminPermission)
-                              }
-                            >
-                              <SelectTrigger className="w-[120px]">
-                                <SelectValue placeholder="Change access" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="full_access">Full Access</SelectItem>
-                                <SelectItem value="view_only">View Only</SelectItem>
-                                <SelectItem value="edit">Edit</SelectItem>
-                                <SelectItem value="create">Create</SelectItem>
-                                <SelectItem value="delete">Delete</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleRemoveModule(module.id)}
-                              className="h-8 w-8 text-red-500"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={3} className="text-center text-gray-500 py-4">
-                        No modules assigned yet
-                      </TableCell>
+                  {[
+                    {
+                      date: "May 2022",
+                      achievement: "Administrator of the Year",
+                      org: "State Education Association",
+                      desc: "Recognized for excellence in school leadership and student outcomes",
+                    },
+                    {
+                      date: "March 2022",
+                      achievement: "School of Excellence Award",
+                      org: "National Blue Ribbon Schools Program",
+                      desc: "School recognized for academic excellence under leadership",
+                    },
+                    {
+                      date: "January 2022",
+                      achievement: "Innovation in Education Grant",
+                      org: "National Education Foundation",
+                      desc: "Secured $250,000 grant for STEM education initiatives",
+                    },
+                    {
+                      date: "November 2021",
+                      achievement: "Published Article",
+                      org: "Educational Leadership Journal",
+                      desc: "Article on building effective school-community partnerships",
+                    },
+                  ].map((achievement, i) => (
+                    <TableRow key={i}>
+                      <TableCell>{achievement.date}</TableCell>
+                      <TableCell className="font-medium">{achievement.achievement}</TableCell>
+                      <TableCell>{achievement.org}</TableCell>
+                      <TableCell>{achievement.desc}</TableCell>
                     </TableRow>
-                  )}
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
+        </TabsContent>
 
-          <Card className="bg-white shadow-sm">
+        <TabsContent value="settings">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-[#264653] flex items-center">
-                <Lock className="w-5 h-5 mr-2" />
-                Security Settings
-              </CardTitle>
+              <CardTitle>Account Settings</CardTitle>
+              <CardDescription>Manage your account preferences and access</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 border rounded-md">
-                  <div>
-                    <h3 className="font-medium text-[#264653]">Reset Password</h3>
-                    <p className="text-sm text-gray-500">Send a password reset link to the admin's email</p>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="font-medium mb-3">Profile Settings</h3>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <User className="h-5 w-5 text-gray-500 mr-2" />
+                          <h4 className="font-medium">Personal Information</h4>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          <Edit size={14} className="mr-2" />
+                          Edit
+                        </Button>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2">
+                        Update your name, contact information, and personal details
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <Lock className="h-5 w-5 text-gray-500 mr-2" />
+                          <h4 className="font-medium">Password & Security</h4>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          <Edit size={14} className="mr-2" />
+                          Change
+                        </Button>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2">
+                        Update your password and configure two-factor authentication
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <Bell className="h-5 w-5 text-gray-500 mr-2" />
+                          <h4 className="font-medium">Notification Preferences</h4>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          <Settings size={14} className="mr-2" />
+                          Configure
+                        </Button>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2">
+                        Manage how and when you receive notifications from the system
+                      </p>
+                    </div>
                   </div>
-                  <Button variant="outline" className="border-[#3D405B] text-[#3D405B]">
-                    Reset Password
-                  </Button>
                 </div>
-                <div className="flex justify-between items-center p-3 border rounded-md">
-                  <div>
-                    <h3 className="font-medium text-[#264653]">Two-Factor Authentication</h3>
-                    <p className="text-sm text-gray-500">Enable additional security for login</p>
+
+                <div>
+                  <h3 className="font-medium mb-3">System Access</h3>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <Shield className="h-5 w-5 text-gray-500 mr-2" />
+                          <h4 className="font-medium">Access Permissions</h4>
+                        </div>
+                        <Badge className={`${themeColors.accentBg} text-white`}>Administrator</Badge>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2">
+                        You have full administrative access to all system features and data
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <Users className="h-5 w-5 text-gray-500 mr-2" />
+                          <h4 className="font-medium">Delegate Access</h4>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          <Settings size={14} className="mr-2" />
+                          Manage
+                        </Button>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2">
+                        Configure temporary access for assistant principals or administrative staff
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <FileText className="h-5 w-5 text-gray-500 mr-2" />
+                          <h4 className="font-medium">Activity Log</h4>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          <FileText size={14} className="mr-2" />
+                          View
+                        </Button>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2">
+                        Review your account activity and system access history
+                      </p>
+                    </div>
                   </div>
-                  <Button variant="outline" className="border-[#3D405B] text-[#3D405B]">
-                    {admin.role === "super_admin" ? "Enabled" : "Enable 2FA"}
-                  </Button>
                 </div>
-                <div className="flex justify-between items-center p-3 border rounded-md">
-                  <div>
-                    <h3 className="font-medium text-[#264653]">Login History</h3>
-                    <p className="text-sm text-gray-500">View recent login attempts and locations</p>
+
+                <div>
+                  <h3 className="font-medium mb-3">Preferences</h3>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <Settings className="h-5 w-5 text-gray-500 mr-2" />
+                          <h4 className="font-medium">Display Settings</h4>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          <Settings size={14} className="mr-2" />
+                          Customize
+                        </Button>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2">Adjust theme, layout, and dashboard preferences</p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <Calendar className="h-5 w-5 text-gray-500 mr-2" />
+                          <h4 className="font-medium">Calendar Integration</h4>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          <Settings size={14} className="mr-2" />
+                          Configure
+                        </Button>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2">
+                        Manage calendar synchronization with external applications
+                      </p>
+                    </div>
                   </div>
-                  <Button variant="outline" className="border-[#3D405B] text-[#3D405B]">
-                    View History
-                  </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

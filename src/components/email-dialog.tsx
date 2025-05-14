@@ -1,176 +1,138 @@
-import { useState } from 'react'
-import { MailIcon, X, Paperclip, Loader2 } from 'lucide-react'
+"use client"
+
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { toast} from "sonner"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Mail, Paperclip, Send } from "lucide-react"
+import { themeColors } from "./ui/theme-config"
 
-export const EmailDialog: React.FC<{teacherEmail: string, teacherName: string}> = ({ teacherEmail, teacherName }) => {
-  const [files, setFiles] = useState<File[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+export default function EmailDialog() {
   const [open, setOpen] = useState(false)
-  
-  const [formData, setFormData] = useState({
-    subject: '',
-    message: '',
-  })
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles: File[] = Array.from(e.target.files)
-      setFiles([...files, ...newFiles])
-    }
-  }
-
-  const removeFile = (fileToRemove: File) => {
-    setFiles(files.filter(file => file !== fileToRemove))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-
-    toast(`Email Sent Successfully, Your message has been sent to ${teacherName}`)
-
-    // Reset form
-    setFormData({ subject: '', message: '' })
-    setFiles([])
-    setIsLoading(false)
-    setOpen(false)
-  }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="bg-[#F2CC8F] hover:bg-[#F2CC8F]"
-        >
-          <MailIcon className="w-4 h-4 mr-2" />
-          Send Email
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-xl">
-        <DialogHeader>
-          <DialogTitle>Send Email to {teacherName}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="to">To</Label>
-            <Input
-              id="to"
-              value={teacherEmail}
-              disabled
-              className="bg-gray-50"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="subject">Subject</Label>
-            <Input
-              id="subject"
-              value={formData.subject}
-              onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-              placeholder="Enter email subject"
-              required
-            />
-          </div>
+    <>
+      <Button onClick={() => setOpen(true)} variant="outline" className="flex items-center gap-2">
+        <Mail size={16} />
+        Email
+      </Button>
 
-          <div className="space-y-2">
-            <Label htmlFor="message">Message</Label>
-            <Textarea
-              id="message"
-              value={formData.message}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, message: e.target.value })}
-              placeholder="Type your message here"
-              className="h-32"
-              required
-            />
-          </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Send Email</DialogTitle>
+            <DialogDescription>Compose and send an email to students or parents.</DialogDescription>
+          </DialogHeader>
 
-          <div className="space-y-2">
-            <Label htmlFor="attachments">Attachments</Label>
-            <div className="space-y-2">
-              <Input
-                id="attachments"
-                type="file"
-                multiple
-                onChange={handleFileChange}
-                className="hidden"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => document.getElementById('attachments')?.click()}
-              >
-                <Paperclip className="w-4 h-4 mr-2" />
-                Add Attachments
-              </Button>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="recipient-type" className="text-right">
+                Send To
+              </Label>
+              <Select>
+                <SelectTrigger id="recipient-type" className="col-span-3">
+                  <SelectValue placeholder="Select recipients" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all-students">All Students</SelectItem>
+                  <SelectItem value="all-parents">All Parents</SelectItem>
+                  <SelectItem value="both">Students and Parents</SelectItem>
+                  <SelectItem value="selected-students">Selected Students</SelectItem>
+                  <SelectItem value="selected-parents">Selected Parents</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            
-            {files.length > 0 && (
-              <div className="mt-2 space-y-2">
-                {files.map((file, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-2 bg-gray-50 rounded"
-                  >
-                    <span className="text-sm truncate">{file.name}</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFile(file)}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="class" className="text-right">
+                Class
+              </Label>
+              <Select>
+                <SelectTrigger id="class" className="col-span-3">
+                  <SelectValue placeholder="Select class" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Classes</SelectItem>
+                  <SelectItem value="math101">Mathematics 101</SelectItem>
+                  <SelectItem value="science202">Science 202</SelectItem>
+                  <SelectItem value="history101">History 101</SelectItem>
+                  <SelectItem value="english202">English 202</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="subject" className="text-right">
+                Subject
+              </Label>
+              <Input id="subject" placeholder="Email subject" className="col-span-3" />
+            </div>
+
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="message" className="text-right pt-2">
+                Message
+              </Label>
+              <Textarea id="message" placeholder="Type your message here" className="col-span-3 min-h-[150px]" />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <div className="text-right">
+                <Label>Options</Label>
               </div>
-            )}
+              <div className="col-span-3 space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="include-grades" />
+                  <Label htmlFor="include-grades">Include current grades</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="include-attendance" />
+                  <Label htmlFor="include-attendance">Include attendance summary</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="high-priority" />
+                  <Label htmlFor="high-priority">Mark as high priority</Label>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="attachments" className="text-right">
+                Attachments
+              </Label>
+              <div className="col-span-3">
+                <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                  <Paperclip size={16} />
+                  Add Attachments
+                </Button>
+              </div>
+            </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={isLoading}
-            >
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
             <Button
-              type="submit"
-              className="bg-[#F2CC8F] hover:bg-[#F2CC8F] text-custom-text"
-              disabled={isLoading}
+              className={`${themeColors.accentBg} ${themeColors.accentHover} text-white`}
+              onClick={() => setOpen(false)}
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <MailIcon className="w-4 h-4 mr-2" />
-                  Send Email
-                </>
-              )}
+              <Send className="mr-2 h-4 w-4" />
+              Send Email
             </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

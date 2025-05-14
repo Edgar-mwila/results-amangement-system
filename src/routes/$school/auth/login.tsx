@@ -81,10 +81,10 @@ const Login = () => {
                     navigate.navigate({
                       to:
                         role === 'admin'
-                          ? '/admin/dashboard'
+                          ? '/$school/admin/dashboard'
                           : role === 'teacher'
-                            ? '/teacher/dashboard'
-                            : '/parent/dashboard',
+                            ? '/$school/teacher/dashboard'
+                            : '/$school/parent/dashboard',
                     })
                   } // Adjust the navigation based on role
                 >

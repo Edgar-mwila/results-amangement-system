@@ -1,282 +1,198 @@
-import { useToast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogTrigger} from "./ui/dialog";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./ui/select";
-import { Plus, X, Loader2, UserPlus } from "lucide-react";
-import { useState } from "react";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Button } from "./ui/button";
+"use client"
 
-const AddStudentDialog = () => {
-    const { toast } = useToast()
-    const [isLoading, setIsLoading] = useState(false)
-    const [isOpen, setIsOpen] = useState(false);
-    
-    const [formData, setFormData] = useState({
-      firstname: "",
-      lastname: "",
-      grade: "",
-      status: "Enrolled",
-      guardians: [
-        {
-          firstname: "",
-          lastname: "",
-          email: "",
-          phone: "",
-          relationship: ""
-        }
-      ]
-    })
-  
-    const handleGuardianChange = (index: number, field: string, value: string) => {
-      const newGuardians = [...formData.guardians]
-      newGuardians[index] = {
-        ...newGuardians[index],
-        [field]: value
-      }
-      setFormData({ ...formData, guardians: newGuardians })
-    }
-  
-    const addGuardian = () => {
-      setFormData({
-        ...formData,
-        guardians: [
-          ...formData.guardians,
-          {
-            firstname: "",
-            lastname: "",
-            email: "",
-            phone: "",
-            relationship: ""
-          }
-        ]
-      })
-    }
-  
-    const removeGuardian = (index: number) => {
-      const newGuardians = formData.guardians.filter((_, i) => i !== index)
-      setFormData({ ...formData, guardians: newGuardians })
-    }
-  
-    const handleSubmit = async (e: { preventDefault: () => void }) => {
-      e.preventDefault()
-      setIsLoading(true)
-  
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-  
-      toast({
-        title: "Success",
-        description: "Student has been added successfully",
-      })
-  
-      setFormData({
-        firstname: "",
-        lastname: "",
-        grade: "",
-        status: "Enrolled",
-        guardians: [
-          {
-            firstname: "",
-            lastname: "",
-            email: "",
-            phone: "",
-            relationship: ""
-          }
-        ]
-      })
-      setIsLoading(false)
-    }
-  
-    return (
-      <Dialog  open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <Button 
-            className="bg-green-500 hover:bg-blue-600"
-            onClick={() => setIsOpen(true)}
-          >
-            <UserPlus className="mr-2 h-4 w-4" />
-            Add New Student
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { CalendarIcon, Plus, Upload } from "lucide-react"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { themeColors } from "./ui/theme-config"
+
+export default function AddStudentDialog() {
+  const [open, setOpen] = useState(false)
+  const [dob, setDob] = useState<Date>()
+  const [enrollmentDate, setEnrollmentDate] = useState<Date>(new Date())
+
+  return (
+    <>
+      <Button onClick={() => setOpen(true)} className={`${themeColors.accentBg} ${themeColors.accentHover} text-white`}>
+        <Plus className="mr-2 h-4 w-4" />
+        Add Student
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Add New Student</DialogTitle>
+            <DialogDescription>Enter student information to add them to the system.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstname">First Name</Label>
-                <Input
-                  id="firstname"
-                  value={formData.firstname}
-                  onChange={(e) => setFormData({ ...formData, firstname: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastname">Last Name</Label>
-                <Input
-                  id="lastname"
-                  value={formData.lastname}
-                  onChange={(e) => setFormData({ ...formData, lastname: e.target.value })}
-                  required
-                />
+
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="first-name" className="text-right">
+                First Name
+              </Label>
+              <Input id="first-name" placeholder="John" className="col-span-3" />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="last-name" className="text-right">
+                Last Name
+              </Label>
+              <Input id="last-name" placeholder="Doe" className="col-span-3" />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="student-id" className="text-right">
+                Student ID
+              </Label>
+              <Input id="student-id" placeholder="ST12345" className="col-span-3" />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="dob" className="text-right">
+                Date of Birth
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="dob"
+                    variant={"outline"}
+                    className={cn("col-span-3 justify-start text-left font-normal", !dob && "text-muted-foreground")}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dob ? format(dob, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar mode="single" selected={dob} onSelect={setDob} initialFocus />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="grade" className="text-right">
+                Grade Level
+              </Label>
+              <Select>
+                <SelectTrigger id="grade" className="col-span-3">
+                  <SelectValue placeholder="Select grade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="9">9th Grade</SelectItem>
+                  <SelectItem value="10">10th Grade</SelectItem>
+                  <SelectItem value="11">11th Grade</SelectItem>
+                  <SelectItem value="12">12th Grade</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="enrollment-date" className="text-right">
+                Enrollment Date
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="enrollment-date"
+                    variant={"outline"}
+                    className={cn("col-span-3 justify-start text-left font-normal")}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {enrollmentDate ? format(enrollmentDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar mode="single" selected={enrollmentDate} onSelect={setEnrollmentDate} initialFocus />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="email" className="text-right">
+                Email
+              </Label>
+              <Input id="email" type="email" placeholder="student@example.com" className="col-span-3" />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="phone" className="text-right">
+                Phone
+              </Label>
+              <Input id="phone" placeholder="(555) 123-4567" className="col-span-3" />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="address" className="text-right">
+                Address
+              </Label>
+              <Textarea id="address" placeholder="123 Main St, City, State, ZIP" className="col-span-3" />
+            </div>
+
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label className="text-right pt-2">Parent/Guardian</Label>
+              <div className="col-span-3 space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="parent-name">Name</Label>
+                  <Input id="parent-name" placeholder="Jane Doe" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="parent-email">Email</Label>
+                  <Input id="parent-email" type="email" placeholder="parent@example.com" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="parent-phone">Phone</Label>
+                  <Input id="parent-phone" placeholder="(555) 987-6543" />
+                </div>
               </div>
             </div>
-  
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="grade">Grade</Label>
-                <Select
-                  value={formData.grade}
-                  onValueChange={(value) => setFormData({ ...formData, grade: value })}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select grade" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[9, 10, 11, 12].map((grade) => (
-                      <SelectItem key={grade} value={grade.toString()}>
-                        Grade {grade}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value })}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Enrolled">Enrolled</SelectItem>
-                    <SelectItem value="Suspended">Suspended</SelectItem>
-                    <SelectItem value="Transferred">Transferred</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-  
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <Label>Guardians</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addGuardian}
-                  disabled={formData.guardians.length >= 3}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Guardian
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="photo" className="text-right">
+                Student Photo
+              </Label>
+              <div className="col-span-3">
+                <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                  <Upload size={16} />
+                  Upload Photo
                 </Button>
               </div>
-  
-              {formData.guardians.map((guardian, index) => (
-                <div key={index} className="p-4 border rounded-lg space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-medium">Guardian {index + 1}</h4>
-                    {formData.guardians.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeGuardian(index)}
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
-  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>First Name</Label>
-                      <Input
-                        value={guardian.firstname}
-                        onChange={(e) => handleGuardianChange(index, "firstname", e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Last Name</Label>
-                      <Input
-                        value={guardian.lastname}
-                        onChange={(e) => handleGuardianChange(index, "lastname", e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Email</Label>
-                      <Input
-                        type="email"
-                        value={guardian.email}
-                        onChange={(e) => handleGuardianChange(index, "email", e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Phone</Label>
-                      <Input
-                        type="tel"
-                        value={guardian.phone}
-                        onChange={(e) => handleGuardianChange(index, "phone", e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-  
-                  <div className="space-y-2">
-                    <Label>Relationship</Label>
-                    <Select
-                      value={guardian.relationship}
-                      onValueChange={(value) => handleGuardianChange(index, "relationship", value)}
-                      required
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select relationship" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Parent">Parent</SelectItem>
-                        <SelectItem value="Guardian">Legal Guardian</SelectItem>
-                        <SelectItem value="Grandparent">Grandparent</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              ))}
             </div>
-  
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-600"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Adding...
-                  </>
-                ) : (
-                  'Add Student'
-                )}
-              </Button>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="notes" className="text-right">
+                Additional Notes
+              </Label>
+              <Textarea id="notes" placeholder="Any additional information about the student" className="col-span-3" />
             </div>
-          </form>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              className={`${themeColors.accentBg} ${themeColors.accentHover} text-white`}
+              onClick={() => setOpen(false)}
+            >
+              Add Student
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
-    )
+    </>
+  )
 }
-
-export default AddStudentDialog;

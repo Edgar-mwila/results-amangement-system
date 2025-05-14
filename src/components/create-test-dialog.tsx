@@ -1,95 +1,142 @@
-import type React from "react"
+"use client"
+
 import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { CalendarIcon, Plus } from "lucide-react"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { themeColors } from "./ui/theme-config"
 
-type CreateTestDialogProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
-
-export function CreateTestDialog({ open, onOpenChange }: CreateTestDialogProps) {
-  const [testName, setTestName] = useState("")
-  const [subject, setSubject] = useState("")
-  const [date, setDate] = useState("")
-  const [duration, setDuration] = useState("")
-  const [totalMarks, setTotalMarks] = useState("")
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle form submission logic here
-    onOpenChange(false)
-  }
+export default function CreateTestDialog() {
+  const [open, setOpen] = useState(false)
+  const [date, setDate] = useState<Date>()
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create New Test</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-2">
-            <Label htmlFor="testName">Test Name</Label>
-            <Input id="testName" value={testName} onChange={(e) => setTestName(e.target.value)} required />
-          </div>
+    <>
+      <Button onClick={() => setOpen(true)} className={`${themeColors.accentBg} ${themeColors.accentHover} text-white`}>
+        <Plus className="mr-2 h-4 w-4" />
+        Create New Test
+      </Button>
 
-          <div className="grid gap-2">
-            <Label htmlFor="subject">Subject</Label>
-            <Select value={subject} onValueChange={setSubject} required>
-              <SelectTrigger id="subject">
-                <SelectValue placeholder="Select subject" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Mathematics">Mathematics</SelectItem>
-                <SelectItem value="Physics">Physics</SelectItem>
-                <SelectItem value="Chemistry">Chemistry</SelectItem>
-                <SelectItem value="Biology">Biology</SelectItem>
-                <SelectItem value="English Language">English Language</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Create New Test</DialogTitle>
+            <DialogDescription>Fill in the details to create a new test for your class.</DialogDescription>
+          </DialogHeader>
 
-          <div className="grid gap-2">
-            <Label htmlFor="date">Date</Label>
-            <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
-          </div>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="test-name" className="text-right">
+                Test Name
+              </Label>
+              <Input id="test-name" placeholder="Midterm Exam" className="col-span-3" />
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="duration">Duration</Label>
-            <Input
-              id="duration"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              placeholder="e.g., 2 hours"
-              required
-            />
-          </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="test-type" className="text-right">
+                Test Type
+              </Label>
+              <Select>
+                <SelectTrigger id="test-type" className="col-span-3">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="exam">Exam</SelectItem>
+                  <SelectItem value="quiz">Quiz</SelectItem>
+                  <SelectItem value="assignment">Assignment</SelectItem>
+                  <SelectItem value="project">Project</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="totalMarks">Total Marks</Label>
-            <Input
-              id="totalMarks"
-              type="number"
-              value={totalMarks}
-              onChange={(e) => setTotalMarks(e.target.value)}
-              required
-            />
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="test-date" className="text-right">
+                Test Date
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="test-date"
+                    variant={"outline"}
+                    className={cn("col-span-3 justify-start text-left font-normal", !date && "text-muted-foreground")}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="total-points" className="text-right">
+                Total Points
+              </Label>
+              <Input id="total-points" type="number" placeholder="100" className="col-span-3" />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="duration" className="text-right">
+                Duration (min)
+              </Label>
+              <Input id="duration" type="number" placeholder="60" className="col-span-3" />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="class" className="text-right">
+                Class
+              </Label>
+              <Select>
+                <SelectTrigger id="class" className="col-span-3">
+                  <SelectValue placeholder="Select class" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="math101">Mathematics 101</SelectItem>
+                  <SelectItem value="science202">Science 202</SelectItem>
+                  <SelectItem value="history101">History 101</SelectItem>
+                  <SelectItem value="english202">English 202</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="description" className="text-right">
+                Description
+              </Label>
+              <Textarea id="description" placeholder="Enter test description and instructions" className="col-span-3" />
+            </div>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" className="bg-green-500 hover:bg-green-600">
+            <Button
+              className={`${themeColors.accentBg} ${themeColors.accentHover} text-white`}
+              onClick={() => setOpen(false)}
+            >
               Create Test
             </Button>
           </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
-

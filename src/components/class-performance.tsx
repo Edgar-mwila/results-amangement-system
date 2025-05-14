@@ -1,1123 +1,475 @@
-import type React from "react"
-import { useState, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+"use client"
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   BarChart,
-  Bar,
+  Download,
+  FileText,
+  Filter,
   LineChart,
-  Line,
   PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  RadarChart,
-  Radar,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  ScatterChart,
-  Scatter,
-  ZAxis,
-} from "recharts"
-import {
+  RefreshCw,
+  TrendingDown,
   TrendingUp,
-  Users,
-  BookOpen,
-  Award,
-  Calendar,
-  AlertTriangle,
-  BarChart2,
-  PieChartIcon,
-  Activity,
 } from "lucide-react"
-import type { classData } from "@/data/class-data"
+import { themeColors } from "./ui/theme-config"
 
-const GRADE_COLORS = {
-  A: "#22c55e",
-  "A-": "#4ade80",
-  "B+": "#3b82f6",
-  B: "#60a5fa",
-  "B-": "#93c5fd",
-  "C+": "#f59e0b",
-  C: "#fbbf24",
-  D: "#ef4444",
-  F: "#b91c1c",
-}
-
-const ClassPerformanceAnalytics: React.FC<{
-  classData: typeof classData
-  isAdmin?: boolean
-  teacherSubject?: string
-}> = ({ classData, isAdmin = false, teacherSubject }) => {
-  const [activeTab, setActiveTab] = useState("overview")
-
-  // Calculate overall class statistics
-  const classStats = useMemo(() => {
-    // Get all test scores across all subjects (or just the teacher's subject)
-    const allScores: number[] = []
-    const subjectAverages: Record<string, number> = {}
-    const subjectTestCounts: Record<string, number> = {}
-
-    // Filter tests based on teacher's subject if not admin
-    const filteredPastTests = isAdmin
-      ? classData.pastTests
-      : classData.pastTests.filter((test) => test.subject === teacherSubject)
-
-    filteredPastTests.forEach((test) => {
-      // Add all scores to the array
-      test.studentScores.forEach((score) => {
-        allScores.push(score.score)
-      })
-
-      // Track subject averages
-      if (!subjectAverages[test.subject]) {
-        subjectAverages[test.subject] = 0
-        subjectTestCounts[test.subject] = 0
-      }
-      subjectAverages[test.subject] += test.averageScore
-      subjectTestCounts[test.subject] += 1
-    })
-
-    // Calculate final subject averages
-    Object.keys(subjectAverages).forEach((subject) => {
-      subjectAverages[subject] = subjectAverages[subject] / subjectTestCounts[subject]
-    })
-
-    // Sort subjects by average score (descending)
-    const sortedSubjects = Object.entries(subjectAverages)
-      .map(([subject, average]) => ({ subject, average }))
-      .sort((a, b) => b.average - a.average)
-
-    // Calculate overall average
-    const overallAverage =
-      allScores.length > 0 ? allScores.reduce((sum, score) => sum + score, 0) / allScores.length : 0
-
-    // Calculate grade distribution
-    const gradeDistribution = {
-      A: 0,
-      B: 0,
-      C: 0,
-      D: 0,
-      F: 0,
-    }
-
-    allScores.forEach((score) => {
-      if (score >= 90) gradeDistribution["A"]++
-      else if (score >= 80) gradeDistribution["B"]++
-      else if (score >= 70) gradeDistribution["C"]++
-      else if (score >= 60) gradeDistribution["D"]++
-      else gradeDistribution["F"]++
-    })
-
-    // Calculate student performance
-    const studentPerformance: Record<string, { scores: number[]; average: number }> = {}
-
-    classData.pastTests.forEach((test) => {
-      test.studentScores.forEach((score) => {
-        if (!studentPerformance[score.student]) {
-          studentPerformance[score.student] = { scores: [], average: 0 }
-        }
-        studentPerformance[score.student].scores.push(score.score)
-      })
-    })
-
-    // Calculate student averages
-    Object.keys(studentPerformance).forEach((student) => {
-      const scores = studentPerformance[student].scores
-      studentPerformance[student].average = scores.reduce((sum, score) => sum + score, 0) / scores.length
-    })
-
-    // Sort students by average score (descending)
-    const sortedStudents = Object.entries(studentPerformance)
-      .map(([student, data]) => ({
-        student,
-        average: data.average,
-        scores: data.scores,
-      }))
-      .sort((a, b) => b.average - a.average)
-
-    // Get top and bottom performers
-    const topPerformers = sortedStudents.slice(0, 3)
-    const bottomPerformers = sortedStudents.slice(-3).reverse()
-
-    // Calculate test performance over time
-    const testPerformanceOverTime = filteredPastTests
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .map((test) => ({
-        name: test.name,
-        subject: test.subject,
-        date: test.date,
-        average: test.averageScore,
-      }))
-
-    return {
-      overallAverage,
-      gradeDistribution,
-      sortedSubjects,
-      sortedStudents,
-      topPerformers,
-      bottomPerformers,
-      testPerformanceOverTime,
-      totalTests: filteredPastTests.length,
-      totalStudents: classData.totalStudents,
-    }
-  }, [classData.pastTests, classData.totalStudents, isAdmin, teacherSubject])
-
-  // Calculate improvement areas
-  const improvementAreas = useMemo(() => {
-    const areas: Record<string, number> = {}
-
-    classData.studentPerformance.forEach((student) => {
-      student.improvementAreas.forEach((area) => {
-        if (!areas[area]) {
-          areas[area] = 0
-        }
-        areas[area]++
-      })
-    })
-
-    return Object.entries(areas)
-      .map(([area, count]) => ({ area, count }))
-      .sort((a, b) => b.count - a.count)
-  }, [classData.studentPerformance])
-
+export default function ClassPerformance() {
   return (
-    <div className="container w-[65vw] space-y-6 mt-5">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="container mx-auto p-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-[#3D405B]">Class Performance Analytics</h1>
-          <p className="text-gray-500 mt-1">Comprehensive analysis of {classData.name} performance</p>
+          <h1 className="text-3xl font-bold">Class Performance</h1>
+          <p className="text-gray-500">Mathematics 101 - Advanced Algebra</p>
         </div>
-
-        <Button className="bg-green-500 hover:bg-green-600">Download Report</Button>
+        <div className="flex gap-2 mt-4 md:mt-0">
+          <Button variant="outline" className="flex items-center gap-2">
+            <Filter size={16} />
+            Filter
+          </Button>
+          <Button variant="outline" className="flex items-center gap-2">
+            <RefreshCw size={16} />
+            Refresh
+          </Button>
+          <Button
+            className={`flex items-center gap-2 ${themeColors.secondaryBg} ${themeColors.secondaryHover} text-white`}
+          >
+            <Download size={16} />
+            Export
+          </Button>
+        </div>
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="bg-white shadow-md">
-          <CardContent className="pt-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-gray-500">Overall Average</p>
-                <p className="text-2xl font-semibold text-[#3D405B]">{classStats.overallAverage.toFixed(1)}%</p>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Class Average</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <div className={`mr-2 rounded-full p-2 ${themeColors.accentBg}`}>
+                <BarChart className="h-4 w-4 text-white" />
               </div>
-              <div className="p-2 rounded-full bg-blue-100">
-                <Activity className="h-5 w-5 text-blue-600" />
+              <div>
+                <div className="text-2xl font-bold">78.5%</div>
+                <div className="flex items-center text-xs text-green-500">
+                  <TrendingUp className="mr-1 h-3 w-3" />
+                  <span>+2.5% from last semester</span>
+                </div>
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Across all subjects and tests</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-md">
-          <CardContent className="pt-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-gray-500">Top Subject</p>
-                <p className="text-2xl font-semibold text-[#3D405B]">
-                  {classStats.sortedSubjects[0]?.subject || "N/A"}
-                </p>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Highest Score</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <div className={`mr-2 rounded-full p-2 ${themeColors.secondaryBg}`}>
+                <TrendingUp className="h-4 w-4 text-white" />
               </div>
-              <div className="p-2 rounded-full bg-green-100">
-                <BookOpen className="h-5 w-5 text-green-600" />
+              <div>
+                <div className="text-2xl font-bold">96%</div>
+                <p className="text-xs text-gray-500">Emma Thompson</p>
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              {classStats.sortedSubjects[0]?.average.toFixed(1)}% average score
-            </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-md">
-          <CardContent className="pt-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-gray-500">Top Student</p>
-                <p className="text-2xl font-semibold text-[#3D405B]">{classStats.topPerformers[0]?.student || "N/A"}</p>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Lowest Score</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <div className="mr-2 rounded-full p-2 bg-red-500">
+                <TrendingDown className="h-4 w-4 text-white" />
               </div>
-              <div className="p-2 rounded-full bg-amber-100">
-                <Award className="h-5 w-5 text-amber-600" />
+              <div>
+                <div className="text-2xl font-bold">52%</div>
+                <p className="text-xs text-gray-500">Alex Rodriguez</p>
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              {classStats.topPerformers[0]?.average.toFixed(1)}% average score
-            </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-md">
-          <CardContent className="pt-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-gray-500">Tests Completed</p>
-                <p className="text-2xl font-semibold text-[#3D405B]">{classStats.totalTests}</p>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Pass Rate</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <div className={`mr-2 rounded-full p-2 ${themeColors.accentBg}`}>
+                <PieChart className="h-4 w-4 text-white" />
               </div>
-              <div className="p-2 rounded-full bg-purple-100">
-                <Calendar className="h-5 w-5 text-purple-600" />
+              <div>
+                <div className="text-2xl font-bold">85%</div>
+                <div className="flex items-center text-xs text-green-500">
+                  <TrendingUp className="mr-1 h-3 w-3" />
+                  <span>+5% from last semester</span>
+                </div>
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Across {classStats.sortedSubjects.length} subjects</p>
           </CardContent>
         </Card>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          {isAdmin && <TabsTrigger value="subjects">Subject Analysis</TabsTrigger>}
-          <TabsTrigger value="students">Student Analysis</TabsTrigger>
+      <Tabs defaultValue="overview" className="mb-6">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsTrigger
+            value="overview"
+            className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
+          >
+            Overview
+          </TabsTrigger>
+          <TabsTrigger
+            value="assessments"
+            className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
+          >
+            Assessments
+          </TabsTrigger>
+          <TabsTrigger
+            value="students"
+            className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
+          >
+            Students
+          </TabsTrigger>
+          <TabsTrigger
+            value="trends"
+            className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
+          >
+            Trends
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            {/* Performance Trend Chart */}
-            <Card className="shadow-md">
+        <TabsContent value="overview">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                  <TrendingUp className="mr-2 text-[#3D405B]" />
-                  Performance Trend
-                </CardTitle>
-                <CardDescription>Average scores over time across all subjects</CardDescription>
-              </CardHeader>
-              <CardContent className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={classStats.testPerformanceOverTime}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis domain={[0, 100]} />
-                    <Tooltip />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="average"
-                      stroke="#3b82f6"
-                      name="Average Score"
-                      strokeWidth={2}
-                      activeDot={{ r: 8 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Grade Distribution Chart */}
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                  <PieChartIcon className="mr-2 text-[#3D405B]" />
-                  Grade Distribution
-                </CardTitle>
-                <CardDescription>Distribution of grades across all tests</CardDescription>
-              </CardHeader>
-              <CardContent className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={Object.entries(classStats.gradeDistribution).map(([grade, count]) => ({
-                        name: grade,
-                        value: count,
-                      }))}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {Object.entries(classStats.gradeDistribution).map(([grade], index) => (
-                        <Cell
-                          key={`cell-${grade}`}
-                          fill={Object.values(GRADE_COLORS)[index % Object.values(GRADE_COLORS).length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Subject Performance Comparison */}
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                  <BookOpen className="mr-2 text-[#3D405B]" />
-                  Subject Performance
-                </CardTitle>
-                <CardDescription>Average scores by subject</CardDescription>
-              </CardHeader>
-              <CardContent className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={classStats.sortedSubjects.map((subject) => ({
-                      name: subject.subject,
-                      average: subject.average,
-                    }))}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    layout="vertical"
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" domain={[0, 100]} />
-                    <YAxis type="category" dataKey="name" width={100} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="average" name="Average Score" fill="#3b82f6" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Improvement Areas */}
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                  <AlertTriangle className="mr-2 text-[#3D405B]" />
-                  Improvement Areas
-                </CardTitle>
-                <CardDescription>Topics where students need the most improvement</CardDescription>
-              </CardHeader>
-              <CardContent className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={improvementAreas.slice(0, 8).map((area) => ({
-                      name: area.area,
-                      count: area.count,
-                    }))}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    layout="vertical"
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" />
-                    <YAxis type="category" dataKey="name" width={120} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="count" name="Number of Students" fill="#f59e0b" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Top and Bottom Performers */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                  <Award className="mr-2 text-[#3D405B]" />
-                  Top Performers
-                </CardTitle>
-                <CardDescription>Students with the highest average scores</CardDescription>
+                <CardTitle>Performance Distribution</CardTitle>
+                <CardDescription>Overall class performance distribution</CardDescription>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Student</TableHead>
-                      <TableHead>Average Score</TableHead>
-                      <TableHead>Tests Taken</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {classStats.topPerformers.map((student, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{student.student}</TableCell>
-                        <TableCell>
-                          <Badge className="bg-green-500">{student.average.toFixed(1)}%</Badge>
-                        </TableCell>
-                        <TableCell>{student.scores.length}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <div className="h-[300px] flex items-center justify-center bg-gray-100 rounded-md">
+                  <BarChart className={`h-16 w-16 ${themeColors.accent}`} />
+                  <span className="ml-2 text-gray-500">Performance Distribution Chart</span>
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="shadow-md">
+            <Card>
               <CardHeader>
-                <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                  <AlertTriangle className="mr-2 text-[#3D405B]" />
-                  Needs Improvement
-                </CardTitle>
-                <CardDescription>Students who need additional support</CardDescription>
+                <CardTitle>Grade Distribution</CardTitle>
+                <CardDescription>Number of students per grade</CardDescription>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Student</TableHead>
-                      <TableHead>Average Score</TableHead>
-                      <TableHead>Improvement Areas</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {classStats.bottomPerformers.map((student, index) => {
-                      // Find student in studentPerformance data
-                      const studentData = classData.studentPerformance.find((s) => s.name === student.student)
-
-                      return (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{student.student}</TableCell>
-                          <TableCell>
-                            <Badge className="bg-amber-500">{student.average.toFixed(1)}%</Badge>
-                          </TableCell>
-                          <TableCell>{studentData?.improvementAreas.join(", ") || "N/A"}</TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </TableBody>
-                </Table>
+                <div className="h-[300px] flex items-center justify-center bg-gray-100 rounded-md">
+                  <PieChart className={`h-16 w-16 ${themeColors.secondary}`} />
+                  <span className="ml-2 text-gray-500">Grade Distribution Chart</span>
+                </div>
+                <div className="mt-4 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <div className={`w-3 h-3 rounded-full ${themeColors.accentBg} mr-2`}></div>
+                      <span>A (90-100%)</span>
+                    </div>
+                    <span className="font-medium">6 students</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <div className={`w-3 h-3 rounded-full ${themeColors.secondaryBg} mr-2`}></div>
+                      <span>B (80-89%)</span>
+                    </div>
+                    <span className="font-medium">10 students</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 rounded-full bg-blue-300 mr-2"></div>
+                      <span>C (70-79%)</span>
+                    </div>
+                    <span className="font-medium">8 students</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 rounded-full bg-yellow-400 mr-2"></div>
+                      <span>D (60-69%)</span>
+                    </div>
+                    <span className="font-medium">5 students</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                      <span>F (Below 60%)</span>
+                    </div>
+                    <span className="font-medium">3 students</span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
 
-          {/* Key Insights */}
-          <Card className="shadow-md">
+        <TabsContent value="assessments">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                <BarChart2 className="mr-2 text-[#3D405B]" />
-                Key Insights and Recommendations
-              </CardTitle>
+              <CardTitle>Assessment Performance</CardTitle>
+              <CardDescription>Performance across different assessments</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h3 className="font-medium text-[#3D405B] mb-1">Performance Summary</h3>
-                <p className="text-gray-700">
-                  {classStats.overallAverage >= 85
-                    ? `Overall class performance is excellent with an average of ${classStats.overallAverage.toFixed(1)}%.`
-                    : classStats.overallAverage >= 75
-                      ? `Overall class performance is good with an average of ${classStats.overallAverage.toFixed(1)}%.`
-                      : `Overall class performance needs improvement with an average of ${classStats.overallAverage.toFixed(1)}%.`}
-                  {classStats.sortedSubjects[0] &&
-                    ` The strongest subject is ${classStats.sortedSubjects[0].subject} with an average of ${classStats.sortedSubjects[0].average.toFixed(1)}%.`}
-                  {classStats.sortedSubjects[classStats.sortedSubjects.length - 1] &&
-                    ` The weakest subject is ${classStats.sortedSubjects[classStats.sortedSubjects.length - 1].subject} with an average of ${classStats.sortedSubjects[classStats.sortedSubjects.length - 1].average.toFixed(1)}%.`}
-                </p>
-              </div>
-
-              <div>
-                <h3 className="font-medium text-[#3D405B] mb-1">Areas of Strength</h3>
-                <ul className="list-disc pl-5 text-gray-700">
-                  <li>
-                    {classStats.topPerformers[0]?.student || "N/A"} has shown exceptional performance with an average of{" "}
-                    {classStats.topPerformers[0]?.average.toFixed(1) || "N/A"}%.
-                  </li>
-                  {classStats.gradeDistribution["A"] > 0 && (
-                    <li>{classStats.gradeDistribution["A"]} test scores achieved A grade level performance.</li>
-                  )}
-                  {classStats.sortedSubjects[0] && (
-                    <li>
-                      {classStats.sortedSubjects[0].subject} is the strongest subject with an average of{" "}
-                      {classStats.sortedSubjects[0].average.toFixed(1)}%.
-                    </li>
-                  )}
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="font-medium text-[#3D405B] mb-1">Areas for Improvement</h3>
-                <ul className="list-disc pl-5 text-gray-700">
-                  {improvementAreas.length > 0 && (
-                    <li>
-                      Focus on {improvementAreas[0].area} as {improvementAreas[0].count} students need improvement in
-                      this area.
-                    </li>
-                  )}
-                  {classStats.bottomPerformers.length > 0 && (
-                    <li>
-                      Provide additional support for {classStats.bottomPerformers.map((s) => s.student).join(", ")}.
-                    </li>
-                  )}
-                  {classStats.sortedSubjects.length > 1 && (
-                    <li>
-                      {classStats.sortedSubjects[classStats.sortedSubjects.length - 1].subject} needs additional focus
-                      with an average of{" "}
-                      {classStats.sortedSubjects[classStats.sortedSubjects.length - 1].average.toFixed(1)}%.
-                    </li>
-                  )}
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="font-medium text-[#3D405B] mb-1">Recommendations</h3>
-                <ul className="list-disc pl-5 text-gray-700">
-                  {improvementAreas.length > 0 && (
-                    <li>Organize targeted review sessions for {improvementAreas[0].area}.</li>
-                  )}
-                  {classStats.bottomPerformers.length > 0 && (
-                    <li>Consider one-on-one tutoring for {classStats.bottomPerformers[0].student}.</li>
-                  )}
-                  {classStats.sortedSubjects.length > 1 && (
-                    <li>
-                      Allocate additional teaching resources to{" "}
-                      {classStats.sortedSubjects[classStats.sortedSubjects.length - 1].subject}.
-                    </li>
-                  )}
-                  <li>Recognize and celebrate the achievements of top performers to motivate other students.</li>
-                </ul>
-              </div>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Assessment</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Average</TableHead>
+                    <TableHead>Highest</TableHead>
+                    <TableHead>Lowest</TableHead>
+                    <TableHead>Pass Rate</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[
+                    {
+                      name: "Midterm Exam",
+                      type: "Exam",
+                      date: "Mar 15, 2023",
+                      avg: "76%",
+                      high: "94%",
+                      low: "52%",
+                      pass: "82%",
+                    },
+                    {
+                      name: "Quadratic Equations",
+                      type: "Quiz",
+                      date: "Apr 5, 2023",
+                      avg: "82%",
+                      high: "100%",
+                      low: "65%",
+                      pass: "90%",
+                    },
+                    {
+                      name: "Polynomial Functions",
+                      type: "Assignment",
+                      date: "Apr 20, 2023",
+                      avg: "88%",
+                      high: "98%",
+                      low: "70%",
+                      pass: "100%",
+                    },
+                    {
+                      name: "Linear Algebra",
+                      type: "Project",
+                      date: "May 1, 2023",
+                      avg: "79%",
+                      high: "96%",
+                      low: "60%",
+                      pass: "85%",
+                    },
+                    {
+                      name: "Final Exam",
+                      type: "Exam",
+                      date: "May 15, 2023",
+                      avg: "N/A",
+                      high: "N/A",
+                      low: "N/A",
+                      pass: "N/A",
+                    },
+                  ].map((assessment, i) => (
+                    <TableRow key={i}>
+                      <TableCell className="font-medium">{assessment.name}</TableCell>
+                      <TableCell>{assessment.type}</TableCell>
+                      <TableCell>{assessment.date}</TableCell>
+                      <TableCell>{assessment.avg}</TableCell>
+                      <TableCell className="text-green-500">{assessment.high}</TableCell>
+                      <TableCell className="text-red-500">{assessment.low}</TableCell>
+                      <TableCell>{assessment.pass}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm">
+                          <FileText size={16} className="mr-2" />
+                          Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="subjects" className="space-y-6">
-          {isAdmin ? (
-            // Original content for admins
-            <>
-              {/* Subject Performance Radar Chart */}
-              <Card className="shadow-md">
-                <CardHeader>
-                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                    <BookOpen className="mr-2 text-[#3D405B]" />
-                    Subject Performance Overview
-                  </CardTitle>
-                  <CardDescription>Comparative analysis of all subjects</CardDescription>
-                </CardHeader>
-                <CardContent className="h-96">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart
-                      outerRadius={150}
-                      width={730}
-                      height={350}
-                      data={classStats.sortedSubjects.map((subject) => ({
-                        subject: subject.subject,
-                        average: subject.average,
-                      }))}
-                    >
-                      <PolarGrid />
-                      <PolarAngleAxis dataKey="subject" />
-                      <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                      <Radar name="Average Score" dataKey="average" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                      <Legend />
-                      <Tooltip />
-                    </RadarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              {/* Subject Details Table */}
-              <Card className="shadow-md">
-                <CardHeader>
-                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                    <BookOpen className="mr-2 text-[#3D405B]" />
-                    Subject Details
-                  </CardTitle>
-                  <CardDescription>Detailed performance metrics for each subject</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Subject</TableHead>
-                        <TableHead>Average Score</TableHead>
-                        <TableHead>Tests Conducted</TableHead>
-                        <TableHead>Teacher</TableHead>
-                        <TableHead>Hours per Week</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {classStats.sortedSubjects.map((subjectStat, index) => {
-                        // Find subject in subjects data
-                        const subjectData = classData.subjects.find((s) => s.name === subjectStat.subject)
-
-                        // Count tests for this subject
-                        const testCount = classData.pastTests.filter(
-                          (test) => test.subject === subjectStat.subject,
-                        ).length
-
-                        return (
-                          <TableRow key={index}>
-                            <TableCell className="font-medium">{subjectStat.subject}</TableCell>
-                            <TableCell>
-                              <Badge
-                                className={
-                                  subjectStat.average >= 90
-                                    ? "bg-green-500"
-                                    : subjectStat.average >= 80
-                                      ? "bg-blue-500"
-                                      : subjectStat.average >= 70
-                                        ? "bg-amber-500"
-                                        : "bg-red-500"
-                                }
-                              >
-                                {subjectStat.average.toFixed(1)}%
-                              </Badge>
-                            </TableCell>
-                            <TableCell>{testCount}</TableCell>
-                            <TableCell>{subjectData?.teacher || "N/A"}</TableCell>
-                            <TableCell>{subjectData?.hoursPerWeek || "N/A"}</TableCell>
-                          </TableRow>
-                        )
-                      })}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-
-              {/* Subject Test Performance */}
-              <Card className="shadow-md">
-                <CardHeader>
-                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                    <BarChart2 className="mr-2 text-[#3D405B]" />
-                    Test Performance by Subject
-                  </CardTitle>
-                  <CardDescription>Performance in individual tests grouped by subject</CardDescription>
-                </CardHeader>
-                <CardContent className="h-96">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={classData.pastTests.map((test) => ({
-                        name: test.name,
-                        subject: test.subject,
-                        average: test.averageScore,
-                        highest: test.highestScore,
-                        lowest: test.lowestScore,
-                      }))}
-                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis domain={[0, 100]} />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="average" name="Average Score" fill="#3b82f6" />
-                      <Bar dataKey="highest" name="Highest Score" fill="#22c55e" />
-                      <Bar dataKey="lowest" name="Lowest Score" fill="#ef4444" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              {/* Subject Correlation Analysis */}
-              <Card className="shadow-md">
-                <CardHeader>
-                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                    <Activity className="mr-2 text-[#3D405B]" />
-                    Subject Correlation Analysis
-                  </CardTitle>
-                  <CardDescription>Relationship between hours per week and performance</CardDescription>
-                </CardHeader>
-                <CardContent className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                      <CartesianGrid />
-                      <XAxis type="number" dataKey="hours" name="Hours per Week" domain={[0, 10]} />
-                      <YAxis type="number" dataKey="average" name="Average Score" domain={[0, 100]} />
-                      <ZAxis range={[100, 500]} />
-                      <Tooltip cursor={{ strokeDasharray: "3 3" }} />
-                      <Legend />
-                      <Scatter
-                        name="Subjects"
-                        data={classStats.sortedSubjects.map((subject) => {
-                          const subjectData = classData.subjects.find((s) => s.name === subject.subject)
-                          return {
-                            subject: subject.subject,
-                            hours: subjectData?.hoursPerWeek || 0,
-                            average: subject.average,
-                          }
-                        })}
-                        fill="#8884d8"
-                      />
-                    </ScatterChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </>
-          ) : (
-            // Limited content for teachers - only showing their subject
-            <>
-              {/* Subject Details Table */}
-              <Card className="shadow-md">
-                <CardHeader>
-                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                    <BookOpen className="mr-2 text-[#3D405B]" />
-                    Subject Details
-                  </CardTitle>
-                  <CardDescription>Performance metrics for {teacherSubject}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Subject</TableHead>
-                        <TableHead>Average Score</TableHead>
-                        <TableHead>Tests Conducted</TableHead>
-                        <TableHead>Teacher</TableHead>
-                        <TableHead>Hours per Week</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {classStats.sortedSubjects
-                        .filter((subjectStat) => subjectStat.subject === teacherSubject)
-                        .map((subjectStat, index) => {
-                          // Find subject in subjects data
-                          const subjectData = classData.subjects.find((s) => s.name === subjectStat.subject)
-
-                          // Count tests for this subject
-                          const testCount = classData.pastTests.filter(
-                            (test) => test.subject === subjectStat.subject,
-                          ).length
-
-                          return (
-                            <TableRow key={index}>
-                              <TableCell className="font-medium">{subjectStat.subject}</TableCell>
-                              <TableCell>
-                                <Badge
-                                  className={
-                                    subjectStat.average >= 90
-                                      ? "bg-green-500"
-                                      : subjectStat.average >= 80
-                                        ? "bg-blue-500"
-                                        : subjectStat.average >= 70
-                                          ? "bg-amber-500"
-                                          : "bg-red-500"
-                                  }
-                                >
-                                  {subjectStat.average.toFixed(1)}%
-                                </Badge>
-                              </TableCell>
-                              <TableCell>{testCount}</TableCell>
-                              <TableCell>{subjectData?.teacher || "N/A"}</TableCell>
-                              <TableCell>{subjectData?.hoursPerWeek || "N/A"}</TableCell>
-                            </TableRow>
-                          )
-                        })}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-
-              {/* Subject Test Performance */}
-              <Card className="shadow-md">
-                <CardHeader>
-                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                    <BarChart2 className="mr-2 text-[#3D405B]" />
-                    Test Performance
-                  </CardTitle>
-                  <CardDescription>Performance in individual tests for {teacherSubject}</CardDescription>
-                </CardHeader>
-                <CardContent className="h-96">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={classData.pastTests
-                        .filter((test) => test.subject === teacherSubject)
-                        .map((test) => ({
-                          name: test.name,
-                          subject: test.subject,
-                          average: test.averageScore,
-                          highest: test.highestScore,
-                          lowest: test.lowestScore,
-                        }))}
-                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis domain={[0, 100]} />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="average" name="Average Score" fill="#3b82f6" />
-                      <Bar dataKey="highest" name="Highest Score" fill="#22c55e" />
-                      <Bar dataKey="lowest" name="Lowest Score" fill="#ef4444" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </>
-          )}
-        </TabsContent>
-
-        <TabsContent value="students" className="space-y-6">
-          {/* Student Performance Distribution */}
-          <Card className="shadow-md">
+        <TabsContent value="students">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                <Users className="mr-2 text-[#3D405B]" />
-                Student Performance Distribution
-              </CardTitle>
-              <CardDescription>Distribution of student average scores</CardDescription>
-            </CardHeader>
-            <CardContent className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={classStats.sortedStudents.map((student) => ({
-                    name: student.student,
-                    average: student.average,
-                  }))}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis domain={[0, 100]} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="average" name="Average Score" fill="#3b82f6">
-                    {classStats.sortedStudents.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={
-                          index < 3 ? "#22c55e" : index >= classStats.sortedStudents.length - 3 ? "#ef4444" : "#3b82f6"
-                        }
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* Student Performance by Subject */}
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                <BookOpen className="mr-2 text-[#3D405B]" />
-                Student Performance by Subject
-              </CardTitle>
-              <CardDescription>Comparative analysis of top students across subjects</CardDescription>
-            </CardHeader>
-            <CardContent className="h-96">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart
-                  outerRadius={150}
-                  width={730}
-                  height={350}
-                  data={classData.subjects.map((subject) => {
-                    // Find all tests for this subject
-                    const tests = classData.pastTests.filter((test) => test.subject === subject.name)
-
-                    // Calculate average score for each student in this subject
-                    const studentScores: Record<string, { total: number; count: number }> = {}
-
-                    tests.forEach((test) => {
-                      test.studentScores.forEach((score) => {
-                        if (!studentScores[score.student]) {
-                          studentScores[score.student] = { total: 0, count: 0 }
-                        }
-                        studentScores[score.student].total += score.score
-                        studentScores[score.student].count += 1
-                      })
-                    })
-
-                    // Get top 3 students for this subject
-                    const topStudents = Object.entries(studentScores)
-                      .map(([student, data]) => ({
-                        student,
-                        average: data.total / data.count,
-                      }))
-                      .sort((a, b) => b.average - a.average)
-                      .slice(0, 3)
-
-                    return {
-                      subject: subject.name,
-                      student1: topStudents[0]?.average || 0,
-                      student2: topStudents[1]?.average || 0,
-                      student3: topStudents[2]?.average || 0,
-                      student1Name: topStudents[0]?.student || "",
-                      student2Name: topStudents[1]?.student || "",
-                      student3Name: topStudents[2]?.student || "",
-                    }
-                  })}
-                >
-                  <PolarGrid />
-                  <PolarAngleAxis dataKey="subject" />
-                  <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                  <Radar name="Top Student" dataKey="student1" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                  <Radar name="2nd Best" dataKey="student2" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
-                  <Radar name="3rd Best" dataKey="student3" stroke="#ffc658" fill="#ffc658" fillOpacity={0.6} />
-                  <Legend />
-                  <Tooltip
-                    formatter={(value, name, props) => {
-                      const dataKey =
-                        name === "Top Student" ? "student1Name" : name === "2nd Best" ? "student2Name" : "student3Name"
-                      const studentName = props.payload[dataKey]
-                      return [`${value}% - ${studentName}`, name]
-                    }}
-                  />
-                </RadarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* Detailed Student List */}
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                <Users className="mr-2 text-[#3D405B]" />
-                Detailed Student Performance
-              </CardTitle>
-              <CardDescription>Complete breakdown of all student performance</CardDescription>
+              <CardTitle>Student Performance</CardTitle>
+              <CardDescription>Individual student performance</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Student</TableHead>
-                    <TableHead>Average Score</TableHead>
-                    <TableHead>Grade</TableHead>
-                    <TableHead>Improvement Areas</TableHead>
-                    <TableHead>Tests Taken</TableHead>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Overall Average</TableHead>
+                    <TableHead>Midterm</TableHead>
+                    <TableHead>Quizzes</TableHead>
+                    <TableHead>Assignments</TableHead>
+                    <TableHead>Projects</TableHead>
+                    <TableHead>Trend</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {classStats.sortedStudents.map((student, index) => {
-                    // Find student in studentPerformance data
-                    const studentData = classData.studentPerformance.find((s) => s.name === student.student)
-
-                    return (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{student.student}</TableCell>
-                        <TableCell>
-                          <Badge
-                            className={
-                              student.average >= 90
-                                ? "bg-green-500"
-                                : student.average >= 80
-                                  ? "bg-blue-500"
-                                  : student.average >= 70
-                                    ? "bg-amber-500"
-                                    : "bg-red-500"
-                            }
-                          >
-                            {student.average.toFixed(1)}%
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{studentData?.overallGrade || "N/A"}</TableCell>
-                        <TableCell>{studentData?.improvementAreas.join(", ") || "None"}</TableCell>
-                        <TableCell>{student.scores.length}</TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-          {/* Student Improvement Areas */}
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                <AlertTriangle className="mr-2 text-[#3D405B]" />
-                Student Improvement Areas
-              </CardTitle>
-              <CardDescription>Detailed breakdown of improvement areas by student</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Improvement Area</TableHead>
-                    <TableHead>Number of Students</TableHead>
-                    <TableHead>Students</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {improvementAreas.map((area, index) => {
-                    // Find students with this improvement area
-                    const students = classData.studentPerformance
-                      .filter((student) => student.improvementAreas.includes(area.area))
-                      .map((student) => student.name)
-
-                    return (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{area.area}</TableCell>
-                        <TableCell>{area.count}</TableCell>
-                        <TableCell>{students.join(", ")}</TableCell>
-                      </TableRow>
-                    )
-                  })}
+                  {[
+                    {
+                      name: "Emma Thompson",
+                      id: "ST10023",
+                      avg: "92%",
+                      midterm: "94%",
+                      quizzes: "95%",
+                      assignments: "90%",
+                      projects: "92%",
+                      trend: "up",
+                    },
+                    {
+                      name: "James Wilson",
+                      id: "ST10045",
+                      avg: "78%",
+                      midterm: "75%",
+                      quizzes: "80%",
+                      assignments: "82%",
+                      projects: "75%",
+                      trend: "stable",
+                    },
+                    {
+                      name: "Sophia Garcia",
+                      id: "ST10067",
+                      avg: "65%",
+                      midterm: "62%",
+                      quizzes: "68%",
+                      assignments: "70%",
+                      projects: "60%",
+                      trend: "up",
+                    },
+                    {
+                      name: "Liam Johnson",
+                      id: "ST10089",
+                      avg: "88%",
+                      midterm: "85%",
+                      quizzes: "90%",
+                      assignments: "92%",
+                      projects: "85%",
+                      trend: "up",
+                    },
+                    {
+                      name: "Olivia Martinez",
+                      id: "ST10012",
+                      avg: "72%",
+                      midterm: "75%",
+                      quizzes: "70%",
+                      assignments: "75%",
+                      projects: "68%",
+                      trend: "down",
+                    },
+                  ].map((student, i) => (
+                    <TableRow key={i}>
+                      <TableCell className="font-medium">{student.name}</TableCell>
+                      <TableCell>{student.id}</TableCell>
+                      <TableCell className="font-medium">{student.avg}</TableCell>
+                      <TableCell>{student.midterm}</TableCell>
+                      <TableCell>{student.quizzes}</TableCell>
+                      <TableCell>{student.assignments}</TableCell>
+                      <TableCell>{student.projects}</TableCell>
+                      <TableCell>
+                        {student.trend === "up" ? (
+                          <TrendingUp className="h-5 w-5 text-green-500" />
+                        ) : student.trend === "down" ? (
+                          <TrendingDown className="h-5 w-5 text-red-500" />
+                        ) : (
+                          <div className="h-0.5 w-5 bg-gray-400 my-3" />
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="trends">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Performance Trend</CardTitle>
+                <CardDescription>Class average over time</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px] flex items-center justify-center bg-gray-100 rounded-md">
+                  <LineChart className={`h-16 w-16 ${themeColors.accent}`} />
+                  <span className="ml-2 text-gray-500">Performance Trend Chart</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Topic Performance</CardTitle>
+                <CardDescription>Performance by topic area</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px] flex items-center justify-center bg-gray-100 rounded-md">
+                  <BarChart className={`h-16 w-16 ${themeColors.secondary}`} />
+                  <span className="ml-2 text-gray-500">Topic Performance Chart</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
       </Tabs>
 
-      <Card className="shadow-md">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-lg text-[#3D405B] flex items-center">
-            <BarChart2 className="mr-2 text-[#3D405B]" />
-            Class Performance Summary
-          </CardTitle>
+          <CardTitle>Performance Insights</CardTitle>
+          <CardDescription>Key observations and recommendations</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h3 className="font-medium text-[#3D405B] mb-1">Overall Assessment</h3>
-            <p className="text-gray-700">
-              {classData.name} demonstrates{" "}
-              {classStats.overallAverage >= 85
-                ? "excellent"
-                : classStats.overallAverage >= 75
-                  ? "good"
-                  : classStats.overallAverage >= 65
-                    ? "satisfactory"
-                    : "concerning"}{" "}
-              overall performance with an average score of {classStats.overallAverage.toFixed(1)}% across all subjects
-              and tests. The class shows particular strength in {classStats.sortedSubjects[0]?.subject || "N/A"} and has
-              opportunities for improvement in
-              {classStats.sortedSubjects[classStats.sortedSubjects.length - 1]?.subject || "N/A"}.
-            </p>
-          </div>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h3 className={`font-medium mb-2 ${themeColors.secondary}`}>Strengths</h3>
+              <ul className="list-disc pl-5 space-y-1 text-sm">
+                <li>Strong performance in Polynomial Functions (88% average)</li>
+                <li>High pass rate across all assessments (85% overall)</li>
+                <li>Six students consistently performing at A level (90%+)</li>
+              </ul>
+            </div>
 
-          <div>
-            <h3 className="font-medium text-[#3D405B] mb-1">Student Performance</h3>
-            <p className="text-gray-700">
-              There is a{" "}
-              {Math.abs(classStats.topPerformers[0]?.average - classStats.bottomPerformers[0]?.average) > 30
-                ? "significant"
-                : Math.abs(classStats.topPerformers[0]?.average - classStats.bottomPerformers[0]?.average) > 20
-                  ? "moderate"
-                  : "small"}{" "}
-              performance gap between the top and bottom performing students.
-              {classStats.topPerformers[0]?.student || "N/A"} leads the class with an average of{" "}
-              {classStats.topPerformers[0]?.average.toFixed(1) || "N/A"}%, while{" "}
-              {classStats.bottomPerformers[0]?.student || "N/A"} would benefit from additional support with an average
-              of {classStats.bottomPerformers[0]?.average.toFixed(1) || "N/A"}%.
-            </p>
-          </div>
+            <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+              <h3 className="font-medium mb-2 text-yellow-700">Areas for Improvement</h3>
+              <ul className="list-disc pl-5 space-y-1 text-sm">
+                <li>Lower performance on Midterm Exam (76% average)</li>
+                <li>Three students at risk of failing (below 60%)</li>
+                <li>Linear Algebra concepts need reinforcement</li>
+              </ul>
+            </div>
 
-          <div>
-            <h3 className="font-medium text-[#3D405B] mb-1">Action Plan</h3>
-            <ul className="list-disc pl-5 text-gray-700">
-              <li>
-                Implement targeted interventions for students scoring below 70%, with particular focus on{" "}
-                {classStats.bottomPerformers[0]?.student || "N/A"}.
-              </li>
-              <li>
-                Organize review sessions for {improvementAreas[0]?.area || "common weak areas"}, which affects{" "}
-                {improvementAreas[0]?.count || "several"} students.
-              </li>
-              <li>
-                Review teaching strategies for{" "}
-                {classStats.sortedSubjects[classStats.sortedSubjects.length - 1]?.subject || "weaker subjects"} to
-                improve overall performance.
-              </li>
-              <li>
-                Leverage peer learning by pairing high-performing students with those who need additional support.
-              </li>
-              <li>Recognize and celebrate the achievements of top performers to motivate the entire class.</li>
-            </ul>
+            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+              <h3 className={`font-medium mb-2 ${themeColors.accent}`}>Recommendations</h3>
+              <ul className="list-disc pl-5 space-y-1 text-sm">
+                <li>Provide additional support for struggling students</li>
+                <li>Review Midterm Exam topics before Final Exam</li>
+                <li>Implement peer tutoring for Linear Algebra concepts</li>
+                <li>Offer extra credit opportunities for at-risk students</li>
+              </ul>
+            </div>
           </div>
         </CardContent>
-        <CardFooter>
-          <Button className="bg-green-500 hover:bg-green-600">Generate Detailed Report</Button>
-        </CardFooter>
       </Card>
     </div>
   )
 }
-
-export default ClassPerformanceAnalytics

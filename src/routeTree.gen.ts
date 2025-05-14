@@ -38,7 +38,7 @@ import { Route as SchoolAdminClassManagementIndexImport } from './routes/$school
 import { Route as SchoolTeacherAuthResetPasswordImport } from './routes/$school/teacher/auth/reset-password'
 import { Route as SchoolParentStudentIdImport } from './routes/$school/parent/student.$id'
 import { Route as SchoolParentAuthResetPasswordImport } from './routes/$school/parent/auth/reset-password'
-import { Route as SchoolAdminAuthResetPasswordImport } from './routes/$school/admin/auth/reset-password'
+import { Route as SchoolAdminAuthResetPasswordImport } from './routes/$school/admin/settings/auth/reset-password'
 import { Route as SchoolTeacherClassesIdIndexImport } from './routes/$school/teacher/classes/$id/index'
 import { Route as SchoolAdminClassManagementIdIndexImport } from './routes/$school/admin/class-management/$id/index'
 import { Route as SchoolTeacherStudentPerformanceStudentIdImport } from './routes/$school/teacher/student-performance/student.$id'

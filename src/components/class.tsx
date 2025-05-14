@@ -1,369 +1,388 @@
+"use client"
+
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { TrendingUp, BookOpen, Users, School, ChevronRight, List } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
-import { Link } from "@tanstack/react-router"
-import AddStudentDialog from "./add-student-dialog"
-import { AssessmentsTab } from "./assessments-tab"
-import { classData } from "@/data/class-data"
-import ClassPerformanceAnalytics from "./class-performance"
+import {
+  BarChart,
+  BookOpen,
+  Calendar,
+  Clock,
+  Download,
+  FileText,
+  GraduationCap,
+  Mail,
+  MapPin,
+  User,
+  Users,
+} from "lucide-react"
+import { themeColors } from "./ui/theme-config"
 
-interface ClassViewProps {
-  isAdmin?: boolean
-  teacherSubject?: string
-}
-
-export default function ClassView({ isAdmin = false, teacherSubject }: ClassViewProps) {
+export default function ClassComponent() {
   const [activeTab, setActiveTab] = useState("overview")
 
   return (
-    <div className="flex flex-col mx-auto p-2 space-y-6">
-      {/* Header Section with Dialog for Class Details */}
-      <div className="sticky flex justify-between items-center">
+    <div className="container mx-auto p-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h1 className="text-4xl font-bold text-[#3D405B]">{classData.name}</h1>
-          <p className="text-lg mt-2 text-gray-600">Class Teacher: {classData.classTeacher}</p>
+          <h1 className="text-3xl font-bold">Mathematics 101</h1>
+          <p className="text-gray-500">Advanced Algebra - Grade 10</p>
         </div>
-        {isAdmin && <div className="flex space-x-4">
-          <AddStudentDialog />
-        </div>}
+        <div className="flex gap-2 mt-4 md:mt-0">
+          <Button variant="outline" className="flex items-center gap-2">
+            <Mail size={16} />
+            Email Class
+          </Button>
+          <Button className={`flex items-center gap-2 ${themeColors.secondaryBg} ${themeColors.secondaryHover}`}>
+            <Download size={16} />
+            Export Data
+          </Button>
+        </div>
       </div>
 
-      {/* Tabs Navigation */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList
-          className="inline-flex w-full justify-start"
-          style={{
-            backgroundColor: "transparent",
-            borderBottom: "1px solid #A8A8A8",
-          }}
-        >
-          <TabsTrigger
-            value="overview"
-            className="
-              data-[state=active]:text-[#3D405B]
-              data-[state=active]:border-b-2 
-              data-[state=active]:border-[#3D405B]
-              mr-4 pb-2
-            "
-          >
-            Overview
-          </TabsTrigger>
-          {isAdmin && (
-            <TabsTrigger
-              value="subjects"
-              className="
-                data-[state=active]:text-[#3D405B]
-                data-[state=active]:border-b-2 
-                data-[state=active]:border-[#3D405B]
-                mr-4 pb-2
-              "
-            >
-              Subjects
-            </TabsTrigger>
-          )}
-          {!isAdmin && teacherSubject && (
-            <TabsTrigger
-              value="subjects"
-              className="
-                data-[state=active]:text-[#3D405B]
-                data-[state=active]:border-b-2 
-                data-[state=active]:border-[#3D405B]
-                mr-4 pb-2
-              "
-            >
-              My Subject
-            </TabsTrigger>
-          )}
-          <TabsTrigger
-            value="student-list"
-            className="
-              data-[state=active]:text-[#3D405B]
-              data-[state=active]:border-b-2 
-              data-[state=active]:border-[#3D405B]
-              mr-4 pb-2
-            "
-          >
-            Student List
-          </TabsTrigger>
-          <TabsTrigger
-            value="assessments"
-            className="
-              data-[state=active]:text-[#3D405B]
-              data-[state=active]:border-b-2 
-              data-[state=active]:border-[#3D405B]
-              mr-4 pb-2
-            "
-          >
-            Assessments
-          </TabsTrigger>
-        </TabsList>
-
-        <ScrollArea className="whitespace-nowrap">
-          {/* Overview Tab */}
-          <TabsContent value="overview">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-              <Card className="shadow-md">
-                <CardHeader>
-                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                    <Users className="mr-2 text-[#3D405B]" />
-                    Students
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-semibold text-[#3D405B]">{classData.totalStudents}</p>
-                  <p className="text-sm text-gray-500">Capacity: {classData.optimumCapacity}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-md">
-                <CardHeader>
-                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                    <BookOpen className="mr-2 text-[#3D405B]" />
-                    Subjects
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-semibold text-[#3D405B]">{classData.subjects.length}</p>
-                  <p className="text-sm text-gray-500">Pure Sciences Curriculum</p>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-md">
-                <CardHeader>
-                  <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                    <TrendingUp className="mr-2 text-[#3D405B]" />
-                    Avg. Performance
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-semibold text-[#3D405B]">{classData.averagePerformance}%</p>
-                  <p className="text-sm text-gray-500">Class Average Grade: B+</p>
-                </CardContent>
-              </Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Class Average</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <div className={`mr-2 rounded-full p-2 ${themeColors.accentBg}`}>
+                <BarChart className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold">78.5%</div>
+                <p className="text-xs text-gray-500">+2.5% from last semester</p>
+              </div>
             </div>
+          </CardContent>
+        </Card>
 
-            <Card className="shadow-md mt-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Students</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <div className={`mr-2 rounded-full p-2 ${themeColors.secondaryBg}`}>
+                <Users className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold">32</div>
+                <p className="text-xs text-gray-500">18 boys, 14 girls</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Next Assessment</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <div className={`mr-2 rounded-full p-2 ${themeColors.accentBg}`}>
+                <Calendar className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold">May 15</div>
+                <p className="text-xs text-gray-500">Final Exam - 10:00 AM</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="flex border-b mb-6">
+        <button
+          className={`px-4 py-2 font-medium ${
+            activeTab === "overview" ? `border-b-2 ${themeColors.accentBorder} ${themeColors.accent}` : "text-gray-500"
+          }`}
+          onClick={() => setActiveTab("overview")}
+        >
+          Overview
+        </button>
+        <button
+          className={`px-4 py-2 font-medium ${
+            activeTab === "students" ? `border-b-2 ${themeColors.accentBorder} ${themeColors.accent}` : "text-gray-500"
+          }`}
+          onClick={() => setActiveTab("students")}
+        >
+          Students
+        </button>
+        <button
+          className={`px-4 py-2 font-medium ${
+            activeTab === "assessments"
+              ? `border-b-2 ${themeColors.accentBorder} ${themeColors.accent}`
+              : "text-gray-500"
+          }`}
+          onClick={() => setActiveTab("assessments")}
+        >
+          Assessments
+        </button>
+        <button
+          className={`px-4 py-2 font-medium ${
+            activeTab === "resources" ? `border-b-2 ${themeColors.accentBorder} ${themeColors.accent}` : "text-gray-500"
+          }`}
+          onClick={() => setActiveTab("resources")}
+        >
+          Resources
+        </button>
+      </div>
+
+      {activeTab === "overview" && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <Card>
               <CardHeader>
-                <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                  <School className="mr-2 text-[#3D405B]" />
-                  About {classData.name}
-                </CardTitle>
+                <CardTitle>Class Performance</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="mb-4">{classData.description}</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h3 className="font-medium text-[#3D405B] mb-1">Class Teacher</h3>
-                    <p>{classData.classTeacher}</p>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-[#3D405B] mb-1">Classroom</h3>
-                    <p>{classData.assignedClassroom}</p>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-[#3D405B] mb-1">Total Subjects</h3>
-                    <p>{classData.subjects.length}</p>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-[#3D405B] mb-1">Upcoming Tests</h3>
-                    <p>{classData.upcomingTests.length}</p>
-                  </div>
+                <div className="h-[300px] flex items-center justify-center bg-gray-100 rounded-md">
+                  <BarChart className={`h-16 w-16 ${themeColors.accent}`} />
+                  <span className="ml-2 text-gray-500">Performance Chart</span>
                 </div>
-                <hr />
-                <hr />
-                <hr />
-                <hr />
-                <ClassPerformanceAnalytics classData={classData} isAdmin={isAdmin} teacherSubject={teacherSubject} />
               </CardContent>
             </Card>
-          </TabsContent>
+          </div>
 
-          {/* Subjects Tab */}
-          <TabsContent value="subjects">
-            <Card className="mt-6 shadow-md">
+          <div>
+            <Card>
               <CardHeader>
-                <CardTitle className="text-lg text-[#3D405B] flex items-center">
-                  <BookOpen className="mr-2 text-[#3D405B]" />
-                  {isAdmin ? "Subject List" : `My Subject: ${teacherSubject}`}
-                </CardTitle>
-                <CardDescription>
-                  {isAdmin
-                    ? `All subjects offered in ${classData.name} with ECZ codes`
-                    : `Details for ${teacherSubject}`}
-                </CardDescription>
+                <CardTitle>Class Information</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 gap-4">
-                  {classData.subjects
-                    .filter((subject) => isAdmin || subject.name === teacherSubject)
-                    .map((subject) => (
-                      <div key={subject.id} className="p-4 border rounded-md hover:bg-gray-50 transition-colors">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-medium text-[#3D405B]">
-                              {subject.name}
-                              <Badge className="ml-2 bg-[#3D405B]">{subject.code}</Badge>
-                            </h3>
-                            <p className="text-sm text-gray-500">Teacher: {subject.teacher}</p>
-                          </div>
-                          <Dialog>
-                            <DialogTrigger>
-                              <Button variant="outline" size="sm" className="border-[#3D405B] text-[#3D405B]">
-                                View Details
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle className="text-xl text-[#3D405B]">
-                                  {subject.name} <span className="text-gray-500">({subject.code})</span>
-                                </DialogTitle>
-                              </DialogHeader>
-                              <div className="space-y-4 py-4">
-                                <div>
-                                  <h3 className="font-medium text-[#3D405B]">Teacher</h3>
-                                  <p>{subject.teacher}</p>
-                                </div>
-                                <div>
-                                  <h3 className="font-medium text-[#3D405B]">Description</h3>
-                                  <p>{subject.description}</p>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <h3 className="font-medium text-[#3D405B]">Examination Type</h3>
-                                    <p>{subject.examinationType}</p>
-                                  </div>
-                                  <div>
-                                    <h3 className="font-medium text-[#3D405B]">Hours per Week</h3>
-                                    <p>{subject.hoursPerWeek}</p>
-                                  </div>
-                                </div>
-                                <div>
-                                  <h3 className="font-medium text-[#3D405B] mb-2">Upcoming Tests</h3>
-                                  <ul className="space-y-1">
-                                    {classData.upcomingTests
-                                      .filter((test) => test.subject === subject.name)
-                                      .map((test) => (
-                                        <li key={test.id} className="text-sm">
-                                          • {test.name} - {test.date}
-                                        </li>
-                                      ))}
-                                  </ul>
-                                </div>
-                              </div>
-                              <DialogFooter className="flex justify-between items-center">
-                                <Link
-                                  to="/admin/class-management/$id/subject/$id"
-                                  params={{ id: subject.id.toString() }}
-                                >
-                                  <Button className="bg-green-500 hover:bg-green-600 text-white">
-                                    View Performance
-                                  </Button>
-                                </Link>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
+                <div className="space-y-4">
+                  <div className="flex items-start">
+                    <GraduationCap className="mr-2 h-5 w-5 text-gray-500" />
+                    <div>
+                      <h3 className="font-medium">Teacher</h3>
+                      <p className="text-sm text-gray-500">Ms. Sarah Johnson</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <Clock className="mr-2 h-5 w-5 text-gray-500" />
+                    <div>
+                      <h3 className="font-medium">Schedule</h3>
+                      <p className="text-sm text-gray-500">Mon, Wed, Fri - 9:00 AM to 10:30 AM</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <MapPin className="mr-2 h-5 w-5 text-gray-500" />
+                    <div>
+                      <h3 className="font-medium">Location</h3>
+                      <p className="text-sm text-gray-500">Room 203, Science Building</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <BookOpen className="mr-2 h-5 w-5 text-gray-500" />
+                    <div>
+                      <h3 className="font-medium">Textbook</h3>
+                      <p className="text-sm text-gray-500">Advanced Algebra: Concepts and Applications</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "students" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Student List</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Student</TableHead>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Average</TableHead>
+                  <TableHead>Attendance</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[
+                  { name: "Emma Thompson", id: "ST10023", avg: "92%", attendance: "98%", status: "Excellent" },
+                  { name: "James Wilson", id: "ST10045", avg: "78%", attendance: "85%", status: "Good" },
+                  { name: "Sophia Garcia", id: "ST10067", avg: "65%", attendance: "75%", status: "Needs Improvement" },
+                  { name: "Liam Johnson", id: "ST10089", avg: "88%", attendance: "92%", status: "Very Good" },
+                  { name: "Olivia Martinez", id: "ST10012", avg: "72%", attendance: "80%", status: "Good" },
+                ].map((student, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <Avatar className="h-8 w-8 mr-2">
+                          <AvatarImage src={`/placeholder.svg?height=32&width=32`} />
+                          <AvatarFallback>
+                            {student.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        {student.name}
                       </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    </TableCell>
+                    <TableCell>{student.id}</TableCell>
+                    <TableCell>{student.avg}</TableCell>
+                    <TableCell>{student.attendance}</TableCell>
+                    <TableCell>
+                      <Badge
+                        className={
+                          student.status === "Excellent"
+                            ? `${themeColors.accentBg} text-white`
+                            : student.status === "Very Good"
+                              ? `${themeColors.secondaryBg} text-white`
+                              : student.status === "Good"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-yellow-100 text-yellow-800"
+                        }
+                      >
+                        {student.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="sm">
+                        <User size={16} className="mr-2" />
+                        View
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
 
-          {/* Student Performance Tab */}
-          <TabsContent value="student-list">
-            <Card className="mt-6 shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center text-[#3D405B]">
-                  <List className="mr-2 text-[#3D405B]" />
-                  {isAdmin ? "Student List" : `Students in ${teacherSubject}`}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Student Name</TableHead>
-                      <TableHead>{isAdmin ? "Overall Grade" : `${teacherSubject} Grade`}</TableHead>
-                      <TableHead>Improvement Areas</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {classData.studentPerformance
-                      .filter((student) => {
-                        if (isAdmin) return true
+      {activeTab === "assessments" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Assessments</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Average Score</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[
+                  { title: "Midterm Exam", type: "Exam", date: "Mar 15, 2023", avg: "76%", status: "Completed" },
+                  { title: "Quadratic Equations", type: "Quiz", date: "Apr 5, 2023", avg: "82%", status: "Completed" },
+                  {
+                    title: "Polynomial Functions",
+                    type: "Assignment",
+                    date: "Apr 20, 2023",
+                    avg: "88%",
+                    status: "Completed",
+                  },
+                  { title: "Linear Algebra", type: "Project", date: "May 1, 2023", avg: "N/A", status: "In Progress" },
+                  { title: "Final Exam", type: "Exam", date: "May 15, 2023", avg: "N/A", status: "Scheduled" },
+                ].map((assessment, i) => (
+                  <TableRow key={i}>
+                    <TableCell className="font-medium">{assessment.title}</TableCell>
+                    <TableCell>{assessment.type}</TableCell>
+                    <TableCell>{assessment.date}</TableCell>
+                    <TableCell>{assessment.avg}</TableCell>
+                    <TableCell>
+                      <Badge
+                        className={
+                          assessment.status === "Completed"
+                            ? `${themeColors.accentBg} text-white`
+                            : assessment.status === "In Progress"
+                              ? `${themeColors.secondaryBg} text-white`
+                              : "bg-gray-100 text-gray-800"
+                        }
+                      >
+                        {assessment.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="sm">
+                        <FileText size={16} className="mr-2" />
+                        Details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
 
-                        // For teachers, check if the student has taken tests in their subject
-                        const studentHasSubject = classData.pastTests
-                          .filter((test) => test.subject === teacherSubject)
-                          .some((test) => test.studentScores.some((score) => score.student === student.name))
+      {activeTab === "resources" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Course Materials</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {[
+                  "Textbook: Advanced Algebra - Concepts and Applications",
+                  "Course Syllabus",
+                  "Formula Sheet",
+                  "Practice Problem Sets",
+                  "Midterm Study Guide",
+                ].map((resource, i) => (
+                  <li key={i} className="flex items-center">
+                    <FileText className="mr-2 h-5 w-5 text-gray-500" />
+                    <span>{resource}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button className={`mt-4 w-full ${themeColors.accentBg} ${themeColors.accentHover} text-white`}>
+                <Download size={16} className="mr-2" />
+                Download All Materials
+              </Button>
+            </CardContent>
+          </Card>
 
-                        return studentHasSubject
-                      })
-                      .map((student) => (
-                        <TableRow key={student.id}>
-                          <TableCell>{student.name}</TableCell>
-                          <TableCell>
-                            <Badge
-                              className={
-                                student.overallGrade.startsWith("A")
-                                  ? "bg-green-500"
-                                  : student.overallGrade.startsWith("B")
-                                    ? "bg-[#3D405B]"
-                                    : "bg-amber-500"
-                              }
-                            >
-                              {student.overallGrade}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {!isAdmin && teacherSubject
-                              ? student.improvementAreas.filter((area) => area.includes(teacherSubject)).join(", ") ||
-                                "None identified"
-                              : student.improvementAreas.length > 0
-                                ? student.improvementAreas.join(", ")
-                                : "None identified"}
-                          </TableCell>
-                          <TableCell>
-                            <Link
-                              to={isAdmin 
-                              ? "/admin/class-management/$id/student/$id"
-                              : "/teacher/classes/$id/student/$id"}
-                              params={{ id: student.id.toString() }}
-                              className="text-[#3D405B] hover:underline flex items-center"
-                            >
-                              Detailed Report <ChevronRight className="h-4 w-4 ml-1" />
-                            </Link>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Assessments Tab */}
-          <TabsContent value="assessments">
-            <AssessmentsTab
-              classData={{
-                upcomingTests: classData.upcomingTests,
-                pastTests: classData.pastTests,
-              }}
-              isAdminPath={true}
-              isAdmin={isAdmin}
-              teacherSubject={teacherSubject}
-            />
-          </TabsContent>
-        </ScrollArea>
-      </Tabs>
+          <Card>
+            <CardHeader>
+              <CardTitle>Online Resources</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {[
+                  "Khan Academy - Algebra II",
+                  "Math is Fun - Quadratic Equations",
+                  "Desmos Graphing Calculator",
+                  "Wolfram Alpha",
+                  "Virtual Math Lab",
+                ].map((resource, i) => (
+                  <li key={i} className="flex items-center">
+                    <BookOpen className="mr-2 h-5 w-5 text-gray-500" />
+                    <span>{resource}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button className={`mt-4 w-full ${themeColors.secondaryBg} ${themeColors.secondaryHover} text-white`}>
+                View All Resources
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }
