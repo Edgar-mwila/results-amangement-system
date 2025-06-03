@@ -209,10 +209,14 @@ export default function StudentPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="sm">
+                        <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => window.location.href = `student/${student.id}`}
+                        >
                         <User size={16} className="mr-2" />
                         View
-                      </Button>
+                        </Button>
                     </TableCell>
                   </TableRow>
                 ))}

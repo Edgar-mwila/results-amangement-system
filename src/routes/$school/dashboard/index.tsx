@@ -78,7 +78,7 @@ const Layout = () => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-md">
+      <div className="w-64 shadow-md">
         {/* Logo/Header */}
         <div className="px-6 py-4 bg-green-400" onClick={() => navigate({ to: `/${school}` })}>
           <h1 className="text-xl font-bold text-white">
