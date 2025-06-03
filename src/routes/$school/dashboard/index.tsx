@@ -118,7 +118,7 @@ const Layout = () => {
                   }`}
                   onClick={() => setActiveOption(path)}
                 >
-                  <Icon className="w-5 h-5 mr-3" />
+                  <Icon />
                   {label}
                 </Link>
               </li>
