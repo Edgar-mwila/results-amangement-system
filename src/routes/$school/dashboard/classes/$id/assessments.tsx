@@ -1,4 +1,4 @@
-"use client"
+
 
 import { createFileRoute } from "@tanstack/react-router"
 import { useNavigate, useParams } from "@tanstack/react-router"

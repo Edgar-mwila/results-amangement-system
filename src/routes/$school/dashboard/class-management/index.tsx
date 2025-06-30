@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input"
 import { TableRow, TableCell, TableBody, Table } from "@/components/ui/table"
-import { createFileRoute, Link } from "@tanstack/react-router"
-import { Search, BookPlus, Filter, Grid, List, X, ChevronRight, School, Users, Home } from 'lucide-react'
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { Search, BookPlus, X, School, AlertCircle, Loader2 } from 'lucide-react'
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,14 +15,6 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -30,39 +22,435 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { ClassModel, User, Grade, AcademicYear, CreateClassRequest } from "@/types"
 
-const exampleClasses = [
-  { id: 1, name: "11A", teacher: "Dr. Smith", grade: "11", students: 25, room: "101" },
-  { id: 2, name: "10A", teacher: "Mrs. Johnson", grade: "10", students: 30, room: "202" },
-  { id: 3, name: "9A", teacher: "Mr. Williams", grade: "9", students: 28, room: "Lab 1" },
-  { id: 4, name: "12A", teacher: "Ms. Brown", grade: "12", students: 22, room: "303" },
-  { id: 5, name: "Physical Education", teacher: "Coach Davis", grade: "All", students: 35, room: "Gym" },
-]
+// API functions
+const classApi = {
+  getClasses: async (schoolId: string): Promise<ClassModel[]> => {
+    const response = await fetch(`/api/${schoolId}/classes/`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch classes');
+    }
+    return response.json();
+  },
+
+  getTeachers: async (schoolId: string): Promise<User[]> => {
+    const response = await fetch(`/api/${schoolId}/users/`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch teachers');
+    }
+    return response.json();
+  },
+
+  getGrades: async (schoolId: string): Promise<Grade[]> => {
+    const response = await fetch(`/api/${schoolId}/grades/`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch grades');
+    }
+    return response.json();
+  },
+
+  getAcademicYears: async (schoolId: string): Promise<AcademicYear[]> => {
+    const response = await fetch(`/api/${schoolId}/academic-years/`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch academic years');
+    }
+    return response.json();
+  },
+
+  createClass: async (schoolId: string, classData: CreateClassRequest): Promise<ClassModel> => {
+    const response = await fetch(`/api/${schoolId}/classes/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(classData),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to create class');
+    }
+    
+    return response.json();
+  },
+};
+
+// Loading skeleton component
+const ClassTableSkeleton = () => (
+  <div className="rounded-xl border border-gray-200 overflow-hidden">
+    <Table>
+      <thead>
+        <TableRow className="bg-gray-50 hover:bg-gray-50">
+          <TableCell className="font-semibold text-gray-700">Class Name</TableCell>
+          <TableCell className="font-semibold text-gray-700">Teacher</TableCell>
+          <TableCell className="font-semibold text-gray-700">Grade</TableCell>
+          <TableCell className="font-semibold text-gray-700">Students</TableCell>
+        </TableRow>
+      </thead>
+      <TableBody>
+        {Array.from({ length: 5 }).map((_, index) => (
+          <TableRow key={index} className="border-t border-gray-100">
+            <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+            <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+            <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+            <TableCell><Skeleton className="h-6 w-8 rounded-full" /></TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+);
+
+// Create Class Dialog Component
+const CreateClassDialog = ({ schoolId }: { schoolId: string }) => {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState<{
+    name: string;
+    grade?: Grade;
+    academicYear?: AcademicYear;
+    classTeacher?: User;
+    gradeId?: number;
+    academicYearId?: number;
+    classTeacherId?: string;
+  }>({
+    name: '',
+    grade: undefined,
+    academicYear: undefined,
+    classTeacher: undefined,
+    gradeId: 0,
+    academicYearId: 0,
+    classTeacherId: '',
+  });
+
+  const queryClient = useQueryClient();
+
+  const { data: teachers, isLoading: teachersLoading } = useQuery({
+    queryKey: ['teachers', schoolId],
+    queryFn: () => classApi.getTeachers(schoolId),
+    enabled: open,
+  });
+
+  const { data: grades, isLoading: gradesLoading } = useQuery({
+    queryKey: ['grades', schoolId],
+    queryFn: () => classApi.getGrades(schoolId),
+    enabled: open,
+  });
+
+  const { data: academicYears, isLoading: academicYearsLoading } = useQuery({
+    queryKey: ['academic-years', schoolId],
+    queryFn: () => classApi.getAcademicYears(schoolId),
+    enabled: open,
+  });
+
+  const createClassMutation = useMutation({
+    mutationFn: (data: CreateClassRequest) => classApi.createClass(schoolId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['classes', schoolId] });
+      toast.success('Class created successfully!');
+      setOpen(false);
+      setFormData({
+        name: '',
+        grade: undefined,
+        academicYear: undefined,
+        classTeacher: undefined,
+        gradeId: 0,
+        academicYearId: 0,
+        classTeacherId: '',
+      });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to create class');
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    formData.grade = grades?.find(g => g.id === formData.gradeId);
+    formData.academicYear = academicYears?.find(y => y.id === formData.academicYearId);
+    formData.classTeacher = teachers?.find(t => t.id === formData.classTeacherId);
+
+    if (!formData.name) {
+      toast.error('Please enter the class name');
+      return;
+    }
+    if (!formData.grade) {
+      toast.error('Please select a grade');
+      return;
+    }
+    if (!formData.academicYear) {
+      toast.error('Please select an academic year');
+      return;
+    }
+    if (!formData.classTeacher) {
+      toast.error('Please select a class teacher');
+      return;
+    }
+
+    // Submit only the required IDs as per CreateClassRequest
+    createClassMutation.mutate({
+      name: formData.name,
+      gradeId: formData.gradeId!,
+      academicYearId: formData.academicYearId!,
+      classTeacherId: formData.classTeacherId!,
+    });
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      grade: undefined,
+      academicYear: undefined,
+      classTeacher: undefined,
+      gradeId: 0,
+      academicYearId: 0,
+      classTeacherId: '',
+    });
+  };
+
+  const activeAcademicYear = academicYears?.find(year => year.isActive);
+
+  return (
+    <Dialog open={open} onOpenChange={(newOpen) => {
+      setOpen(newOpen);
+      if (!newOpen) resetForm();
+    }}>
+      <DialogTrigger asChild>
+        <Button className="bg-green-400 hover:bg-green-500 text-white">
+          <BookPlus className="mr-2 h-4 w-4" />
+          Add New Class
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle className="text-xl">Create New Class</DialogTitle>
+          <DialogDescription>
+            Fill in the details to create a new class in the system.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-5 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right font-medium">
+                Class Name
+              </Label>
+              <Input
+                id="name"
+                className="col-span-3 focus:ring-green-400 focus:border-green-400"
+                placeholder="e.g. 11A"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="grade" className="text-right font-medium">
+                Grade
+              </Label>
+              <Select
+                value={formData.gradeId?.toString()}
+                onValueChange={(value) => {
+                  const numericValue = Number(value);
+                  const grade = grades?.find(g => g.id === numericValue);
+                  if (!grade) {
+                    toast.error('Invalid grade selected');
+                    console.error('Invalid grade selected:', value);
+                    console.log('Available grades:', grades);
+                  }
+                  setFormData(prev => ({
+                    ...prev,
+                    grade: grade,
+                    gradeId: numericValue,
+                  }));
+                }}
+              >
+                <SelectTrigger className="col-span-3 focus:ring-green-400 focus:border-green-400">
+                  <SelectValue placeholder="Select grade" />
+                </SelectTrigger>
+                <SelectContent>
+                  {gradesLoading ? (
+                    <div className="p-2">
+                      <Skeleton className="h-4 w-full" />
+                    </div>
+                  ) : (
+                    grades?.map((grade) => (
+                      <SelectItem key={grade.id} value={grade.id.toString()}>
+                        Grade {grade.level}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="teacher" className="text-right font-medium">
+                Class Teacher
+              </Label>
+              <Select
+                value={formData.classTeacherId}
+                onValueChange={(value) => {
+                  const teacher = teachers?.find(t => t.id === value);
+                  setFormData(prev => ({
+                    ...prev,
+                    classTeacher: teacher,
+                    classTeacherId: value,
+                  }));
+                }}
+              >
+                <SelectTrigger className="col-span-3 focus:ring-green-400 focus:border-green-400">
+                  <SelectValue placeholder="Select teacher" />
+                </SelectTrigger>
+                <SelectContent>
+                  {teachersLoading ? (
+                    <div className="p-2">
+                      <Skeleton className="h-4 w-full" />
+                    </div>
+                  ) : (
+                    teachers?.map((teacher) => (
+                      <SelectItem key={teacher.id} value={teacher.id}>
+                        {teacher.firstName} {teacher.lastName}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="academicYear" className="text-right font-medium">
+                Academic Year
+              </Label>
+              <Select
+                value={formData.academicYearId?.toString()}
+                onValueChange={(value) => {
+                  const numericValue = Number(value);
+                  const year = academicYears?.find(y => y.id === numericValue);
+                  setFormData(prev => ({
+                    ...prev,
+                    academicYear: year,
+                    academicYearId: numericValue,
+                  }));
+                }}
+              >
+                <SelectTrigger className="col-span-3 focus:ring-green-400 focus:border-green-400">
+                  <SelectValue placeholder="Select academic year" />
+                </SelectTrigger>
+                <SelectContent>
+                  {academicYearsLoading ? (
+                    <div className="p-2">
+                      <Skeleton className="h-4 w-full" />
+                    </div>
+                  ) : (
+                    academicYears?.map((year) => (
+                      <SelectItem key={year.id} value={year.id.toString()}>
+                        {year.year}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {activeAcademicYear && (
+              <div className="col-span-4 text-sm text-gray-600">
+                Active Academic Year: {activeAcademicYear.year}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              className="border-gray-200"
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="bg-green-400 hover:bg-green-500 text-white"
+              disabled={createClassMutation.isPending}
+            >
+              {createClassMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Create Class'
+              )}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 const ClassManagement = () => {
-  const [search, setSearch] = useState("")
-  const [sortBy, setSortBy] = useState("name")
-  const [viewMode, setViewMode] = useState("grid")
+  const navigate = useNavigate();
+  const { school } = Route.useParams();
+  const [search, setSearch] = useState("");
+
+  const { 
+    data: classes = [], 
+    isLoading, 
+    error,
+    refetch 
+  } = useQuery({
+    queryKey: ['classes', school],
+    queryFn: () => classApi.getClasses(school),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 3,
+  });
 
   const filteredClasses = useMemo(() => {
-    const filtered = exampleClasses.filter(
+    const filtered = classes.filter(
       (cls) =>
         cls.name.toLowerCase().includes(search.toLowerCase()) ||
-        cls.grade.toLowerCase().includes(search.toLowerCase()) ||
-        cls.room.toLowerCase().includes(search.toLowerCase()) ||
-        cls.teacher.toLowerCase().includes(search.toLowerCase())
-    )
+        cls.grade.level.toString().includes(search.toLowerCase()) ||
+        `${cls.classTeacher.firstName} ${cls.classTeacher.lastName}`.toLowerCase().includes(search.toLowerCase())
+    );
 
     return filtered.sort((a, b) => {
-      if (sortBy === "name") return a.name.localeCompare(b.name)
-      if (sortBy === "grade") return a.grade.localeCompare(b.grade)
-      if (sortBy === "students") return b.students - a.students
-      return 0
-    })
-  }, [search, sortBy])
+      return a.name.localeCompare(b.name);
+    });
+  }, [classes, search]);
 
   const clearSearch = () => {
-    setSearch("")
+    setSearch("");
+  };
+
+  if (error) {
+    return (
+      <div className="flex flex-col space-y-6 p-6 bg-white">
+        <div className="flex flex-col space-y-2">
+          <h1 className="text-2xl font-bold text-gray-800">Class Management</h1>
+          <p className="text-gray-500">Manage all classes, assign teachers, and monitor student enrollment</p>
+        </div>
+        
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load classes: {error.message}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="ml-2"
+              onClick={() => refetch()}
+            >
+              Try Again
+            </Button>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   return (
@@ -79,7 +467,7 @@ const ClassManagement = () => {
           </div>
           <Input
             type="text"
-            placeholder="Search by class, teacher, grade or room..."
+            placeholder="Search by class, teacher, or grade..."
             className="pl-10 pr-10 border-gray-200 focus:border-green-400 focus:ring-green-400"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -95,163 +483,25 @@ const ClassManagement = () => {
         </div>
 
         <div className="flex flex-wrap gap-2 w-full md:w-auto">
-          <div className="flex items-center bg-gray-50 rounded-lg p-1">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`p-1 rounded ${
-                viewMode === "grid" ? "bg-white shadow-sm" : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              <Grid className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setViewMode("table")}
-              className={`p-1 rounded ${
-                viewMode === "table" ? "bg-white shadow-sm" : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              <List className="h-4 w-4" />
-            </button>
-          </div>
-
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[180px] border-gray-200 focus:ring-green-400">
-              <div className="flex items-center">
-                <Filter className="mr-2 h-4 w-4 text-gray-400" />
-                <SelectValue placeholder="Sort by" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="name">Class Name</SelectItem>
-              <SelectItem value="grade">Grade Level</SelectItem>
-              <SelectItem value="students">Number of Students</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="bg-green-400 hover:bg-green-500 text-white">
-                <BookPlus className="mr-2 h-4 w-4" />
-                Add New Class
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle className="text-xl">Create New Class</DialogTitle>
-                <DialogDescription>
-                  Fill in the details to create a new class in the system.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-5 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right font-medium">
-                    Class Name
-                  </Label>
-                  <Input id="name" className="col-span-3 focus:ring-green-400 focus:border-green-400" placeholder="e.g. 11A" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="teacher" className="text-right font-medium">
-                    Teacher
-                  </Label>
-                  <Input id="teacher" className="col-span-3 focus:ring-green-400 focus:border-green-400" placeholder="e.g. Dr. Smith" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="grade" className="text-right font-medium">
-                    Grade
-                  </Label>
-                  <Input id="grade" className="col-span-3 focus:ring-green-400 focus:border-green-400" placeholder="e.g. 11" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="room" className="text-right font-medium">
-                    Room
-                  </Label>
-                  <Input id="room" className="col-span-3 focus:ring-green-400 focus:border-green-400" placeholder="e.g. 101" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="students" className="text-right font-medium">
-                    Max Students
-                  </Label>
-                  <Input id="students" type="number" className="col-span-3 focus:ring-green-400 focus:border-green-400" placeholder="e.g. 30" />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" className="border-gray-200">Cancel</Button>
-                <Button type="submit" className="bg-green-400 hover:bg-green-500 text-white">
-                  Create Class
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <CreateClassDialog schoolId={school} />
         </div>
       </div>
 
-      {filteredClasses.length === 0 ? (
+      {isLoading ? (
+        <ClassTableSkeleton />
+      ) : filteredClasses.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-xl">
           <School className="h-12 w-12 text-gray-300 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-1">No classes found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-1">
+            {search ? 'No classes found' : 'No classes yet'}
+          </h3>
           <p className="text-gray-500 mb-4 text-center max-w-md">
-            We couldn't find any classes matching your search criteria. Try adjusting your search or create a new class.
+            {search 
+              ? "We couldn't find any classes matching your search criteria. Try adjusting your search or create a new class."
+              : "Get started by creating your first class."
+            }
           </p>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="bg-green-400 hover:bg-green-500 text-white">
-                <BookPlus className="mr-2 h-4 w-4" />
-                Add New Class
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              {/* Dialog content same as above */}
-            </DialogContent>
-          </Dialog>
-        </div>
-      ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredClasses.map((cls) => (
-            <Card key={cls.id} className="overflow-hidden hover:shadow-md transition-shadow border-gray-200">
-              <div className="h-2 bg-gradient-to-r from-green-400 to-blue-400" />
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-lg font-bold">
-                      <Link 
-                        to="/$school/dashboard/class-management/$id" 
-                        params={{ id: cls.id.toString() }}
-                        className="text-gray-800 hover:text-blue-500 transition-colors"
-                      >
-                        {cls.name}
-                      </Link>
-                    </CardTitle>
-                    <CardDescription className="text-gray-500">Grade {cls.grade}</CardDescription>
-                  </div>
-                  <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">{cls.students} students</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="pb-2">
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm">
-                    <Users className="h-4 w-4 mr-2 text-gray-400" />
-                    <span className="text-gray-600">Teacher: </span>
-                    <span className="ml-1 font-medium text-gray-800">{cls.teacher}</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <Home className="h-4 w-4 mr-2 text-gray-400" />
-                    <span className="text-gray-600">Room: </span>
-                    <span className="ml-1 font-medium text-gray-800">{cls.room}</span>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="pt-2 flex justify-end">
-                <Link 
-                  to="/$school/dashboard/class-management/$id" 
-                  params={{ id: cls.id.toString() }}
-                  className="text-sm text-blue-500 hover:text-blue-600 flex items-center"
-                >
-                  View details
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Link>
-              </CardFooter>
-            </Card>
-          ))}
+          <CreateClassDialog schoolId={school} />
         </div>
       ) : (
         <div className="rounded-xl border border-gray-200 overflow-hidden">
@@ -262,37 +512,33 @@ const ClassManagement = () => {
                 <TableCell className="font-semibold text-gray-700">Teacher</TableCell>
                 <TableCell className="font-semibold text-gray-700">Grade</TableCell>
                 <TableCell className="font-semibold text-gray-700">Students</TableCell>
-                <TableCell className="font-semibold text-gray-700">Room</TableCell>
-                <TableCell className="font-semibold text-gray-700 text-right">Actions</TableCell>
               </TableRow>
             </thead>
             <TableBody>
               {filteredClasses.map((cls) => (
-                <TableRow key={cls.id} className="hover:bg-gray-50 border-t border-gray-100">
+                <TableRow
+                  key={cls.id}
+                  className="hover:bg-gray-50 border-t border-gray-100 cursor-pointer"
+                  onClick={() => navigate({ 
+                    to: "/$school/dashboard/class-management/$id", 
+                    params: { school: school, id: cls.id } 
+                  })}
+                >
                   <TableCell className="font-medium">
-                    <Link 
-                      to="/$school/dashboard/class-management/$id" 
-                      params={{ id: cls.id.toString() }}
-                      className="text-gray-800 hover:text-blue-500 transition-colors"
-                    >
+                    <span className="text-gray-800 hover:text-blue-500 transition-colors">
                       {cls.name}
-                    </Link>
+                    </span>
                   </TableCell>
-                  <TableCell>{cls.teacher}</TableCell>
-                  <TableCell>{cls.grade}</TableCell>
                   <TableCell>
-                    <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">{cls.students}</Badge>
+                    {cls.classTeacher && cls.classTeacher.firstName && cls.classTeacher.lastName
+                      ? `${cls.classTeacher.firstName} ${cls.classTeacher.lastName}`
+                      : ""}
                   </TableCell>
-                  <TableCell>{cls.room}</TableCell>
-                  <TableCell className="text-right">
-                    <Link 
-                      to="/$school/dashboard/class-management/$id" 
-                      params={{ id: cls.id.toString() }}
-                      className="text-sm text-blue-500 hover:text-blue-600 inline-flex items-center"
-                    >
-                      View
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Link>
+                  <TableCell>{cls.grade && cls.grade.level != null ? cls.grade.level : ""}</TableCell>
+                  <TableCell>
+                    <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
+                      {cls.studentCount}
+                    </Badge>
                   </TableCell>
                 </TableRow>
               ))}
@@ -301,9 +547,9 @@ const ClassManagement = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 export const Route = createFileRoute('/$school/dashboard/class-management/')({
   component: ClassManagement,
-})
+});

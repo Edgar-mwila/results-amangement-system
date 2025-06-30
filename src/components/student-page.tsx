@@ -1,139 +1,388 @@
-"use client"
-
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { BarChart, BookOpen, Calendar, Download, GraduationCap, Plus, Search, TrendingUp, User } from "lucide-react"
+
+import { Plus, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { themeColors } from "./ui/theme-config"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog"
+import { useNavigate, useParams } from "@tanstack/react-router"
 
-export default function StudentPage() {
-  const [searchQuery, setSearchQuery] = useState("")
+// Updated type definitions to match your backend interface
+interface SubjectData {
+  name: string;
+  code: string;
+  url: string;
+}
 
-  // Filter students based on search query
-  const filteredStudents = [
-    { id: "ST10023", name: "Emma Thompson", grade: "10", gpa: "3.92", attendance: "98%" },
-    { id: "ST10045", name: "James Wilson", grade: "10", gpa: "3.45", attendance: "92%" },
-    { id: "ST10067", name: "Sophia Garcia", grade: "10", gpa: "3.21", attendance: "95%" },
-    { id: "ST10089", name: "Liam Johnson", grade: "10", gpa: "3.78", attendance: "97%" },
-    { id: "ST10012", name: "Olivia Martinez", grade: "10", gpa: "3.56", attendance: "94%" },
-    { id: "ST10034", name: "Noah Brown", grade: "10", gpa: "3.67", attendance: "96%" },
-    { id: "ST10056", name: "Ava Davis", grade: "10", gpa: "3.89", attendance: "99%" },
-    { id: "ST10078", name: "William Miller", grade: "10", gpa: "3.12", attendance: "91%" },
-    { id: "ST10090", name: "Isabella Wilson", grade: "10", gpa: "3.34", attendance: "93%" },
-    { id: "ST10101", name: "Benjamin Moore", grade: "10", gpa: "3.45", attendance: "95%" },
-  ].filter(
-    (student) =>
-      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.id.toLowerCase().includes(searchQuery.toLowerCase()),
+interface UserData {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  status: string;
+}
+
+interface GuardianContact {
+  id: string;
+  type: string;
+  value: string;
+}
+
+interface GuardianData {
+  id: string;
+  firstName: string;
+  otherName: string;
+  lastName: string;
+  contacts: GuardianContact[];
+}
+
+interface ClassSubjectData {
+  subject: SubjectData;
+  teacher: UserData;
+}
+
+interface AssessmentData {
+  id: number;
+  name: string;
+  totalMarks: number;
+  dateOfAssessment: string;
+  classSubjects: ClassSubjectData;
+}
+
+interface Grade {
+  id: string;
+  level: number;
+  name: string;
+}
+
+interface AcademicYear {
+  id: string;
+  year: string;
+  startDate: string;
+  endDate: string;
+}
+
+interface ClassData {
+  id: string;
+  name: string;
+  grade: Grade;
+  academicYear: AcademicYear;
+  classSubjects: ClassSubjectData[];
+}
+
+interface ClassStudentData {
+  classModel: ClassData;
+}
+
+interface GuardianStudentData {
+  guardian: GuardianData;
+  relationship: string;
+}
+
+interface StudentAssessmentData {
+  comment: string;
+  marksObtained: number;
+  assessment: AssessmentData;
+}
+
+export interface StudentData {
+  id: string;
+  firstName: string;
+  lastName: string;
+  otherName: string;
+  sex: 'M' | 'F';
+  gender: string;
+  status: string;
+  dateOfBirth: string;
+  province: string;
+  city: string;
+  township: string;
+  address: string;
+  classStudents: ClassStudentData[];
+  guardians: GuardianStudentData[];
+  assessments: StudentAssessmentData[];
+  createdAt: string;
+}
+
+interface StudentPageProps {
+  students: StudentData[];
+}
+
+const themeColors = {
+  accentBg: "bg-blue-600",
+  accentHover: "hover:bg-blue-700"
+};
+
+function CreateStudentDialog() {
+  const [open, setOpen] = useState(false)
+  const [form, setForm] = useState({
+    firstName: "",
+    otherName: "",
+    lastName: "",
+    sex: "M",
+    dateOfBirth: "",
+    gender: "",
+    status: "Active",
+    province: "",
+    city: "",
+    township: "",
+    address: "",
+    postalAddress: "",
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/students/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) throw new Error("Failed to create student")
+      setOpen(false)
+      setForm({
+        firstName: "",
+        otherName: "",
+        lastName: "",
+        sex: "M",
+        dateOfBirth: "",
+        gender: "",
+        status: "Active",
+        province: "",
+        city: "",
+        township: "",
+        address: "",
+        postalAddress: "",
+      })
+      // Reload the page to refresh the student list
+      window.location.reload()
+    } catch (err) {
+      setError(
+        err && typeof err === "object" && "message" in err
+          ? String((err as { message?: unknown }).message)
+          : "Error creating student"
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          className={`flex items-center gap-2 ${themeColors.accentBg} ${themeColors.accentHover} text-white`}
+        >
+          <Plus size={16} />
+          Add Student
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add New Student</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="flex gap-2">
+            <Input
+              name="firstName"
+              placeholder="First Name"
+              value={form.firstName}
+              onChange={handleChange}
+              required
+            />
+            <Input
+              name="otherName"
+              placeholder="Other Name"
+              value={form.otherName}
+              onChange={handleChange}
+            />
+            <Input
+              name="lastName"
+              placeholder="Last Name"
+              value={form.lastName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="flex gap-2">
+            <select
+              name="sex"
+              value={form.sex}
+              onChange={handleChange}
+              className="border rounded px-2 py-1"
+              required
+            >
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+            </select>
+            <Input
+              name="gender"
+              placeholder="Gender"
+              value={form.gender}
+              onChange={handleChange}
+            />
+            <Input
+              name="dateOfBirth"
+              type="date"
+              value={form.dateOfBirth}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="flex gap-2">
+            <Input
+              name="province"
+              placeholder="Province"
+              value={form.province}
+              onChange={handleChange}
+            />
+            <Input
+              name="city"
+              placeholder="City"
+              value={form.city}
+              onChange={handleChange}
+            />
+            <Input
+              name="township"
+              placeholder="Township"
+              value={form.township}
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <textarea
+              name="address"
+              placeholder="Address"
+              value={form.address}
+              onChange={handleChange}
+              className="w-full border rounded px-2 py-1"
+              rows={2}
+            />
+          </div>
+          <div className="flex gap-2">
+            <Input
+              name="postalAddress"
+              placeholder="Postal Address"
+              value={form.postalAddress}
+              onChange={handleChange}
+            />
+            <select
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+              className="border rounded px-2 py-1"
+            >
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+              <option value="Graduated">Graduated</option>
+            </select>
+          </div>
+          {error && <div className="text-red-500 text-sm">{error}</div>}
+          <DialogFooter>
+            <Button type="submit" disabled={loading} onClick={handleSubmit}>
+              {loading ? "Saving..." : "Save"}
+            </Button>
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+          </div>
+      </DialogContent>
+    </Dialog>
   )
+}
+
+export default function StudentPage({ students }: StudentPageProps) {
+  const { school } = useParams({ strict: false });
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("")
+  const [gradeFilter, setGradeFilter] = useState<string>("")
+  const [statusFilter, setStatusFilter] = useState<string>("")
+
+  // Helper function to get full name
+  const getFullName = (student: StudentData): string => {
+    const parts = [student.firstName, student.otherName, student.lastName].filter(Boolean)
+    return parts.join(' ')
+  }
+
+  // Helper function to get current grade from classStudents
+  const getCurrentGrade = (student: StudentData): string => {
+    if (student.classStudents && student.classStudents.length > 0) {
+      // Get the most recent class enrollment
+      const latestClass = student.classStudents[0]
+      return latestClass.classModel.grade.level.toString()
+    }
+    return 'N/A'
+  }
+
+  // Helper function to generate student ID display
+  const getStudentIdDisplay = (student: StudentData): string => {
+    return `ST${student.id.toString().padStart(5, '0')}`
+  }
+
+  // Get unique grades and statuses for filter dropdowns
+  const gradeOptions = Array.from(new Set(
+    students
+      .map(student => getCurrentGrade(student))
+      .filter(grade => grade !== 'N/A')
+  )).sort()
+  
+  const statusOptions = Array.from(new Set(
+    students.map(student => student.status || "Active")
+  ))
+
+  // Filter students based on search query, grade, and status
+  const filteredStudents = students.filter((student) => {
+    const fullName = getFullName(student)
+    const studentId = getStudentIdDisplay(student)
+    const currentGrade = getCurrentGrade(student)
+    
+    const matchesQuery =
+      fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      studentId.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    const matchesGrade = gradeFilter ? currentGrade === gradeFilter : true
+    const matchesStatus = statusFilter ? (student.status || "Active") === statusFilter : true
+    
+    return matchesQuery && matchesGrade && matchesStatus
+  })
 
   return (
     <div className="container mx-auto p-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Students</h1>
-          <p className="text-gray-500">Manage and view student information</p>
+          <h1 className="text-3xl font-bold">Student Management</h1>
         </div>
         <div className="flex gap-2 mt-4 md:mt-0">
-          <Button variant="outline" className="flex items-center gap-2">
-            <Download size={16} />
-            Export
-          </Button>
-          <Button className={`flex items-center gap-2 ${themeColors.accentBg} ${themeColors.accentHover} text-white`}>
-            <Plus size={16} />
-            Add Student
-          </Button>
+          <CreateStudentDialog />
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Total Students</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center">
-              <div className={`mr-2 rounded-full p-2 ${themeColors.accentBg}`}>
-                <User className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold">1,250</div>
-                <p className="text-xs text-gray-500">+50 from last year</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Average GPA</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center">
-              <div className={`mr-2 rounded-full p-2 ${themeColors.secondaryBg}`}>
-                <GraduationCap className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold">3.42</div>
-                <div className="flex items-center text-xs text-green-500">
-                  <TrendingUp className="mr-1 h-3 w-3" />
-                  <span>+0.08 from last year</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Attendance Rate</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center">
-              <div className={`mr-2 rounded-full p-2 ${themeColors.accentBg}`}>
-                <Calendar className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold">94.5%</div>
-                <div className="flex items-center text-xs text-green-500">
-                  <TrendingUp className="mr-1 h-3 w-3" />
-                  <span>+1.2% from last year</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Graduation Rate</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center">
-              <div className={`mr-2 rounded-full p-2 ${themeColors.secondaryBg}`}>
-                <BookOpen className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold">96.8%</div>
-                <div className="flex items-center text-xs text-green-500">
-                  <TrendingUp className="mr-1 h-3 w-3" />
-                  <span>+0.5% from last year</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       <Card className="mb-6">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Student Directory</CardTitle>
-          <CardDescription>Search and manage students</CardDescription>
+          <div className="text-sm text-gray-500">Total Students: {filteredStudents.length}</div>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -147,426 +396,290 @@ export default function StudentPage() {
               />
             </div>
             <div className="flex gap-2">
-              <Button variant="outline">Grade Level</Button>
-              <Button variant="outline">GPA</Button>
-              <Button variant="outline">Status</Button>
+              <select
+                className="border rounded px-2 py-1"
+                value={gradeFilter}
+                onChange={(e) => setGradeFilter(e.target.value)}
+              >
+                <option value="">All Grades</option>
+                {gradeOptions.map((grade) => (
+                  <option key={grade} value={grade}>
+                    Grade {grade}
+                  </option>
+                ))}
+              </select>
+              <select
+                className="border rounded px-2 py-1"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="">All Statuses</option>
+                {statusOptions.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
           <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Student</TableHead>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Grade</TableHead>
-                  <TableHead>GPA</TableHead>
-                  <TableHead>Attendance</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredStudents.map((student) => (
-                  <TableRow key={student.id}>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <Avatar className="h-8 w-8 mr-2">
-                          <AvatarImage src={`/placeholder.svg?height=32&width=32`} />
-                          <AvatarFallback>
-                            {student.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        {student.name}
+            <div className="bg-gray-50 border-b">
+              <div className="grid grid-cols-6 gap-4 p-4 font-medium">
+                <div>Student</div>
+                <div>ID</div>
+                <div>Grade</div>
+                <div>Gender</div>
+                <div>Status</div>
+                <div>Guardians</div>
+              </div>
+            </div>
+            <div className="divide-y">
+              {filteredStudents.map((student) => {
+                const fullName = getFullName(student)
+                const studentId = getStudentIdDisplay(student)
+                const currentGrade = getCurrentGrade(student)
+                const guardianCount = student.guardians?.length || 0
+                
+                return (
+                  <div 
+                    key={student.id} 
+                    onClick={() => navigate({ to: '/$school/dashboard/student-management/student/$id', params: { school: school, id: student.id } })}
+                    className="cursor-pointer hover:bg-gray-50 p-4 grid grid-cols-6 gap-4 items-center"
+                  >
+                    <div className="flex items-center">
+                      <Avatar className="h-8 w-8 mr-2">
+                        <AvatarImage src={`/placeholder.svg?height=32&width=32`} />
+                        <AvatarFallback>
+                          {student.firstName[0]}{student.lastName[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="font-medium">{fullName}</div>
+                        <div className="text-sm text-gray-500">
+                          {student.city && student.province ? `${student.city}, ${student.province}` : 'No location'}
+                        </div>
                       </div>
-                    </TableCell>
-                    <TableCell>{student.id}</TableCell>
-                    <TableCell>{student.grade}</TableCell>
-                    <TableCell>{student.gpa}</TableCell>
-                    <TableCell>{student.attendance}</TableCell>
-                    <TableCell>
+                    </div>
+                    <div className="font-mono">{studentId}</div>
+                    <div>
+                      {currentGrade !== 'N/A' ? `Grade ${currentGrade}` : 'Not Enrolled'}
+                    </div>
+                    <div>
+                      <Badge variant="outline">
+                        {student.sex === 'M' ? 'Male' : 'Female'}
+                      </Badge>
+                    </div>
+                    <div>
                       <Badge
                         className={
-                          Number.parseFloat(student.gpa) >= 3.7
-                            ? `${themeColors.accentBg} text-white`
-                            : Number.parseFloat(student.gpa) >= 3.3
-                              ? `${themeColors.secondaryBg} text-white`
-                              : Number.parseFloat(student.gpa) >= 3.0
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-yellow-100 text-yellow-800"
+                          student.status === "Active"
+                            ? "bg-green-500 text-white"
+                            : student.status === "Inactive"
+                            ? "bg-red-500 text-white"
+                            : student.status === "Graduated"
+                            ? "bg-blue-500 text-white"
+                            : "bg-yellow-400 text-black"
                         }
                       >
-                        {Number.parseFloat(student.gpa) >= 3.7
-                          ? "Excellent"
-                          : Number.parseFloat(student.gpa) >= 3.3
-                            ? "Very Good"
-                            : Number.parseFloat(student.gpa) >= 3.0
-                              ? "Good"
-                              : "Needs Improvement"}
+                        {student.status || 'Active'}
                       </Badge>
-                    </TableCell>
-                    <TableCell>
-                        <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => window.location.href = `student/${student.id}`}
-                        >
-                        <User size={16} className="mr-2" />
-                        View
-                        </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    </div>
+                    <div>
+                      <Badge variant="secondary">
+                        {guardianCount} Guardian{guardianCount !== 1 ? 's' : ''}
+                      </Badge>
+                    </div>
+                  </div>
+                )
+              })}
+              {filteredStudents.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No students found matching your criteria
+                </div>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="overview" className="mb-6">
-        <TabsList className="grid w-full grid-cols-4 mb-6">
-          <TabsTrigger
-            value="overview"
-            className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
-          >
-            Overview
-          </TabsTrigger>
-          <TabsTrigger
-            value="academics"
-            className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
-          >
-            Academics
-          </TabsTrigger>
-          <TabsTrigger
-            value="attendance"
-            className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
-          >
-            Attendance
-          </TabsTrigger>
-          <TabsTrigger
-            value="demographics"
-            className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
-          >
-            Demographics
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Student Distribution by Grade</CardTitle>
-                <CardDescription>Number of students per grade level</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px] flex items-center justify-center bg-gray-100 rounded-md">
-                  <BarChart className={`h-16 w-16 ${themeColors.accent}`} />
-                  <span className="ml-2 text-gray-500">Grade Distribution Chart</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Students per Grade */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Students per Grade</CardTitle>
+            <CardDescription>Breakdown of students by grade</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {Array.from(
+                students.reduce((acc, student) => {
+                  const grade = getCurrentGrade(student)
+                  if (grade !== 'N/A') {
+                    acc.set(grade, (acc.get(grade) || 0) + 1)
+                  }
+                  return acc
+                }, new Map<string, number>())
+              )
+              .sort(([a], [b]) => parseInt(a) - parseInt(b))
+              .map(([grade, count]) => (
+                <div key={grade} className="flex justify-between items-center py-1">
+                  <span className="text-sm">Grade {grade}</span>
+                  <Badge variant="secondary">{count}</Badge>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Student Statistics</CardTitle>
-                <CardDescription>Key metrics and figures</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Gender Distribution</div>
-                    <div className="flex justify-between mt-1">
-                      <span>Male: 48%</span>
-                      <span>Female: 52%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "48%" }}></div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Student-Teacher Ratio</div>
-                    <div className="text-2xl font-bold mt-1">15:1</div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">College Acceptance Rate</div>
-                    <div className="text-2xl font-bold mt-1">88%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "88%" }}></div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Extracurricular Participation</div>
-                    <div className="text-2xl font-bold mt-1">76%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "76%" }}></div>
-                    </div>
-                  </div>
+              ))}
+              {students.filter(s => getCurrentGrade(s) === 'N/A').length > 0 && (
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-sm">Not Enrolled</span>
+                  <Badge variant="outline">
+                    {students.filter(s => getCurrentGrade(s) === 'N/A').length}
+                  </Badge>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="academics">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>GPA Distribution</CardTitle>
-                <CardDescription>Student GPA breakdown</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px] flex items-center justify-center bg-gray-100 rounded-md">
-                  <BarChart className={`h-16 w-16 ${themeColors.accent}`} />
-                  <span className="ml-2 text-gray-500">GPA Distribution Chart</span>
+        {/* Students per Status */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Students per Status</CardTitle>
+            <CardDescription>Breakdown of students by status</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {Array.from(
+                students.reduce((acc, student) => {
+                  const status = student.status || "Active"
+                  acc.set(status, (acc.get(status) || 0) + 1)
+                  return acc
+                }, new Map<string, number>())
+              ).map(([status, count]) => (
+                <div key={status} className="flex justify-between items-center py-1">
+                  <span className="text-sm">{status}</span>
+                  <Badge
+                    className={
+                      status === "Active"
+                        ? "bg-green-500 text-white"
+                        : status === "Inactive"
+                        ? "bg-red-500 text-white"
+                        : status === "Graduated"
+                        ? "bg-blue-500 text-white"
+                        : "bg-yellow-400 text-black"
+                    }
+                  >
+                    {count}
+                  </Badge>
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Academic Metrics</CardTitle>
-                <CardDescription>Performance indicators</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Honor Roll Students</div>
-                    <div className="text-2xl font-bold mt-1">32%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "32%" }}></div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">AP Course Enrollment</div>
-                    <div className="text-2xl font-bold mt-1">45%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "45%" }}></div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Students Needing Support</div>
-                    <div className="text-2xl font-bold mt-1">12%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className="bg-yellow-500 h-2 rounded-full" style={{ width: "12%" }}></div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">National Merit Scholars</div>
-                    <div className="text-2xl font-bold mt-1">5%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "5%" }}></div>
-                    </div>
-                  </div>
+        {/* Students by Gender */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Students by Gender</CardTitle>
+            <CardDescription>Gender distribution</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {Array.from(
+                students.reduce((acc, student) => {
+                  const gender = student.sex === 'M' ? 'Male' : 'Female'
+                  acc.set(gender, (acc.get(gender) || 0) + 1)
+                  return acc
+                }, new Map<string, number>())
+              ).map(([gender, count]) => (
+                <div key={gender} className="flex justify-between items-center py-1">
+                  <span className="text-sm">{gender}</span>
+                  <Badge variant="outline">{count}</Badge>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="attendance">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Attendance Trends</CardTitle>
-                <CardDescription>Monthly attendance rates</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px] flex items-center justify-center bg-gray-100 rounded-md">
-                  <BarChart className={`h-16 w-16 ${themeColors.accent}`} />
-                  <span className="ml-2 text-gray-500">Attendance Trends Chart</span>
+        {/* Guardian Statistics */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Guardian Statistics</CardTitle>
+            <CardDescription>Student guardian information</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center py-1">
+                <span className="text-sm">Students with Guardians</span>
+                <Badge variant="secondary">
+                  {students.filter(s => s.guardians && s.guardians.length > 0).length}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center py-1">
+                <span className="text-sm">Without Guardians</span>
+                <Badge variant="outline">
+                  {students.filter(s => !s.guardians || s.guardians.length === 0).length}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center py-1">
+                <span className="text-sm">Total Guardians</span>
+                <Badge variant="secondary">
+                  {students.reduce((acc, student) => acc + (student.guardians?.length || 0), 0)}
+                </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Assessment Statistics */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Assessment Statistics</CardTitle>
+            <CardDescription>Student assessment data</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center py-1">
+                <span className="text-sm">Students with Assessments</span>
+                <Badge variant="secondary">
+                  {students.filter(s => s.assessments && s.assessments.length > 0).length}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center py-1">
+                <span className="text-sm">Total Assessments</span>
+                <Badge variant="outline">
+                  {students.reduce((acc, student) => acc + (student.assessments?.length || 0), 0)}
+                </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent Enrollments */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Enrollments</CardTitle>
+            <CardDescription>Students enrolled in the last 30 days</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              const thirtyDaysAgo = new Date()
+              thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+              
+              const recentStudents = students.filter(student => {
+                if (!student.createdAt) return false
+                return new Date(student.createdAt) >= thirtyDaysAgo
+              }).length
+              
+              return (
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">{recentStudents}</div>
+                  <div className="text-sm text-gray-500">New students</div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Attendance Statistics</CardTitle>
-                <CardDescription>Key attendance metrics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Perfect Attendance</div>
-                    <div className="text-2xl font-bold mt-1">18%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "18%" }}></div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Chronic Absences</div>
-                    <div className="text-2xl font-bold mt-1">5%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className="bg-red-500 h-2 rounded-full" style={{ width: "5%" }}></div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Tardy Rate</div>
-                    <div className="text-2xl font-bold mt-1">7.2%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className="bg-yellow-500 h-2 rounded-full" style={{ width: "7.2%" }}></div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Average Absences Per Student</div>
-                    <div className="text-2xl font-bold mt-1">4.3 days</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="demographics">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Student Demographics</CardTitle>
-                <CardDescription>Population breakdown</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="font-medium mb-3">Ethnicity Distribution</h3>
-                    <div className="h-[200px] flex items-center justify-center bg-gray-100 rounded-md">
-                      <BarChart className={`h-10 w-10 ${themeColors.accent}`} />
-                      <span className="ml-2 text-gray-500">Ethnicity Chart</span>
-                    </div>
-                    <div className="mt-4 space-y-2">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          <div className={`w-3 h-3 rounded-full ${themeColors.accentBg} mr-2`}></div>
-                          <span>White/Caucasian</span>
-                        </div>
-                        <span className="font-medium">45%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          <div className={`w-3 h-3 rounded-full ${themeColors.secondaryBg} mr-2`}></div>
-                          <span>Hispanic/Latino</span>
-                        </div>
-                        <span className="font-medium">25%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 rounded-full bg-blue-300 mr-2"></div>
-                          <span>Black/African American</span>
-                        </div>
-                        <span className="font-medium">15%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 rounded-full bg-yellow-400 mr-2"></div>
-                          <span>Asian</span>
-                        </div>
-                        <span className="font-medium">10%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 rounded-full bg-purple-400 mr-2"></div>
-                          <span>Other</span>
-                        </div>
-                        <span className="font-medium">5%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-medium mb-3">Grade Level Distribution</h3>
-                    <div className="h-[200px] flex items-center justify-center bg-gray-100 rounded-md">
-                      <BarChart className={`h-10 w-10 ${themeColors.secondary}`} />
-                      <span className="ml-2 text-gray-500">Grade Level Chart</span>
-                    </div>
-                    <div className="mt-4 space-y-2">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          <div className={`w-3 h-3 rounded-full ${themeColors.accentBg} mr-2`}></div>
-                          <span>9th Grade</span>
-                        </div>
-                        <span className="font-medium">28%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          <div className={`w-3 h-3 rounded-full ${themeColors.secondaryBg} mr-2`}></div>
-                          <span>10th Grade</span>
-                        </div>
-                        <span className="font-medium">26%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 rounded-full bg-blue-300 mr-2"></div>
-                          <span>11th Grade</span>
-                        </div>
-                        <span className="font-medium">24%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 rounded-full bg-yellow-400 mr-2"></div>
-                          <span>12th Grade</span>
-                        </div>
-                        <span className="font-medium">22%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Additional Demographics</CardTitle>
-                <CardDescription>Other student characteristics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Special Education</div>
-                    <div className="text-2xl font-bold mt-1">12%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "12%" }}></div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">English Language Learners</div>
-                    <div className="text-2xl font-bold mt-1">8%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "8%" }}></div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Free/Reduced Lunch</div>
-                    <div className="text-2xl font-bold mt-1">32%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "32%" }}></div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Gifted & Talented</div>
-                    <div className="text-2xl font-bold mt-1">15%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className={`${themeColors.accentBg} h-2 rounded-full`} style={{ width: "15%" }}></div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+              )
+            })()}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

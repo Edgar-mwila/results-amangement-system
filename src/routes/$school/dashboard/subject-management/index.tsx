@@ -1,148 +1,204 @@
 import { Input } from '@/components/ui/input'
 import { TableRow, TableCell, TableBody, Table } from '@/components/ui/table'
-import { createFileRoute } from '@tanstack/react-router'
-import { Search, BookPlus, Filter, Grid, List, X, BookOpen } from 'lucide-react'
-import { useState, useMemo, FormEvent } from 'react'
+import { createFileRoute, useParams } from '@tanstack/react-router'
+import { Search, Filter, X, BookOpen, AlertCircle } from 'lucide-react'
+import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogDescription,
-  DialogTrigger,
 } from '@/components/ui/dialog'
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs'
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from '@/components/ui/card'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import { useQuery } from '@tanstack/react-query'
 
-// Example data for subjects
-const exampleSubjects = [
-  {
-    id: 1,
-    name: 'Mathematics',
-    code: 'MATH101',
-    department: 'Mathematics',
-    classes: ['Grade 9A', 'Grade 9B', 'Grade 10A'],
-    teachers: ['John Doe', 'Alice Williams'],
-    students: 78,
-    averageGrade: 'B+',
-    passRate: '92%',
-  },
-  {
-    id: 2,
-    name: 'English Literature',
-    code: 'ENGL102',
-    department: 'Languages',
-    classes: ['Grade 9A', 'Grade 9B', 'Grade 10A', 'Grade 10B'],
-    teachers: ['Jane Smith'],
-    students: 96,
-    averageGrade: 'A-',
-    passRate: '97%',
-  },
-  {
-    id: 3,
-    name: 'Biology',
-    code: 'BIO103',
-    department: 'Science',
-    classes: ['Grade 11A', 'Grade 11B'],
-    teachers: ['Bob Johnson', 'Charlie Brown'],
-    students: 54,
-    averageGrade: 'B',
-    passRate: '88%',
-  },
-  {
-    id: 4,
-    name: 'History',
-    code: 'HIST104',
-    department: 'Humanities',
-    classes: ['Grade 10A', 'Grade 10B', 'Grade 11A'],
-    teachers: ['Alice Williams'],
-    students: 72,
-    averageGrade: 'B+',
-    passRate: '91%',
-  },
-  {
-    id: 5,
-    name: 'Physics',
-    code: 'PHYS105',
-    department: 'Science',
-    classes: ['Grade 12A', 'Grade 12B'],
-    teachers: ['Charlie Brown'],
-    students: 45,
-    averageGrade: 'B-',
-    passRate: '84%',
-  },
-]
-
-// Example data for subject details
-const exampleStudents = [
-  { id: 1, name: 'Emma Johnson', class: 'Grade 9A', grade: 'A', attendance: '95%' },
-  { id: 2, name: 'James Wilson', class: 'Grade 9A', grade: 'B+', attendance: '92%' },
-  { id: 3, name: 'Sophia Davis', class: 'Grade 9B', grade: 'A-', attendance: '97%' },
-  { id: 4, name: 'Noah Miller', class: 'Grade 9B', grade: 'B-', attendance: '85%' },
-  { id: 5, name: 'Olivia Taylor', class: 'Grade 10A', grade: 'A', attendance: '98%' },
-]
-
-const exampleTeachers = [
-  { id: 1, name: 'John Doe', classes: ['Grade 9A', 'Grade 9B'], experience: '8 years' },
-  { id: 2, name: 'Alice Williams', classes: ['Grade 10A'], experience: '12 years' },
-]
-
-const examplePerformanceData = {
-  examScores: {
-    midterm: { average: 78, highest: 98, lowest: 45, passRate: '88%' },
-    final: { average: 82, highest: 100, lowest: 52, passRate: '92%' },
-  },
-  classDistribution: [
-    { class: 'Grade 9A', average: 'B+', students: 25 },
-    { class: 'Grade 9B', average: 'B', students: 27 },
-    { class: 'Grade 10A', average: 'A-', students: 26 },
-  ],
-  gradeDistribution: {
-    A: 28,
-    B: 34,
-    C: 12,
-    D: 3,
-    F: 1,
-  },
+// Type definitions based on your API interface
+interface UserData {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  passwordHash: string;
+  profilePhotoUrl: string;
+  status: string;
+  role: Role;
 }
 
-interface Subject {
+interface Role {
+  name: string;
+}
+
+interface Grade {
+  level: number;
+  name: string;
+}
+
+interface AcademicYear {
+  year: string;
+  name: string;
+}
+
+interface StudentData {
   id: number;
+  firstName: string;
+  otherName: string;
+  lastName: string;
+  sex: string;
+  gender: string;
+}
+
+interface ClassStudentData {
+  student: StudentData;
+}
+
+interface ClassData {
+  id: string;
+  grade: Grade;
+  name: string;
+  academicYear: AcademicYear;
+  classStudents: ClassStudentData[];
+}
+
+interface ClassSubjectData {
+  classModel: ClassData;
+  teacher: UserData;
+}
+
+interface SubjectData {
   name: string;
   code: string;
-  department: string;
+  url: string;
+  classSubjects: ClassSubjectData[];
+}
+
+// Display interface for transformed data
+interface SubjectDisplay {
+  name: string;
+  code: string;
+  url: string;
   classes: string[];
   teachers: string[];
   students: number;
-  averageGrade: string;
-  passRate: string;
+  departments: string[];
+  academicYears: string[];
 }
 
+// API function to fetch subjects
+const fetchSubjects = async (school: string): Promise<SubjectData[]> => {
+  const response = await fetch(`/api/${school}/subjects/`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch subjects');
+  }
+  return response.json();
+};
+
+// Transform subjects for display
+const transformSubjectsForDisplay = (subjects: SubjectData[]): SubjectDisplay[] => {
+  return subjects.map(subject => {
+    const uniqueClasses = new Set<string>();
+    const uniqueTeachers = new Set<string>();
+    const uniqueDepartments = new Set<string>();
+    const uniqueAcademicYears = new Set<string>();
+    let totalStudents = 0;
+
+    subject.classSubjects?.forEach(cs => {
+      if (cs.classModel) {
+        const className = `Grade ${cs.classModel.grade?.level || ''} ${cs.classModel.name}`.trim();
+        uniqueClasses.add(className);
+        
+        // Count students
+        totalStudents += cs.classModel.classStudents?.length || 0;
+        
+        // Add academic year
+        if (cs.classModel.academicYear?.name) {
+          uniqueAcademicYears.add(cs.classModel.academicYear.name);
+        }
+        
+        // Determine department based on grade level
+        if (cs.classModel.grade) {
+          const level = cs.classModel.grade.level;
+          if (level <= 6) {
+            uniqueDepartments.add('Primary');
+          } else if (level <= 9) {
+            uniqueDepartments.add('Middle School');
+          } else {
+            uniqueDepartments.add('High School');
+          }
+        }
+      }
+      
+      if (cs.teacher) {
+        const teacherName = `${cs.teacher.firstName} ${cs.teacher.lastName}`.trim();
+        uniqueTeachers.add(teacherName);
+      }
+    });
+
+    return {
+      name: subject.name,
+      code: subject.code,
+      url: subject.url,
+      classes: Array.from(uniqueClasses),
+      teachers: Array.from(uniqueTeachers),
+      students: totalStudents,
+      departments: Array.from(uniqueDepartments),
+      academicYears: Array.from(uniqueAcademicYears),
+    };
+  });
+};
+
+// Loading skeleton component
+const SubjectsTableSkeleton = () => (
+  <div className="border rounded-lg overflow-hidden border-gray-200">
+    <Table>
+      <TableRow className="bg-gray-50">
+        <TableCell className="font-medium text-gray-700">Subject</TableCell>
+        <TableCell className="font-medium text-gray-700">Code</TableCell>
+        <TableCell className="font-medium text-gray-700">Classes</TableCell>
+        <TableCell className="font-medium text-gray-700">Teachers</TableCell>
+      </TableRow>
+      <TableBody>
+        {[...Array(5)].map((_, index) => (
+          <TableRow key={index} className="border-t border-gray-100">
+            <TableCell>
+              <Skeleton className="h-4 w-32" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-20" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-24" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-16" />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+);
+
 // Component for displaying subject details
-const SubjectDetailsDialog = ({ open, onOpenChange, subject }: { open: boolean; onOpenChange: (open: boolean) => void; subject: Subject | null }) => {
+const SubjectDetailsDialog = ({ 
+  open, 
+  onOpenChange, 
+  subject 
+}: { 
+  open: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  subject: SubjectDisplay | null;
+}) => {
   if (!subject) return null;
 
   return (
@@ -150,274 +206,74 @@ const SubjectDetailsDialog = ({ open, onOpenChange, subject }: { open: boolean; 
       <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto">
         <div className="h-2 bg-gradient-to-r from-green-400 to-blue-400 -mx-6 -mt-6 rounded-t-lg" />
         <DialogHeader className="pt-2">
-          <DialogTitle className="text-2xl font-bold text-gray-800">{subject.name} ({subject.code})</DialogTitle>
-          <DialogDescription className="text-gray-500">
-            Detailed information about this subject and its performance
-          </DialogDescription>
+          <DialogTitle className="text-2xl font-bold text-gray-800">
+            {subject.name} ({subject.code})
+          </DialogTitle>
+          {subject.url && (
+            <p className="text-sm text-gray-500">
+              URL: <a href={subject.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{subject.url}</a>
+            </p>
+          )}
         </DialogHeader>
-
-        <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="mb-4 bg-gray-50">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:text-green-600 data-[state=active]:shadow-sm">Overview</TabsTrigger>
-            <TabsTrigger value="students" className="data-[state=active]:bg-white data-[state=active]:text-green-600 data-[state=active]:shadow-sm">Students</TabsTrigger>
-            <TabsTrigger value="teachers" className="data-[state=active]:bg-white data-[state=active]:text-green-600 data-[state=active]:shadow-sm">Teachers</TabsTrigger>
-            <TabsTrigger value="performance" className="data-[state=active]:bg-white data-[state=active]:text-green-600 data-[state=active]:shadow-sm">Performance</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="space-y-4">
-            <Card className="border-gray-200">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-bold text-gray-800">Subject Information</CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-2 gap-4">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="border-gray-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-bold text-gray-800">Classes & Students</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
                 <div>
-                  <p className="text-sm text-gray-500">Department</p>
-                  <p className="font-medium text-gray-800">{subject.department}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Subject Code</p>
-                  <p className="font-medium text-gray-800">{subject.code}</p>
+                  <p className="text-sm text-gray-500">Classes ({subject.classes.length})</p>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {subject.classes.map((cls, i) => (
+                      <Badge key={i} variant="outline" className="text-xs">
+                        {cls}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Total Students</p>
                   <p className="font-medium text-gray-800">{subject.students}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500">Classes</p>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {subject.classes.map((cls: string, i: number) => (
-                      <Badge key={i} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-50">{cls}</Badge>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="border-gray-200">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-bold text-gray-800">Performance Summary</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Average Grade</span>
-                      <span className="font-medium text-gray-800">{subject.averageGrade}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Pass Rate</span>
-                      <span className="font-medium text-gray-800">{subject.passRate}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-gray-200">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-bold text-gray-800">Teaching Staff</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-1">
-                    {subject.teachers.map((teacher: string, i: number) => (
-                      <li key={i} className="text-sm font-medium text-gray-800">{teacher}</li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="students">
-            <Card className="border-gray-200">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-bold text-gray-800">Enrolled Students</CardTitle>
-                <CardDescription className="text-gray-500">
-                  Showing {exampleStudents.length} of {subject.students} students
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-lg overflow-hidden border border-gray-200">
-                  <Table>
-                    <TableRow className="bg-gray-50 hover:bg-gray-50">
-                      <TableCell className="font-medium text-gray-700">Name</TableCell>
-                      <TableCell className="font-medium text-gray-700">Class</TableCell>
-                      <TableCell className="font-medium text-gray-700">Grade</TableCell>
-                      <TableCell className="font-medium text-gray-700">Attendance</TableCell>
-                    </TableRow>
-                    <TableBody>
-                      {exampleStudents.map((student) => (
-                        <TableRow key={student.id} className="hover:bg-gray-50 border-t border-gray-100">
-                          <TableCell className="font-medium text-gray-800">{student.name}</TableCell>
-                          <TableCell>{student.class}</TableCell>
-                          <TableCell>
-                            <Badge className={`
-                              ${student.grade.startsWith('A') ? 'bg-green-100 text-green-700' : ''}
-                              ${student.grade.startsWith('B') ? 'bg-blue-100 text-blue-700' : ''}
-                              ${student.grade.startsWith('C') ? 'bg-yellow-100 text-yellow-700' : ''}
-                              ${student.grade.startsWith('D') || student.grade.startsWith('F') ? 'bg-red-100 text-red-700' : ''}
-                              hover:bg-opacity-90
-                            `}>
-                              {student.grade}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{student.attendance}</TableCell>
-                        </TableRow>
+                {subject.academicYears.length > 0 && (
+                  <div>
+                    <p className="text-sm text-gray-500">Academic Years</p>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {subject.academicYears.map((year, i) => (
+                        <Badge key={i} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                          {year}
+                        </Badge>
                       ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="teachers">
-            <Card className="border-gray-200">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-bold text-gray-800">Teaching Staff</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-lg overflow-hidden border border-gray-200">
-                  <Table>
-                    <TableRow className="bg-gray-50 hover:bg-gray-50">
-                      <TableCell className="font-medium text-gray-700">Name</TableCell>
-                      <TableCell className="font-medium text-gray-700">Classes Taught</TableCell>
-                      <TableCell className="font-medium text-gray-700">Experience</TableCell>
-                    </TableRow>
-                    <TableBody>
-                      {exampleTeachers.map((teacher) => (
-                        <TableRow key={teacher.id} className="hover:bg-gray-50 border-t border-gray-100">
-                          <TableCell className="font-medium text-gray-800">{teacher.name}</TableCell>
-                          <TableCell>
-                            <div className="flex flex-wrap gap-1">
-                              {teacher.classes.map((cls, i) => (
-                                <Badge key={i} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-50">{cls}</Badge>
-                              ))}
-                            </div>
-                          </TableCell>
-                          <TableCell>{teacher.experience}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="performance">
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="border-gray-200">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-bold text-gray-800">Exam Results</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium mb-2 text-gray-800">Midterm Exam</h4>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="text-gray-600">Average Score: <span className="font-medium text-gray-800">{examplePerformanceData.examScores.midterm.average}%</span></div>
-                        <div className="text-gray-600">Pass Rate: <span className="font-medium text-gray-800">{examplePerformanceData.examScores.midterm.passRate}</span></div>
-                        <div className="text-gray-600">Highest: <span className="font-medium text-gray-800">{examplePerformanceData.examScores.midterm.highest}%</span></div>
-                        <div className="text-gray-600">Lowest: <span className="font-medium text-gray-800">{examplePerformanceData.examScores.midterm.lowest}%</span></div>
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-2 text-gray-800">Final Exam</h4>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="text-gray-600">Average Score: <span className="font-medium text-gray-800">{examplePerformanceData.examScores.final.average}%</span></div>
-                        <div className="text-gray-600">Pass Rate: <span className="font-medium text-gray-800">{examplePerformanceData.examScores.final.passRate}</span></div>
-                        <div className="text-gray-600">Highest: <span className="font-medium text-gray-800">{examplePerformanceData.examScores.final.highest}%</span></div>
-                        <div className="text-gray-600">Lowest: <span className="font-medium text-gray-800">{examplePerformanceData.examScores.final.lowest}%</span></div>
-                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
-              <Card className="border-gray-200">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-bold text-gray-800">Grade Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-800">A</span>
-                      <div className="w-3/4 bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-green-400 h-2.5 rounded-full" style={{ width: `${(examplePerformanceData.gradeDistribution.A / subject.students) * 100}%` }}></div>
-                      </div>
-                      <span className="text-sm text-gray-600">{examplePerformanceData.gradeDistribution.A}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-800">B</span>
-                      <div className="w-3/4 bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-blue-400 h-2.5 rounded-full" style={{ width: `${(examplePerformanceData.gradeDistribution.B / subject.students) * 100}%` }}></div>
-                      </div>
-                      <span className="text-sm text-gray-600">{examplePerformanceData.gradeDistribution.B}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-800">C</span>
-                      <div className="w-3/4 bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-yellow-400 h-2.5 rounded-full" style={{ width: `${(examplePerformanceData.gradeDistribution.C / subject.students) * 100}%` }}></div>
-                      </div>
-                      <span className="text-sm text-gray-600">{examplePerformanceData.gradeDistribution.C}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-800">D</span>
-                      <div className="w-3/4 bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-orange-400 h-2.5 rounded-full" style={{ width: `${(examplePerformanceData.gradeDistribution.D / subject.students) * 100}%` }}></div>
-                      </div>
-                      <span className="text-sm text-gray-600">{examplePerformanceData.gradeDistribution.D}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-800">F</span>
-                      <div className="w-3/4 bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-red-400 h-2.5 rounded-full" style={{ width: `${(examplePerformanceData.gradeDistribution.F / subject.students) * 100}%` }}></div>
-                      </div>
-                      <span className="text-sm text-gray-600">{examplePerformanceData.gradeDistribution.F}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card className="mt-4 border-gray-200">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-bold text-gray-800">Performance by Class</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-lg overflow-hidden border border-gray-200">
-                  <Table>
-                    <TableRow className="bg-gray-50 hover:bg-gray-50">
-                      <TableCell className="font-medium text-gray-700">Class</TableCell>
-                      <TableCell className="font-medium text-gray-700">Students</TableCell>
-                      <TableCell className="font-medium text-gray-700">Average Grade</TableCell>
-                    </TableRow>
-                    <TableBody>
-                      {examplePerformanceData.classDistribution.map((cls, i) => (
-                        <TableRow key={i} className="hover:bg-gray-50 border-t border-gray-100">
-                          <TableCell className="font-medium text-gray-800">{cls.class}</TableCell>
-                          <TableCell>{cls.students}</TableCell>
-                          <TableCell>
-                            <Badge className={`
-                              ${cls.average.startsWith('A') ? 'bg-green-100 text-green-700' : ''}
-                              ${cls.average.startsWith('B') ? 'bg-blue-100 text-blue-700' : ''}
-                              ${cls.average.startsWith('C') ? 'bg-yellow-100 text-yellow-700' : ''}
-                              ${cls.average.startsWith('D') || cls.average.startsWith('F') ? 'bg-red-100 text-red-700' : ''}
-                              hover:bg-opacity-90
-                            `}>
-                              {cls.average}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
+          <Card className="border-gray-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-bold text-gray-800">Teachers ({subject.teachers.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 max-h-40 overflow-y-auto">
+                {subject.teachers.length > 0 ? (
+                  subject.teachers.map((teacher, i) => (
+                    <li key={i} className="text-sm font-medium text-gray-800 flex items-center">
+                      <div className="w-2 h-2 bg-green-400 rounded-full mr-2 flex-shrink-0"></div>
+                      {teacher}
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-sm text-gray-500 italic">No teachers assigned</li>
+                )}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+        
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} className="border-gray-200">
             Close
@@ -428,117 +284,40 @@ const SubjectDetailsDialog = ({ open, onOpenChange, subject }: { open: boolean; 
   );
 };
 
-// Component for adding a new subject
-const AddSubjectDialog = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) => {
-  const [newSubject, setNewSubject] = useState({
-    name: '',
-    code: '',
-    department: '',
+const SubjectManagement = () => {
+  const { school } = useParams({ from: "/$school/dashboard/subject-management/" });
+  const [search, setSearch] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState<SubjectDisplay | null>(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [filterDepartment, setFilterDepartment] = useState('');
+
+  // Fetch subjects using TanStack Query
+  const {
+    data: subjects,
+    isLoading,
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['subjects'],
+    queryFn: () => fetchSubjects(school),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 2,
   });
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    // Here you would typically make an API call to add the new subject
-    console.log('New subject:', newSubject);
-    onOpenChange(false);
-    setNewSubject({
-      name: '',
-      code: '',
-      department: '',
+  // Transform subjects for display
+  const displaySubjects = useMemo(() => {
+    if (!subjects) return [];
+    return transformSubjectsForDisplay(subjects);
+  }, [subjects]);
+
+  // Get unique departments for filtering
+  const availableDepartments = useMemo(() => {
+    const departments = new Set<string>();
+    displaySubjects.forEach(subject => {
+      subject.departments.forEach(dept => departments.add(dept));
     });
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <div className="h-2 bg-gradient-to-r from-green-400 to-blue-400 -mx-6 -mt-6 rounded-t-lg" />
-        <DialogHeader className="pt-2">
-          <DialogTitle className="text-xl font-bold text-gray-800">Add New Subject</DialogTitle>
-          <DialogDescription className="text-gray-500">
-            Fill in the details to create a new subject in the system.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid w-full gap-4">
-            <div className="flex flex-col space-y-2">
-              <Label htmlFor="name" className="font-medium text-gray-700">Subject Name</Label>
-              <Input
-                id="name"
-                value={newSubject.name}
-                onChange={(e) =>
-                  setNewSubject({ ...newSubject, name: e.target.value })
-                }
-                className="border-gray-200 focus:border-green-400 focus:ring-green-400"
-                placeholder="e.g. Chemistry"
-                required
-              />
-            </div>
-            <div className="flex flex-col space-y-2">
-              <Label htmlFor="code" className="font-medium text-gray-700">Subject Code</Label>
-              <Input
-                id="code"
-                value={newSubject.code}
-                onChange={(e) =>
-                  setNewSubject({ ...newSubject, code: e.target.value })
-                }
-                className="border-gray-200 focus:border-green-400 focus:ring-green-400"
-                placeholder="e.g. CHEM201"
-                required
-              />
-            </div>
-            <div className="flex flex-col space-y-2">
-              <Label htmlFor="department" className="font-medium text-gray-700">Department</Label>
-              <Select
-                value={newSubject.department}
-                onValueChange={(value) =>
-                  setNewSubject({ ...newSubject, department: value })
-                }
-                required
-              >
-                <SelectTrigger className="border-gray-200 focus:ring-green-400">
-                  <SelectValue placeholder="Select department" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Mathematics">Mathematics</SelectItem>
-                  <SelectItem value="Science">Science</SelectItem>
-                  <SelectItem value="Languages">Languages</SelectItem>
-                  <SelectItem value="Humanities">Humanities</SelectItem>
-                  <SelectItem value="Arts">Arts</SelectItem>
-                  <SelectItem value="Physical Education">Physical Education</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter className="pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="border-gray-200"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="bg-green-400 hover:bg-green-500 text-white"
-            >
-              Add Subject
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-const SubjectManagement = () => {
-  const [search, setSearch] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
-  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [filterDepartment, setFilterDepartment] = useState('');
-  const [viewMode, setViewMode] = useState('grid');
-  const [sortBy, setSortBy] = useState('name');
+    return Array.from(departments).sort();
+  }, [displaySubjects]);
 
   // Clear search functionality
   const clearSearch = () => {
@@ -547,52 +326,78 @@ const SubjectManagement = () => {
 
   // Filter subjects based on search and department filter
   const filteredSubjects = useMemo(() => {
-    const filtered = exampleSubjects.filter(
-      (subject) => {
-        const matchesSearch = 
-          subject.name.toLowerCase().includes(search.toLowerCase()) ||
-          subject.code.toLowerCase().includes(search.toLowerCase()) ||
-          subject.department.toLowerCase().includes(search.toLowerCase());
-        
-        const matchesDepartment = filterDepartment === '' || subject.department === filterDepartment;
-        
-        return matchesSearch && matchesDepartment;
-      }
-    );
+    const filtered = displaySubjects.filter((subject) => {
+      const matchesSearch = 
+        subject.name.toLowerCase().includes(search.toLowerCase()) ||
+        subject.code.toLowerCase().includes(search.toLowerCase()) ||
+        subject.departments.some(dept => dept.toLowerCase().includes(search.toLowerCase())) ||
+        subject.teachers.some(teacher => teacher.toLowerCase().includes(search.toLowerCase()));
+      
+      const matchesDepartment = filterDepartment === '' || subject.departments.includes(filterDepartment);
+      
+      return matchesSearch && matchesDepartment;
+    });
 
     // Sort the filtered subjects
-    return filtered.sort((a, b) => {
-      if (sortBy === 'name') return a.name.localeCompare(b.name);
-      if (sortBy === 'code') return a.code.localeCompare(b.code);
-      if (sortBy === 'department') return a.department.localeCompare(b.department);
-      if (sortBy === 'students') return b.students - a.students;
-      return 0;
-    });
-  }, [search, filterDepartment, sortBy]);
+    return filtered.sort((a, b) => a.name.localeCompare(b.name));
+  }, [displaySubjects, search, filterDepartment]);
 
-  // Get unique departments for filter
-  const departments = useMemo(() => {
-    return ['', ...new Set(exampleSubjects.map(subject => subject.department))];
-  }, []);
-
-  const handleSubjectClick = (subject: Subject): void => {
+  const handleSubjectClick = (subject: SubjectDisplay): void => {
     setSelectedSubject(subject);
     setDetailsDialogOpen(true);
   };
 
-  // Function to determine badge color based on grade
-  const getGradeBadgeClass = (grade: string) => {
-    if (grade.startsWith('A')) return 'bg-green-100 text-green-700 hover:bg-green-100';
-    if (grade.startsWith('B')) return 'bg-blue-100 text-blue-700 hover:bg-blue-100';
-    if (grade.startsWith('C')) return 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100';
-    return 'bg-red-100 text-red-700 hover:bg-red-100';
-  };
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex flex-col space-y-6 p-6 bg-white">
+        <div className="flex flex-row justify-between items-center">
+          <Skeleton className="h-8 w-48" />
+        </div>
+        
+        <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
+          <Skeleton className="h-10 w-full md:w-96" />
+          <Skeleton className="h-10 w-32" />
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-4 w-24" />
+        </div>
+        
+        <SubjectsTableSkeleton />
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex flex-col space-y-6 p-6 bg-white">
+        <div className="flex flex-row justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-800">Subject Management</h1>
+        </div>
+        
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load subjects. {error instanceof Error ? error.message : 'Please try again later.'}
+          </AlertDescription>
+        </Alert>
+        
+        <div className="flex justify-center">
+          <Button onClick={() => refetch()} variant="outline">
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col space-y-6 p-6 bg-white">
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-row justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Subject Management</h1>
-        <p className="text-gray-500">Manage all subjects, assign teachers, and monitor student performance</p>
       </div>
 
       <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
@@ -602,7 +407,7 @@ const SubjectManagement = () => {
           </div>
           <Input
             type="text"
-            placeholder="Search by subject name, code or department..."
+            placeholder="Search by name, code, department, or teacher..."
             className="pl-10 pr-10 border-gray-200 focus:border-green-400 focus:ring-green-400"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -616,66 +421,26 @@ const SubjectManagement = () => {
             </button>
           )}
         </div>
-
-        <div className="flex flex-wrap gap-2 w-full md:w-auto">
-          <div className="flex items-center bg-gray-50 rounded-lg p-1">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-1 rounded ${
-                viewMode === 'grid' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-600'
-              }`}
-            >
-              <Grid className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-1 rounded ${
-                viewMode === 'list' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-600'
-              }`}
-            >
-              <List className="h-4 w-4" />
-            </button>
-          </div>
-
-          <Select value={filterDepartment} onValueChange={setFilterDepartment}>
-            <SelectTrigger className="w-full md:w-[180px] border-gray-200 focus:ring-green-400">
-              <SelectValue placeholder="All Departments" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Departments</SelectItem>
-              {departments.filter(d => d !== '').map((department) => (
-                <SelectItem key={department} value={department}>{department}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full md:w-[160px] border-gray-200 focus:ring-green-400">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="name">Name</SelectItem>
-              <SelectItem value="code">Code</SelectItem>
-              <SelectItem value="department">Department</SelectItem>
-              <SelectItem value="students">Students</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-green-400 hover:bg-green-500 text-white ml-auto">
-                <BookPlus className="mr-2 h-4 w-4" />
-                Add Subject
-              </Button>
-            </DialogTrigger>
-          </Dialog>
+        
+        {/* Department filter */}
+        <div className="flex items-center gap-2">
+          <select
+            value={filterDepartment}
+            onChange={(e) => setFilterDepartment(e.target.value)}
+            className="px-3 py-2 border border-gray-200 rounded-md text-sm focus:border-green-400 focus:ring-green-400"
+          >
+            <option value="">All Departments</option>
+            {availableDepartments.map(dept => (
+              <option key={dept} value={dept}>{dept}</option>
+            ))}
+          </select>
         </div>
       </div>
 
       {/* Show results count and filters */}
       <div className="flex flex-wrap items-center justify-between text-sm text-gray-500">
         <div>
-          Showing <span className="font-medium text-gray-700">{filteredSubjects.length}</span> subjects
+          Showing <span className="font-medium text-gray-700">{filteredSubjects.length}</span> of <span className="font-medium text-gray-700">{displaySubjects.length}</span> subjects
           {filterDepartment && (
             <>
               {' '}in <span className="font-medium text-gray-700">{filterDepartment}</span> department
@@ -710,7 +475,7 @@ const SubjectManagement = () => {
         </div>
       </div>
 
-      {/* Display subjects in either grid or list view */}
+      {/* Display subjects */}
       {filteredSubjects.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="bg-gray-100 rounded-full p-3 mb-4">
@@ -718,75 +483,11 @@ const SubjectManagement = () => {
           </div>
           <h3 className="text-lg font-medium text-gray-800 mb-1">No subjects found</h3>
           <p className="text-gray-500 max-w-sm">
-            Try adjusting your search or filters to find what you're looking for, or add a new subject.
+            {displaySubjects.length === 0 
+              ? "No subjects have been created yet."
+              : "Try adjusting your search or filters to find what you're looking for."
+            }
           </p>
-          <Button 
-            onClick={() => setAddDialogOpen(true)} 
-            className="mt-4 bg-green-400 hover:bg-green-500 text-white"
-          >
-            <BookPlus className="mr-2 h-4 w-4" />
-            Add New Subject
-          </Button>
-        </div>
-      ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredSubjects.map((subject) => (
-            <Card 
-              key={subject.id} 
-              className="border border-gray-200 hover:border-green-300 hover:shadow-md transition-all cursor-pointer"
-              onClick={() => handleSubjectClick(subject)}
-            >
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-lg font-bold text-gray-800">{subject.name}</CardTitle>
-                    <CardDescription className="text-gray-500">{subject.code}</CardDescription>
-                  </div>
-                  <Badge className={getGradeBadgeClass(subject.averageGrade)}>
-                    {subject.averageGrade}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="pb-4">
-                <div className="grid grid-cols-2 gap-y-2 text-sm">
-                  <div>
-                    <p className="text-gray-500">Department</p>
-                    <p className="font-medium text-gray-800">{subject.department}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500">Students</p>
-                    <p className="font-medium text-gray-800">{subject.students}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500">Classes</p>
-                    <p className="font-medium text-gray-800">{subject.classes.length}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500">Pass Rate</p>
-                    <p className="font-medium text-gray-800">{subject.passRate}</p>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="pt-0 pb-4">
-                <div className="flex -space-x-2">
-                  {subject.teachers.slice(0, 3).map((teacher, i) => (
-                    <div 
-                      key={i} 
-                      className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 to-green-400 flex items-center justify-center text-white text-xs font-medium border-2 border-white"
-                      title={teacher}
-                    >
-                      {teacher.split(' ').map(n => n[0]).join('')}
-                    </div>
-                  ))}
-                  {subject.teachers.length > 3 && (
-                    <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-xs font-medium border-2 border-white">
-                      +{subject.teachers.length - 3}
-                    </div>
-                  )}
-                </div>
-              </CardFooter>
-            </Card>
-          ))}
         </div>
       ) : (
         <div className="border rounded-lg overflow-hidden border-gray-200">
@@ -794,51 +495,53 @@ const SubjectManagement = () => {
             <TableRow className="bg-gray-50 hover:bg-gray-50">
               <TableCell className="font-medium text-gray-700">Subject</TableCell>
               <TableCell className="font-medium text-gray-700">Code</TableCell>
-              <TableCell className="font-medium text-gray-700">Department</TableCell>
+              <TableCell className="font-medium text-gray-700">Classes</TableCell>
               <TableCell className="font-medium text-gray-700">Teachers</TableCell>
               <TableCell className="font-medium text-gray-700">Students</TableCell>
-              <TableCell className="font-medium text-gray-700">Avg. Grade</TableCell>
-              <TableCell className="font-medium text-gray-700">Pass Rate</TableCell>
             </TableRow>
             <TableBody>
-              {filteredSubjects.map((subject) => (
+              {filteredSubjects.map((subject, index) => (
                 <TableRow 
-                  key={subject.id} 
+                  key={`${subject.code}-${index}`}
                   className="hover:bg-gray-50 border-t border-gray-100 cursor-pointer"
                   onClick={() => handleSubjectClick(subject)}
                 >
                   <TableCell className="font-medium text-gray-800">{subject.name}</TableCell>
-                  <TableCell>{subject.code}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-50">
-                      {subject.department}
+                    <Badge variant="outline" className="font-mono text-xs">
+                      {subject.code}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex -space-x-2">
-                      {subject.teachers.slice(0, 2).map((teacher, i) => (
-                        <div 
-                          key={i} 
-                          className="h-7 w-7 rounded-full bg-gradient-to-br from-blue-400 to-green-400 flex items-center justify-center text-white text-xs font-medium border-2 border-white"
-                          title={teacher}
-                        >
-                          {teacher.split(' ').map(n => n[0]).join('')}
-                        </div>
+                    <div className="flex flex-wrap gap-1">
+                      {subject.classes.slice(0, 2).map((cls, i) => (
+                        <Badge key={i} variant="outline" className="text-xs">
+                          {cls}
+                        </Badge>
                       ))}
-                      {subject.teachers.length > 2 && (
-                        <div className="h-7 w-7 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-xs font-medium border-2 border-white">
-                          +{subject.teachers.length - 2}
-                        </div>
+                      {subject.classes.length > 2 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{subject.classes.length - 2} more
+                        </Badge>
+                      )}
+                      {subject.classes.length === 0 && (
+                        <span className="text-xs text-gray-400">No classes</span>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>{subject.students}</TableCell>
                   <TableCell>
-                    <Badge className={getGradeBadgeClass(subject.averageGrade)}>
-                      {subject.averageGrade}
-                    </Badge>
+                    <div className="text-sm text-gray-600">
+                      {subject.teachers.length > 0 
+                        ? `${subject.teachers.length} teacher${subject.teachers.length > 1 ? 's' : ''}`
+                        : 'No teachers'
+                      }
+                    </div>
                   </TableCell>
-                  <TableCell>{subject.passRate}</TableCell>
+                  <TableCell>
+                    <div className="text-sm font-medium text-gray-800">
+                      {subject.students}
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -846,16 +549,11 @@ const SubjectManagement = () => {
         </div>
       )}
 
-      {/* Detail and Add dialogs */}
+      {/* Detail dialog */}
       <SubjectDetailsDialog 
         open={detailsDialogOpen} 
         onOpenChange={setDetailsDialogOpen} 
         subject={selectedSubject} 
-      />
-      
-      <AddSubjectDialog 
-        open={addDialogOpen} 
-        onOpenChange={setAddDialogOpen} 
       />
     </div>
   );

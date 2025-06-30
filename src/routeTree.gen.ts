@@ -29,7 +29,7 @@ import { Route as SchoolDashboardReportsIndexImport } from './routes/$school/das
 import { Route as SchoolDashboardClassesIndexImport } from './routes/$school/dashboard/classes/index'
 import { Route as SchoolDashboardClassManagementIndexImport } from './routes/$school/dashboard/class-management/index'
 import { Route as SchoolDashboardAssessmentsIndexImport } from './routes/$school/dashboard/assessments/index'
-import { Route as SchoolDashboardStudentIdImport } from './routes/$school/dashboard/student.$id'
+import { Route as SchoolDashboardStudentIdImport } from './routes/$school/dashboard/student'
 import { Route as SchoolDashboardClassesIdIndexImport } from './routes/$school/dashboard/classes/$id/index'
 import { Route as SchoolDashboardClassManagementIdIndexImport } from './routes/$school/dashboard/class-management/$id/index'
 import { Route as SchoolDashboardStudentManagementStudentIdImport } from './routes/$school/dashboard/student-management/student.$id'
@@ -144,7 +144,7 @@ const SchoolDashboardAssessmentsIndexRoute =
   } as any)
 
 const SchoolDashboardStudentIdRoute = SchoolDashboardStudentIdImport.update({
-  path: '/student/$id',
+  path: '/student',
   getParentRoute: () => SchoolDashboardIndexRoute,
 } as any)
 
@@ -269,10 +269,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SchoolDashboardCommunicationImport
       parentRoute: typeof SchoolDashboardIndexRoute
     }
-    '/$school/dashboard/student/$id': {
-      id: '/$school/dashboard/student/$id'
-      path: '/student/$id'
-      fullPath: '/$school/dashboard/student/$id'
+    '/$school/dashboard/student': {
+      id: '/$school/dashboard/student'
+      path: '/student'
+      fullPath: '/$school/dashboard/student'
       preLoaderRoute: typeof SchoolDashboardStudentIdImport
       parentRoute: typeof SchoolDashboardIndexRoute
     }
@@ -417,7 +417,7 @@ export interface FileRoutesByFullPath {
   '/$school/auth/register': typeof SchoolAuthRegisterRoute
   '/$school/dashboard': typeof SchoolDashboardIndexRoute
   '/$school/dashboard/communication': typeof SchoolDashboardCommunicationRoute
-  '/$school/dashboard/student/$id': typeof SchoolDashboardStudentIdRoute
+  '/$school/dashboard/student': typeof SchoolDashboardStudentIdRoute
   '/$school/dashboard/assessments': typeof SchoolDashboardAssessmentsIndexRoute
   '/$school/dashboard/class-management': typeof SchoolDashboardClassManagementIndexRoute
   '/$school/dashboard/classes': typeof SchoolDashboardClassesIndexRoute
@@ -448,7 +448,7 @@ export interface FileRoutesByTo {
   '/$school/auth/register': typeof SchoolAuthRegisterRoute
   '/$school/dashboard': typeof SchoolDashboardIndexRoute
   '/$school/dashboard/communication': typeof SchoolDashboardCommunicationRoute
-  '/$school/dashboard/student/$id': typeof SchoolDashboardStudentIdRoute
+  '/$school/dashboard/student': typeof SchoolDashboardStudentIdRoute
   '/$school/dashboard/assessments': typeof SchoolDashboardAssessmentsIndexRoute
   '/$school/dashboard/class-management': typeof SchoolDashboardClassManagementIndexRoute
   '/$school/dashboard/classes': typeof SchoolDashboardClassesIndexRoute
@@ -480,7 +480,7 @@ export interface FileRoutesById {
   '/$school/auth/register': typeof SchoolAuthRegisterRoute
   '/$school/dashboard/': typeof SchoolDashboardIndexRoute
   '/$school/dashboard/communication': typeof SchoolDashboardCommunicationRoute
-  '/$school/dashboard/student/$id': typeof SchoolDashboardStudentIdRoute
+  '/$school/dashboard/student': typeof SchoolDashboardStudentIdRoute
   '/$school/dashboard/assessments/': typeof SchoolDashboardAssessmentsIndexRoute
   '/$school/dashboard/class-management/': typeof SchoolDashboardClassManagementIndexRoute
   '/$school/dashboard/classes/': typeof SchoolDashboardClassesIndexRoute
@@ -513,7 +513,7 @@ export interface FileRouteTypes {
     | '/$school/auth/register'
     | '/$school/dashboard'
     | '/$school/dashboard/communication'
-    | '/$school/dashboard/student/$id'
+    | '/$school/dashboard/student'
     | '/$school/dashboard/assessments'
     | '/$school/dashboard/class-management'
     | '/$school/dashboard/classes'
@@ -543,7 +543,7 @@ export interface FileRouteTypes {
     | '/$school/auth/register'
     | '/$school/dashboard'
     | '/$school/dashboard/communication'
-    | '/$school/dashboard/student/$id'
+    | '/$school/dashboard/student'
     | '/$school/dashboard/assessments'
     | '/$school/dashboard/class-management'
     | '/$school/dashboard/classes'
@@ -573,7 +573,7 @@ export interface FileRouteTypes {
     | '/$school/auth/register'
     | '/$school/dashboard/'
     | '/$school/dashboard/communication'
-    | '/$school/dashboard/student/$id'
+    | '/$school/dashboard/student'
     | '/$school/dashboard/assessments/'
     | '/$school/dashboard/class-management/'
     | '/$school/dashboard/classes/'
@@ -703,7 +703,7 @@ export const routeTree = rootRoute
       "filePath": "$school/dashboard/index.tsx",
       "children": [
         "/$school/dashboard/communication",
-        "/$school/dashboard/student/$id",
+        "/$school/dashboard/student",
         "/$school/dashboard/assessments/",
         "/$school/dashboard/class-management/",
         "/$school/dashboard/classes/",
@@ -727,7 +727,7 @@ export const routeTree = rootRoute
     "/$school/dashboard/communication": {
       "filePath": "$school/dashboard/communication.tsx"
     },
-    "/$school/dashboard/student/$id": {
+    "/$school/dashboard/student": {
       "filePath": "$school/dashboard/student.$id.tsx"
     },
     "/$school/dashboard/assessments/": {

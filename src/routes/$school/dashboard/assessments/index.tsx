@@ -1,230 +1,755 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { AcademicYear, Role } from '@/types'
 
-type assessment = {
-  id: string
-  title: string
-  class: {
+// Updated Types based on your new backend interface
+type Assessment = {
+  id: number
+  name: string
+  classSubjects: {
+    id: number
+    classModel: {
+      grade: {
+        name: string
+      }
+      academicYear: AcademicYear
+      name: string
+      classStudents: {
+        student: {
+          id: number
+          firstName: string
+          otherName?: string
+          lastName: string
+          sex: string
+          gender: string
+        }
+      }[]
+    }
+    subject: {
+      name: string
+      code: string
+      url: string
+    }
+    teacher: {
+      id: string
+      firstName: string
+      lastName: string
+      email: string
+      phone: string
+      status: string
+      role: Role
+    }
+  }
+  totalMarks: number
+  term: {
     id: string
     name: string
-    grade: string
+    startDate: string
+    endDate: string
   }
-  subject: string
-  type: string
-  dueDate: string
-  totalPoints: number
-  status: string
-  studentsCompleted: number
-  studentsTotal: number
-  averageScore: number | null
-  createdDate: string
+  studentAssessments: StudentAssessment[]
+  createdAt: string
 }
-// Mock data for assessments across all classes
-const assessmentsData: assessment[] = [
-  {
-    id: 'assess-1',
-    title: 'Midterm Exam',
-    class: {
-      id: 'class-a',
-      name: 'Class A',
-      grade: '9th Grade',
-    },
-    subject: 'Mathematics',
-    type: 'Exam',
-    dueDate: '2025-04-15',
-    totalPoints: 100,
-    status: 'Upcoming',
-    studentsCompleted: 0,
-    studentsTotal: 28,
-    averageScore: null,
-    createdDate: '2025-04-01',
-  },
-  {
-    id: 'assess-2',
-    title: 'Lab Report: Photosynthesis',
-    class: {
-      id: 'class-c',
-      name: 'Class C',
-      grade: '9th Grade',
-    },
-    subject: 'Biology',
-    type: 'Assignment',
-    dueDate: '2025-04-10',
-    totalPoints: 50,
-    status: 'Active',
-    studentsCompleted: 12,
-    studentsTotal: 30,
-    averageScore: null,
-    createdDate: '2025-04-03',
-  },
-  {
-    id: 'assess-3',
-    title: 'Chemical Bonding Quiz',
-    class: {
-      id: 'class-b',
-      name: 'Class B',
-      grade: '10th Grade',
-    },
-    subject: 'Chemistry',
-    type: 'Quiz',
-    dueDate: '2025-04-05',
-    totalPoints: 25,
-    status: 'Grading',
-    studentsCompleted: 24,
-    studentsTotal: 24,
-    averageScore: null,
-    createdDate: '2025-04-02',
-  },
-  {
-    id: 'assess-4',
-    title: "Newton's Laws Problem Set",
-    class: {
-      id: 'class-a',
-      name: 'Class A',
-      grade: '9th Grade',
-    },
-    subject: 'Physics',
-    type: 'Assignment',
-    dueDate: '2025-03-25',
-    totalPoints: 40,
-    status: 'Completed',
-    studentsCompleted: 26,
-    studentsTotal: 28,
-    averageScore: 87,
-    createdDate: '2025-03-18',
-  },
-  {
-    id: 'assess-5',
-    title: 'Statistics Project',
-    class: {
-      id: 'class-d',
-      name: 'Class D',
-      grade: '11th Grade',
-    },
-    subject: 'Statistics',
-    type: 'Project',
-    dueDate: '2025-04-20',
-    totalPoints: 150,
-    status: 'Upcoming',
-    studentsCompleted: 0,
-    studentsTotal: 22,
-    averageScore: null,
-    createdDate: '2025-03-30',
-  },
-  {
-    id: 'assess-6',
-    title: 'Calculus Quiz #2',
-    class: {
-      id: 'class-d',
-      name: 'Class D',
-      grade: '11th Grade',
-    },
-    subject: 'Calculus',
-    type: 'Quiz',
-    dueDate: '2025-03-22',
-    totalPoints: 30,
-    status: 'Completed',
-    studentsCompleted: 20,
-    studentsTotal: 22,
-    averageScore: 76,
-    createdDate: '2025-03-15',
-  },
-  {
-    id: 'assess-7',
-    title: 'Ecosystem Analysis Report',
-    class: {
-      id: 'class-c',
-      name: 'Class C',
-      grade: '9th Grade',
-    },
-    subject: 'Environmental Science',
-    type: 'Assignment',
-    dueDate: '2025-03-18',
-    totalPoints: 65,
-    status: 'Completed',
-    studentsCompleted: 28,
-    studentsTotal: 30,
-    averageScore: 92,
-    createdDate: '2025-03-11',
-  },
-  {
-    id: 'assess-8',
-    title: 'Periodic Table Quiz',
-    class: {
-      id: 'class-b',
-      name: 'Class B',
-      grade: '10th Grade',
-    },
-    subject: 'Chemistry',
-    type: 'Quiz',
-    dueDate: '2025-03-28',
-    totalPoints: 20,
-    status: 'Completed',
-    studentsCompleted: 23,
-    studentsTotal: 24,
-    averageScore: 85,
-    createdDate: '2025-03-21',
-  },
-]
 
+type StudentAssessment = {
+  id: number
+  student: {
+    id: number
+    firstName: string
+    lastName: string
+    otherName?: string
+    sex: string
+    gender: string
+  }
+  marksObtained?: number
+  comment?: string
+}
+
+type CreateAssessmentData = {
+  name: string
+  classSubjectId: string
+  termId: string
+  totalMarks: number
+  dateOfAssessment: string
+}
+
+type ClassSubject = {
+  id: string
+  classModel: {
+    id: string
+    name: string
+    grade: {
+      name: string
+    }
+  }
+  subject: {
+    name: string
+  }
+}
+
+type Term = {
+  id: string
+  name: string
+  startDate: string
+  endDate: string
+}
+
+type User = {
+  id: string
+  role: 'TEACHER' | 'ADMIN'
+  firstName: string
+  lastName: string
+}
+
+// Enhanced Student Grade Type for tracking changes
+type StudentGradeState = {
+  marks: number
+  comment: string
+  hasValidMarks: boolean
+  isModified: boolean
+  originalMarks?: number
+  originalComment?: string
+}
+
+// Skeleton Components
+const TableSkeleton = () => (
+  <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+    <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Title
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Class
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Completion
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Average Score
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {[...Array(5)].map((_, i) => (
+            <tr key={i}>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded animate-pulse w-2/3"></div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="h-2 bg-gray-200 rounded animate-pulse"></div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="h-4 bg-gray-200 rounded animate-pulse mb-1"></div>
+                <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2"></div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)
+
+// API Functions
+const apiCall = async (url: string, options: RequestInit = {}) => {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  })
+  
+  if (!response.ok) {
+    throw new Error(`API call failed: ${response.status} ${response.statusText}`)
+  }
+  
+  return response.json()
+}
+
+const fetchAssessments = async (school: string): Promise<Assessment[]> => {
+  return apiCall(`/api/${school}/assessments/`)
+}
+
+const fetchClassSubjects = async (school: string): Promise<ClassSubject[]> => {
+  return apiCall(`/api/${school}/assessments/class-subjects`)
+}
+
+const fetchTerms = async (school: string): Promise<Term[]> => {
+  return apiCall(`/api/${school}/assessments/terms`)
+}
+
+const createAssessment = async (school: string, data: CreateAssessmentData): Promise<Assessment> => {
+  return apiCall(`/api/${school}/assessments/`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+const updateStudentAssessment = async (
+  school: string, 
+  assessmentId: string, 
+  studentId: string, 
+  data: { marksObtained: number; comment?: string }
+): Promise<StudentAssessment> => {
+  return apiCall(`/api/${school}/assessments/${assessmentId}/students/${studentId}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+}
+
+const getCurrentUser = async (): Promise<User> => {
+  return JSON.parse(localStorage.getItem('user') || '{}')
+}
+
+// Helper function to calculate completion based on class students vs assessed students
+const calculateCompletion = (assessment: Assessment) => {
+  const totalClassStudents = assessment.classSubjects.classModel.classStudents.length
+  const studentsWithValidMarks = assessment.studentAssessments.filter(sa => 
+    sa.marksObtained !== null && sa.marksObtained !== undefined && sa.marksObtained >= 0
+  ).length
+  
+  return {
+    completed: studentsWithValidMarks,
+    total: totalClassStudents,
+    percentage: totalClassStudents > 0 ? (studentsWithValidMarks / totalClassStudents) * 100 : 0
+  }
+}
+
+// Helper function to check if user can grade assessment
+const canUserGradeAssessment = (user: User | null, assessment: Assessment): boolean => {
+  if (!user) return false
+  if (user.role === 'ADMIN') return true
+  if (user.role === 'TEACHER' && user.id === assessment.classSubjects.teacher.id) return true
+  return false
+}
+
+// Create Assessment Dialog
+const CreateAssessmentDialog = ({ 
+  school, 
+  onAssessmentCreated 
+}: { 
+  school: string
+  onAssessmentCreated: () => void
+}) => {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [classSubjects, setClassSubjects] = useState<ClassSubject[]>([])
+  const [terms, setTerms] = useState<Term[]>([])
+  const [formData, setFormData] = useState<CreateAssessmentData>({
+    name: '',
+    classSubjectId: '',
+    termId: '',
+    totalMarks: 0,
+    dateOfAssessment: ''
+  })
+
+  useEffect(() => {
+    if (open) {
+      Promise.all([
+        fetchClassSubjects(school),
+        fetchTerms(school)
+      ]).then(([classSubjectsData, termsData]) => {
+        setClassSubjects(classSubjectsData)
+        setTerms(termsData)
+      }).catch(console.error)
+    }
+  }, [open, school])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      await createAssessment(school, formData)
+      setOpen(false)
+      setFormData({
+        name: '',
+        classSubjectId: '',
+        termId: '',
+        totalMarks: 0,
+        dateOfAssessment: ''
+      })
+      onAssessmentCreated()
+    } catch (error) {
+      console.error('Error creating assessment:', error)
+      alert('Failed to create assessment. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg flex items-center">
+          <svg
+            className="w-4 h-4 mr-2"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
+          </svg>
+          New Assessment
+        </button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Create New Assessment</DialogTitle>
+          <DialogDescription>
+            Fill in the details to create a new assessment for your class.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Assessment Name
+            </label>
+            <input
+              type="text"
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={formData.name}
+              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              placeholder="Enter assessment name"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Class & Subject
+            </label>
+            <select
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={formData.classSubjectId}
+              onChange={(e) => setFormData(prev => ({ ...prev, classSubjectId: e.target.value }))}
+            >
+              <option value="">Select class and subject</option>
+              {classSubjects.map((cs) => (
+                <option key={cs.id} value={cs.id}>
+                  {cs.classModel.name} - {cs.subject.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Term
+            </label>
+            <select
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={formData.termId}
+              onChange={(e) => setFormData(prev => ({ ...prev, termId: e.target.value }))}
+            >
+              <option value="">Select term</option>
+              {terms.map((term) => (
+                <option key={term.id} value={term.id}>
+                  {term.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Total Marks
+            </label>
+            <input
+              type="number"
+              required
+              min="1"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={formData.totalMarks || ''}
+              onChange={(e) => setFormData(prev => ({ ...prev, totalMarks: parseInt(e.target.value) || 0 }))}
+              placeholder="Enter total marks"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Assessment Date
+            </label>
+            <input
+              type="date"
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={formData.dateOfAssessment}
+              onChange={(e) => setFormData(prev => ({ ...prev, dateOfAssessment: e.target.value }))}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button type="button" disabled={loading}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Creating...' : 'Create Assessment'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// Enhanced Student Grading Dialog
+const StudentGradingDialog = ({ 
+  assessment, 
+  school,
+  user,
+  onGradingComplete 
+}: { 
+  assessment: Assessment
+  school: string
+  user: User | null
+  onGradingComplete: () => void 
+}) => {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [studentGrades, setStudentGrades] = useState<Record<string, StudentGradeState>>({})
+
+  const canGrade = canUserGradeAssessment(user, assessment)
+
+  useEffect(() => {
+    if (open && assessment) {
+      const initialGrades: Record<string, StudentGradeState> = {}
+      
+      // Get all students in the class
+      assessment.classSubjects.classModel.classStudents.forEach(classStudent => {
+        const student = classStudent.student
+        const existingAssessment = assessment.studentAssessments.find(sa => sa.student.id === student.id)
+        
+        if (existingAssessment) {
+          // Student has an existing assessment
+          const hasValidMarks = existingAssessment.marksObtained !== null && 
+                               existingAssessment.marksObtained !== undefined && 
+                               existingAssessment.marksObtained >= 0
+          
+          initialGrades[student.id.toString()] = {
+            marks: existingAssessment.marksObtained || 0,
+            comment: existingAssessment.comment || '',
+            hasValidMarks,
+            isModified: false,
+            originalMarks: existingAssessment.marksObtained || undefined,
+            originalComment: existingAssessment.comment || ''
+          }
+        } else {
+          // Student doesn't have an assessment yet
+          initialGrades[student.id.toString()] = {
+            marks: 0,
+            comment: 'No assessment recorded',
+            hasValidMarks: false,
+            isModified: false,
+            originalMarks: undefined,
+            originalComment: ''
+          }
+        }
+      })
+      
+      setStudentGrades(initialGrades)
+    }
+  }, [open, assessment])
+
+  const handleGradeChange = (studentId: string, field: 'marks' | 'comment', value: string | number) => {
+    setStudentGrades(prev => {
+      const current = prev[studentId]
+      const newGrade = {
+        ...current,
+        [field]: value
+      }
+      
+      // Check if this grade has been modified from original
+      const marksChanged = newGrade.marks !== (current.originalMarks || 0)
+      const commentChanged = newGrade.comment !== (current.originalComment || '')
+      
+      newGrade.isModified = marksChanged || commentChanged
+      newGrade.hasValidMarks = newGrade.marks >= 0 && newGrade.marks <= assessment.totalMarks
+      
+      return {
+        ...prev,
+        [studentId]: newGrade
+      }
+    })
+  }
+
+  const handleSave = async () => {
+    setLoading(true)
+    try {
+      // Only save assessments that have been modified
+      const modifiedGrades = Object.entries(studentGrades)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([_, grade]) => grade.isModified && grade.hasValidMarks)
+      
+      const promises = modifiedGrades.map(([studentId, grade]) =>
+        updateStudentAssessment(school, assessment.id.toString(), studentId, {
+          marksObtained: grade.marks,
+          comment: grade.comment
+        })
+      )
+      
+      await Promise.all(promises)
+      setOpen(false)
+      onGradingComplete()
+    } catch (error) {
+      console.error('Error updating grades:', error)
+      alert('Failed to save grades. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!assessment) return null
+
+  const completion = calculateCompletion(assessment)
+  const averageScore = completion.completed > 0 
+    ? assessment.studentAssessments
+        .filter(sa => sa.marksObtained !== null && sa.marksObtained !== undefined && sa.marksObtained >= 0)
+        .reduce((sum, sa) => sum + (sa.marksObtained || 0), 0) / completion.completed
+    : 0
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <tr className={`hover:bg-gray-50 ${canGrade ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="text-sm font-medium text-gray-900">
+              {assessment.name}
+              {!canGrade && (
+                <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                  No Access
+                </span>
+              )}
+            </div>
+            <div className="text-sm text-gray-500">
+              {assessment.classSubjects.subject.name}
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="text-sm text-gray-900">
+              {assessment.classSubjects.classModel.name}
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex items-center">
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div
+                  className="bg-blue-600 h-2.5 rounded-full"
+                  style={{
+                    width: `${completion.percentage}%`,
+                  }}
+                ></div>
+              </div>
+              <span className="text-sm text-gray-900 ml-2">
+                {completion.completed}/{completion.total}
+              </span>
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {completion.completed > 0
+              ? `${Math.round((averageScore / assessment.totalMarks) * 100)}%`
+              : '-'}
+            <div className="text-sm text-gray-500">
+              total: {assessment.totalMarks} pts
+            </div>
+          </td>
+        </tr>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>
+            Grade Students - {assessment.name}
+          </DialogTitle>
+          <DialogDescription>
+            {assessment.classSubjects.classModel.name} - {assessment.classSubjects.subject.name} (Total: {assessment.totalMarks} marks)
+            {!canGrade && (
+              <div className="mt-2 text-red-600 font-medium">
+                You don't have permission to grade this assessment. Only the assigned teacher can grade.
+              </div>
+            )}
+          </DialogDescription>
+        </DialogHeader>
+        
+        {canGrade ? (
+          <div className="space-y-4">
+            {assessment.classSubjects.classModel.classStudents.map((classStudent) => {
+              const student = classStudent.student
+              const studentId = student.id.toString()
+              const fullName = `${student.firstName} ${student.otherName ? student.otherName + ' ' : ''}${student.lastName}`
+              const currentGrade = studentGrades[studentId] || { 
+                marks: 0, 
+                comment: '', 
+                hasValidMarks: false, 
+                isModified: false 
+              }
+              
+              return (
+                <div key={student.id} className="border rounded-lg p-4 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <div className="font-medium text-gray-900">{fullName}</div>
+                    {currentGrade.isModified && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        Modified
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Marks (out of {assessment.totalMarks})
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max={assessment.totalMarks}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={currentGrade.marks || ''}
+                        onChange={(e) => handleGradeChange(studentId, 'marks', parseInt(e.target.value) || 0)}
+                        placeholder="Enter marks"
+                      />
+                      {currentGrade.marks > assessment.totalMarks && (
+                        <p className="text-red-500 text-xs mt-1">
+                          Marks cannot exceed {assessment.totalMarks}
+                        </p>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Comment
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={currentGrade.comment}
+                        onChange={(e) => handleGradeChange(studentId, 'comment', e.target.value)}
+                        placeholder="Add a comment"
+                      />
+                    </div>
+                  </div>
+                  
+                  {currentGrade.hasValidMarks && currentGrade.marks >= 0 && (
+                    <div className="text-sm text-gray-600">
+                      Percentage: {Math.round((currentGrade.marks / assessment.totalMarks) * 100)}%
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <div className="text-gray-500">
+              You don't have permission to grade this assessment.
+            </div>
+          </div>
+        )}
+
+        <DialogFooter>
+          <Button disabled={loading}>
+            Cancel
+          </Button>
+          {canGrade && (
+            <Button onClick={handleSave} disabled={loading}>
+              {loading ? 'Saving...' : 'Save Grades'}
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// Main Assessments Component
 const Assessments = () => {
-  const navigate = useNavigate()
+  const { school } = Route.useParams()
+  const [assessments, setAssessments] = useState<Assessment[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [filters, setFilters] = useState({
-    status: 'all',
-    type: 'all',
     class: 'all',
     subject: 'all',
   })
   const [searchTerm, setSearchTerm] = useState('')
-  const [sortBy, setSortBy] = useState('dueDate')
-  const [sortDirection, setSortDirection] = useState('asc')
+  const [sortBy, setSortBy] = useState('createdAt')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
+
+  const loadData = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const [assessmentsData, userData] = await Promise.all([
+        fetchAssessments(school),
+        getCurrentUser()
+      ])
+      setAssessments(assessmentsData)
+      console.log("Fetched AssessmentData: ", assessmentsData);
+      setUser(userData)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load data')
+    } finally {
+      setLoading(false)
+    }
+  }, [school])
+  
+  useEffect(() => {
+    loadData()
+  }, [loadData])
 
   // Extract unique filter options
-  const classes = [...new Set(assessmentsData.map((a) => a.class.name))]
-  const subjects = [...new Set(assessmentsData.map((a) => a.subject))]
-  const types = [...new Set(assessmentsData.map((a) => a.type))]
-  const statuses = [...new Set(assessmentsData.map((a) => a.status))]
+  const classes = [...new Set(assessments.map((a) => a.classSubjects.classModel.name))]
+  const subjects = [...new Set(assessments.map((a) => a.classSubjects.subject.name))]
 
   // Apply filters and sorting
-  const filteredAssessments = assessmentsData
+  const filteredAssessments = assessments
     .filter((assessment) => {
       return (
-        (filters.status === 'all' || assessment.status === filters.status) &&
-        (filters.type === 'all' || assessment.type === filters.type) &&
-        (filters.class === 'all' || assessment.class.name === filters.class) &&
-        (filters.subject === 'all' || assessment.subject === filters.subject) &&
+        (filters.class === 'all' || assessment.classSubjects.classModel.name === filters.class) &&
+        (filters.subject === 'all' || assessment.classSubjects.subject.name === filters.subject) &&
         (searchTerm === '' ||
-          assessment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          assessment.subject.toLowerCase().includes(searchTerm.toLowerCase()))
+          assessment.name.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     })
     .sort((a, b) => {
       let comparison = 0
 
       switch (sortBy) {
-        case 'title':
-          comparison = a.title.localeCompare(b.title)
-          break
-        case 'dueDate':
-          comparison = Number(new Date(a.dueDate)) - Number(new Date(b.dueDate))
+        case 'name':
+          comparison = a.name.localeCompare(b.name)
           break
         case 'class':
-          comparison = a.class.name.localeCompare(b.class.name)
+          comparison = a.classSubjects.classModel.name.localeCompare(b.classSubjects.classModel.name)
           break
-        case 'status':
-          comparison = a.status.localeCompare(b.status)
+        case 'subject':
+          comparison = a.classSubjects.subject.name.localeCompare(b.classSubjects.subject.name)
           break
-        case 'type':
-          comparison = a.type.localeCompare(b.type)
+        case 'completion': {
+          const aCompletion = calculateCompletion(a).percentage
+          const bCompletion = calculateCompletion(b).percentage
+          comparison = aCompletion - bCompletion
           break
-        case 'completion':
-          comparison =
-            a.studentsCompleted / a.studentsTotal -
-            b.studentsCompleted / b.studentsTotal
-          break
-        case 'score':
-          comparison = (a.averageScore || 0) - (b.averageScore || 0)
+        }
+        case 'createdAt':
+          comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           break
         default:
           comparison = 0
@@ -233,37 +758,6 @@ const Assessments = () => {
       return sortDirection === 'asc' ? comparison : -comparison
     })
 
-  // Helper function for status styling
-  const getStatusStyle = (status: string) => {
-    switch (status) {
-      case 'Upcoming':
-        return 'bg-blue-100 text-blue-800'
-      case 'Active':
-        return 'bg-green-100 text-green-800'
-      case 'Grading':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'Completed':
-        return 'bg-gray-100 text-gray-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  // Format date in a more readable way
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString()
-  }
-
-  // Calculate days remaining
-  const getDaysRemaining = (dueDate: string) => {
-    const today = new Date()
-    const due = new Date(dueDate)
-    const diffTime = Number(due) - Number(today)
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays
-  }
-
-  // Toggle sort direction when clicking the same column
   const handleSortChange = (column: string) => {
     if (sortBy === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
@@ -273,31 +767,47 @@ const Assessments = () => {
     }
   }
 
+  if (error) {
+    return (
+      <div className="p-6 max-w-6xl mx-auto">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">Error</h3>
+              <div className="mt-2 text-sm text-red-700">
+                {error}
+              </div>
+              <div className="mt-4">
+                <button
+                  onClick={loadData}
+                  className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <header className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-3xl font-bold text-gray-800">All Assessments</h1>
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg flex items-center"
-            onClick={() => alert('Create new assessment')} // Replace with actual navigation
-          >
-            <svg
-              className="w-4 h-4 mr-2"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-            New Assessment
-          </button>
+          {user && (user.role === 'TEACHER' || user.role === 'ADMIN') && (
+            <CreateAssessmentDialog 
+              school={school} 
+              onAssessmentCreated={loadData}
+            />
+          )}
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
@@ -328,7 +838,7 @@ const Assessments = () => {
               />
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <select
                 className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                 value={filters.class}
@@ -358,391 +868,175 @@ const Assessments = () => {
                   </option>
                 ))}
               </select>
-
-              <select
-                className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                value={filters.type}
-                onChange={(e) =>
-                  setFilters({ ...filters, type: e.target.value })
-                }
-              >
-                <option value="all">All Types</option>
-                {types.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                value={filters.status}
-                onChange={(e) =>
-                  setFilters({ ...filters, status: e.target.value })
-                }
-              >
-                <option value="all">All Statuses</option>
-                {statuses.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSortChange('title')}
-                >
-                  <div className="flex items-center">
-                    Title
-                    {sortBy === 'title' && (
-                      <svg
-                        className="w-3 h-3 ml-1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d={
-                            sortDirection === 'asc'
-                              ? 'M5 15l7-7 7 7'
-                              : 'M19 9l-7 7-7-7'
-                          }
-                        />
-                      </svg>
-                    )}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSortChange('class')}
-                >
-                  <div className="flex items-center">
-                    Class
-                    {sortBy === 'class' && (
-                      <svg
-                        className="w-3 h-3 ml-1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d={
-                            sortDirection === 'asc'
-                              ? 'M5 15l7-7 7 7'
-                              : 'M19 9l-7 7-7-7'
-                          }
-                        />
-                      </svg>
-                    )}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSortChange('type')}
-                >
-                  <div className="flex items-center">
-                    Type
-                    {sortBy === 'type' && (
-                      <svg
-                        className="w-3 h-3 ml-1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d={
-                            sortDirection === 'asc'
-                              ? 'M5 15l7-7 7 7'
-                              : 'M19 9l-7 7-7-7'
-                          }
-                        />
-                      </svg>
-                    )}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSortChange('dueDate')}
-                >
-                  <div className="flex items-center">
-                    Due Date
-                    {sortBy === 'dueDate' && (
-                      <svg
-                        className="w-3 h-3 ml-1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d={
-                            sortDirection === 'asc'
-                              ? 'M5 15l7-7 7 7'
-                              : 'M19 9l-7 7-7-7'
-                          }
-                        />
-                      </svg>
-                    )}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSortChange('status')}
-                >
-                  <div className="flex items-center">
-                    Status
-                    {sortBy === 'status' && (
-                      <svg
-                        className="w-3 h-3 ml-1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d={
-                            sortDirection === 'asc'
-                              ? 'M5 15l7-7 7 7'
-                              : 'M19 9l-7 7-7-7'
-                          }
-                        />
-                      </svg>
-                    )}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSortChange('completion')}
-                >
-                  <div className="flex items-center">
-                    Completion
-                    {sortBy === 'completion' && (
-                      <svg
-                        className="w-3 h-3 ml-1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d={
-                            sortDirection === 'asc'
-                              ? 'M5 15l7-7 7 7'
-                              : 'M19 9l-7 7-7-7'
-                          }
-                        />
-                      </svg>
-                    )}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSortChange('score')}
-                >
-                  <div className="flex items-center">
-                    Score
-                    {sortBy === 'score' && (
-                      <svg
-                        className="w-3 h-3 ml-1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d={
-                            sortDirection === 'asc'
-                              ? 'M5 15l7-7 7 7'
-                              : 'M19 9l-7 7-7-7'
-                          }
-                        />
-                      </svg>
-                    )}
-                  </div>
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredAssessments.map((assessment) => {
-                const daysRemaining = getDaysRemaining(assessment.dueDate)
-
-                return (
-                  <tr
-                    key={assessment.id}
-                    className="hover:bg-gray-50 cursor-pointer"
-                    onClick={() =>
-                      navigate({ to: `/$school/dashboard/assessments/${assessment.id}` })
-                    }
+      {loading ? (
+        <TableSkeleton />
+      ) : (
+        <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSortChange('name')}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {assessment.title}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {assessment.subject}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {assessment.class.name}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {assessment.class.grade}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {assessment.type}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {assessment.totalPoints} pts
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {formatDate(assessment.dueDate)}
-                      </div>
-                      {assessment.status === 'Upcoming' ||
-                      assessment.status === 'Active' ? (
-                        <div
-                          className={`text-sm ${daysRemaining <= 3 ? 'text-red-600 font-medium' : 'text-gray-500'}`}
+                    <div className="flex items-center">
+                      Title
+                      {sortBy === 'name' && (
+                        <svg
+                          className="w-3 h-3 ml-1"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                         >
-                          {daysRemaining > 0
-                            ? `${daysRemaining} days left`
-                            : 'Due today'}
-                        </div>
-                      ) : null}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusStyle(assessment.status)}`}
-                      >
-                        {assessment.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                          <div
-                            className="bg-blue-600 h-2.5 rounded-full"
-                            style={{
-                              width: `${(assessment.studentsCompleted / assessment.studentsTotal) * 100}%`,
-                            }}
-                          ></div>
-                        </div>
-                        <span className="text-sm text-gray-900 ml-2">
-                          {assessment.studentsCompleted}/
-                          {assessment.studentsTotal}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {assessment.averageScore
-                        ? `${assessment.averageScore}%`
-                        : '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          // Navigate to edit page
-                          navigate({
-                            to: `/$school/dashboard/assessments/${assessment.id}/edit`,
-                          })
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className={`${
-                          assessment.status === 'Grading'
-                            ? 'text-yellow-600 hover:text-yellow-900'
-                            : 'text-gray-400'
-                        }`}
-                        disabled={assessment.status !== 'Grading'}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          if (assessment.status === 'Grading') {
-                            // Navigate to grading page
-                            navigate({
-                              to: `/$school/dashboard/assessments/${assessment.id}/grade`,
-                            })
-                          }
-                        }}
-                      >
-                        Grade
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {filteredAssessments.length === 0 && (
-          <div className="text-center py-12">
-            <svg
-              className="mx-auto h-12 w-12 text-gray-400"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">
-              No assessments found
-            </h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Try adjusting your search or filters
-            </p>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d={
+                              sortDirection === 'asc'
+                                ? 'M5 15l7-7 7 7'
+                                : 'M19 9l-7 7-7-7'
+                            }
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSortChange('class')}
+                  >
+                    <div className="flex items-center">
+                      Class
+                      {sortBy === 'class' && (
+                        <svg
+                          className="w-3 h-3 ml-1"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d={
+                              sortDirection === 'asc'
+                                ? 'M5 15l7-7 7 7'
+                                : 'M19 9l-7 7-7-7'
+                            }
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSortChange('completion')}
+                  >
+                    <div className="flex items-center">
+                      Completion
+                      {sortBy === 'completion' && (
+                        <svg
+                          className="w-3 h-3 ml-1"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d={
+                              sortDirection === 'asc'
+                                ? 'M5 15l7-7 7 7'
+                                : 'M19 9l-7 7-7-7'
+                            }
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSortChange('dateOfAssessment')}
+                  >
+                    <div className="flex items-center">
+                      Average Score
+                      {sortBy === 'dateOfAssessment' && (
+                        <svg
+                          className="w-3 h-3 ml-1"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d={
+                              sortDirection === 'asc'
+                                ? 'M5 15l7-7 7 7'
+                                : 'M19 9l-7 7-7-7'
+                            }
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredAssessments.map((assessment) => {
+                  return (
+                    <StudentGradingDialog
+                      user={user}
+                      key={assessment.id}
+                      assessment={assessment}
+                      school={school}
+                      onGradingComplete={loadData}
+                    />
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+
+          {filteredAssessments.length === 0 && !loading && (
+            <div className="text-center py-12">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </svg>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                No assessments found
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Try adjusting your search or filters
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="mt-6 flex justify-between items-center">
         <div className="text-sm text-gray-700">
@@ -751,13 +1045,80 @@ const Assessments = () => {
         </div>
 
         <div className="flex space-x-2">
-          <button className="bg-white border border-gray-300 text-gray-700 py-1 px-3 rounded-md text-sm">
+          <button 
+            onClick={() => {
+              const csvContent = generateCSVContent(filteredAssessments)
+              downloadCSV(csvContent, 'assessments.csv')
+            }}
+            className="bg-white border border-gray-300 text-gray-700 py-1 px-3 rounded-md text-sm hover:bg-gray-50"
+          >
             Export Data
           </button>
         </div>
       </div>
     </div>
   )
+}
+
+// Helper functions for CSV export
+const generateCSVContent = (assessments: Assessment[]): string => {
+  const headers = [
+    'Assessment Name',
+    'Class',
+    'Subject', 
+    'Total Marks',
+    'Assessment Date',
+    'Students Completed',
+    'Total Students',
+    'Completion %',
+    'Average Score',
+    'Average %'
+  ]
+  
+  const rows = assessments.map(assessment => {
+    const completedCount = assessment.studentAssessments.filter(sa =>
+      sa.marksObtained !== null && sa.marksObtained !== undefined
+    ).length
+    const totalStudents = assessment.studentAssessments.length
+    const averageScore = completedCount > 0
+      ? assessment.studentAssessments
+          .filter(sa => sa.marksObtained !== null && sa.marksObtained !== undefined)
+          .reduce((sum, sa) => sum + (sa.marksObtained || 0), 0) / completedCount
+      : 0
+    
+    return [
+      assessment.name,
+      assessment.classSubjects.classModel.name,
+      assessment.classSubjects.subject.name,
+      assessment.totalMarks,
+      completedCount,
+      totalStudents,
+      totalStudents > 0 ? Math.round((completedCount / totalStudents) * 100) : 0,
+      Math.round(averageScore * 100) / 100,
+      assessment.totalMarks > 0 ? Math.round((averageScore / assessment.totalMarks) * 100) : 0
+    ]
+  })
+  
+  const csvRows = [headers, ...rows]
+  return csvRows.map(row => 
+    row.map(field => 
+      typeof field === 'string' && field.includes(',') 
+        ? `"${field}"` 
+        : field
+    ).join(',')
+  ).join('\n')
+}
+
+const downloadCSV = (content: string, filename: string) => {
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.setAttribute('href', url)
+  link.setAttribute('download', filename)
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 
 export const Route = createFileRoute('/$school/dashboard/assessments/')({

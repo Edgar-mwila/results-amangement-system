@@ -15,7 +15,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function NavBar() {
   return (
     <div className='fixed top-0 left-0 right-0 flex justify-between m-auto items-baseline p-5 bg-green-600'>
-      <Link to="/" className="text-3xl font-bold text-[#3D405B]">
+      <Link className="text-3xl font-bold text-[#3D405B]">
         Edu-Track
       </Link>
       <div className="flex gap-2">

@@ -1,275 +1,275 @@
 import type React from "react"
-
 import { Input } from "@/components/ui/input"
 import { TableRow, TableCell, TableBody, Table, TableHead, TableHeader } from "@/components/ui/table"
-import { createFileRoute, useRouter } from "@tanstack/react-router"
+import { createFileRoute, useParams, useRouter } from "@tanstack/react-router"
 import { Search, UserPlus, Filter } from "lucide-react"
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { themeColors } from "@/components/ui/theme-config"
+import { useQuery } from "@tanstack/react-query"
+import { Skeleton } from "@/components/ui/skeleton"
 
-const exampleStaff = [
-  {
-    id: 1,
-    firstname: "John",
-    lastname: "Doe",
-    role: "Teacher",
-    email: "john.doe@school.com",
-    status: "Active",
-    department: "Mathematics",
-    joinDate: "2020-08-15",
-  },
-  {
-    id: 2,
-    firstname: "Jane",
-    lastname: "Smith",
-    role: "Administrator",
-    email: "jane.smith@school.com",
-    status: "Active",
-    department: "Administration",
-    joinDate: "2018-05-10",
-  },
-  {
-    id: 3,
-    firstname: "Bob",
-    lastname: "Johnson",
-    role: "Administrator",
-    email: "bob.johnson@school.com",
-    status: "On Leave",
-    department: "Administration",
-    joinDate: "2019-03-22",
-  },
-  {
-    id: 4,
-    firstname: "Alice",
-    lastname: "Williams",
-    role: "Teacher",
-    email: "alice.williams@school.com",
-    status: "Active",
-    department: "Science",
-    joinDate: "2021-01-05",
-  },
-  {
-    id: 5,
-    firstname: "Charlie",
-    lastname: "Brown",
-    role: "Teacher",
-    email: "charlie.brown@school.com",
-    status: "Inactive",
-    department: "English",
-    joinDate: "2019-09-30",
-  },
-  {
-    id: 6,
-    firstname: "Emily",
-    lastname: "Davis",
-    role: "Teacher",
-    email: "emily.davis@school.com",
-    status: "Active",
-    department: "History",
-    joinDate: "2022-02-15",
-  },
-  {
-    id: 7,
-    firstname: "Michael",
-    lastname: "Wilson",
-    role: "Support Staff",
-    email: "michael.wilson@school.com",
-    status: "Active",
-    department: "IT Support",
-    joinDate: "2020-11-08",
-  },
-  {
-    id: 8,
-    firstname: "Sarah",
-    lastname: "Martinez",
-    role: "Teacher",
-    email: "sarah.martinez@school.com",
-    status: "Active",
-    department: "Physical Education",
-    joinDate: "2021-08-01",
-  },
-]
 
-const AddStaffDialog: React.FC<{
-  open: boolean
-  onOpenChange: (boolean: boolean) => void
-}> = ({ open, onOpenChange }) => {
-  const [newStaff, setNewStaff] = useState({
-    firstname: "",
-    lastname: "",
-    email: "",
-    role: "",
-    department: "",
-    status: "Active",
-  })
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would typically make an API call to add the new staff member
-    console.log("New staff member:", newStaff)
-    onOpenChange(false)
-    setNewStaff({
-      firstname: "",
-      lastname: "",
-      email: "",
-      role: "",
-      department: "",
-      status: "Active",
-    })
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Add New Staff Member</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid w-full gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="firstname">First Name</Label>
-                <Input
-                  id="firstname"
-                  value={newStaff.firstname}
-                  onChange={(e) => setNewStaff({ ...newStaff, firstname: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="lastname">Last Name</Label>
-                <Input
-                  id="lastname"
-                  value={newStaff.lastname}
-                  onChange={(e) => setNewStaff({ ...newStaff, lastname: e.target.value })}
-                  required
-                />
-              </div>
-            </div>
-            <div className="flex flex-col space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={newStaff.email}
-                onChange={(e) => setNewStaff({ ...newStaff, email: e.target.value })}
-                required
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Select
-                  value={newStaff.role}
-                  onValueChange={(value) => setNewStaff({ ...newStaff, role: value })}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Teacher">Teacher</SelectItem>
-                    <SelectItem value="Administrator">Administrator</SelectItem>
-                    <SelectItem value="Support Staff">Support Staff</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="department">Department</Label>
-                <Select
-                  value={newStaff.department}
-                  onValueChange={(value) => setNewStaff({ ...newStaff, department: value })}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select department" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Mathematics">Mathematics</SelectItem>
-                    <SelectItem value="Science">Science</SelectItem>
-                    <SelectItem value="English">English</SelectItem>
-                    <SelectItem value="History">History</SelectItem>
-                    <SelectItem value="Physical Education">Physical Education</SelectItem>
-                    <SelectItem value="Administration">Administration</SelectItem>
-                    <SelectItem value="IT Support">IT Support</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="flex flex-col space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={newStaff.status}
-                onValueChange={(value) => setNewStaff({ ...newStaff, status: value })}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Inactive">Inactive</SelectItem>
-                  <SelectItem value="On Leave">On Leave</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter className="mt-6">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" className={`${themeColors.accentBg} ${themeColors.accentHover} text-white`}>
-              Add Staff
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  )
-}
 
 const StaffManagement = () => {
+  const { school } = useParams({ strict: false })
   const [search, setSearch] = useState("")
   const [roleFilter, setRoleFilter] = useState<string>("all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const router = useRouter()
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const filteredStaff = useMemo(() => {
-    return exampleStaff.filter((staff) => {
-      const nameMatch =
-        staff.firstname.toLowerCase().includes(search.toLowerCase()) ||
-        staff.lastname.toLowerCase().includes(search.toLowerCase()) ||
-        staff.email.toLowerCase().includes(search.toLowerCase())
+  type Role = {
+    id: number
+    name: string
+  }
 
-      const roleMatch = roleFilter === "all" || staff.role === roleFilter
-      const statusMatch = statusFilter === "all" || staff.status === statusFilter
+  const fetchRoles = async (): Promise<Role[]> => {
+    const res = await fetch(`/api/${school}/roles/`)
+    if (!res.ok) throw new Error("Failed to fetch roles")
+    return res.json()
+  }
 
-      return nameMatch && roleMatch && statusMatch
+  const { data: roles = [], isLoading: rolesLoading } = useQuery<Role[]>({
+    queryKey: ["roles", school],
+    queryFn: fetchRoles,
+  })
+
+  const AddStaffDialog: React.FC<{
+    open: boolean
+    onOpenChange: (boolean: boolean) => void
+  }> = ({ open, onOpenChange }) => {
+    const [newStaff, setNewStaff] = useState({
+      firstname: "",
+      lastname: "",
+      email: "",
+      phone: "",
+      role: undefined as Role | undefined,
+      status: "Active",
     })
-  }, [search, roleFilter, statusFilter])
 
-  const staffCounts = useMemo(() => {
-    const total = exampleStaff.length
-    const active = exampleStaff.filter((staff) => staff.status === "Active").length
-    const teachers = exampleStaff.filter((staff) => staff.role === "Teacher").length
-    const admins = exampleStaff.filter((staff) => staff.role === "Administrator").length
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault()
+      try {
+        const res = await fetch(`/api/${school}/users/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firstName: newStaff.firstname,
+            lastName: newStaff.lastname,
+            email: newStaff.email,
+            phone: newStaff.phone,
+            role: newStaff.role,
+            status: newStaff.status,
+          }),
+        })
+        if (!res.ok) throw new Error("Failed to create staff member")
+        onOpenChange(false)
+        setNewStaff({
+          firstname: "",
+          lastname: "",
+          email: "",
+          phone: "",
+          role: undefined,
+          status: "Active",
+        })
+      } catch (err) {
+        console.error(err)
+      }
+    }
 
-    return { total, active, teachers, admins }
-  }, [])
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Staff Member</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid w-full gap-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="firstname">First Name</Label>
+                  <Input
+                    id="firstname"
+                    value={newStaff.firstname}
+                    onChange={(e) => setNewStaff({ ...newStaff, firstname: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="lastname">Last Name</Label>
+                  <Input
+                    id="lastname"
+                    value={newStaff.lastname}
+                    onChange={(e) => setNewStaff({ ...newStaff, lastname: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={newStaff.email}
+                  onChange={(e) => setNewStaff({ ...newStaff, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="flex flex-col space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={newStaff.phone}
+                  onChange={(e) => setNewStaff({ ...newStaff, phone: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="role">Role</Label>
+                  <Select
+                    value={newStaff.role ? String(newStaff.role.id) : ""}
+                    onValueChange={(value) => {
+                      const selectedRole = roles.find((r) => String(r.id) === value)
+                      setNewStaff({ ...newStaff, role: selectedRole })
+                    }}
+                    required
+                    disabled={rolesLoading}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={rolesLoading ? "Loading roles..." : "Select role"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roles.map((role) => (
+                        <SelectItem key={role.id} value={String(role.id)}>
+                          {role.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex flex-col space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select
+                  value={newStaff.status}
+                  onValueChange={(value) => setNewStaff({ ...newStaff, status: value })}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                    <SelectItem value="On Leave">On Leave</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter className="mt-6">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" className={`${themeColors.accentBg} ${themeColors.accentHover} text-white`}>
+                Add Staff
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  type Staff = {
+    id: string
+    firstName: string
+    lastName: string
+    email: string
+    role: Role
+    status: string
+  }
+
+  const fetchStaff = async (): Promise<Staff[]> => {
+    const res = await fetch(`/api/${school}/users/`)
+    if (!res.ok) throw new Error("Failed to fetch staff")
+    return res.json()
+  }
+
+  const { data: staff = [], isLoading, isError, error } = useQuery<Staff[]>({
+    queryKey: ["staff"],
+    queryFn: fetchStaff,
+  })
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex gap-4">
+          <Skeleton className="h-20 w-1/4" />
+          <Skeleton className="h-20 w-1/4" />
+          <Skeleton className="h-20 w-1/4" />
+          <Skeleton className="h-20 w-1/4" />
+        </div>
+        <Skeleton className="h-12 w-full" />
+        <div className="rounded-md border mt-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center px-4 py-4 border-b last:border-b-0 gap-4">
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-4 w-4 rounded-full" />
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="p-8 text-center text-red-600 font-semibold">
+        Failed to load staff members. {error instanceof Error ? error.message : ""}
+      </div>
+    )
+  }
+
+  const filteredStaff = staff.filter((staff) => {
+    const firstName = staff.firstName ?? ""
+    const lastName = staff.lastName ?? ""
+    const email = staff.email ?? ""
+    const role = staff.role ?? ""
+    const status = staff.status ?? ""
+
+    const nameMatch =
+      firstName.toLowerCase().includes(search.toLowerCase()) ||
+      lastName.toLowerCase().includes(search.toLowerCase()) ||
+      email.toLowerCase().includes(search.toLowerCase())
+
+    const roleMatch = roleFilter === "all" || role.name === roleFilter
+    const statusMatch = statusFilter === "all" || status === statusFilter
+
+    return nameMatch && roleMatch && statusMatch
+  })
+
+  const staffCounts = {
+    total: staff.length,
+    active: staff.filter((staff) => staff.status === "Active").length,
+    teachers: staff.filter((staff) => staff.role.name === "Teacher").length,
+    admins: staff.filter((staff) => staff.role.name === "Admin").length,
+  }
 
   return (
     <div className="container mx-auto p-4 bg-white">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Staff Management</h1>
-          <p className="text-gray-500">Manage and view all staff members</p>
         </div>
         <Button
           className={`${themeColors.accentBg} ${themeColors.accentHover} text-white mt-4 md:mt-0`}
@@ -320,9 +320,6 @@ const StaffManagement = () => {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Staff Directory</CardTitle>
-        </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div className="relative w-full md:w-auto">
@@ -346,7 +343,6 @@ const StaffManagement = () => {
                     <SelectItem value="all">All Roles</SelectItem>
                     <SelectItem value="Teacher">Teachers</SelectItem>
                     <SelectItem value="Administrator">Administrators</SelectItem>
-                    <SelectItem value="Support Staff">Support Staff</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -367,13 +363,11 @@ const StaffManagement = () => {
           <div className="rounded-md border">
             <Table>
               <TableHeader>
-                <TableRow className={`${themeColors.accentBg} text-white`}>
+                <TableRow className={`text-gray-900 bg-gray-100`}>
                   <TableHead className="font-bold">Name</TableHead>
                   <TableHead className="font-bold">Role</TableHead>
-                  <TableHead className="font-bold">Department</TableHead>
                   <TableHead className="font-bold">Email</TableHead>
-                  <TableHead className="font-bold">Join Date</TableHead>
-                  <TableHead className="font-bold">Status</TableHead>
+                  <TableHead className="font-bold"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -384,29 +378,29 @@ const StaffManagement = () => {
                       className="hover:bg-gray-50 cursor-pointer"
                       onClick={() =>
                         router.navigate({
-                          to: `/$school/dashboard/staff-management/staffer/${staff.id}?role=${staff.role.toLowerCase()}`,
+                          to: `/$school/dashboard/staff-management/staffer/${staff.id}`
                         })
                       }
                     >
                       <TableCell className="font-medium">
-                        {staff.firstname} {staff.lastname}
+                        {staff.firstName} {staff.lastName}
                       </TableCell>
-                      <TableCell>{staff.role}</TableCell>
-                      <TableCell>{staff.department}</TableCell>
+                      <TableCell>{staff.role.name}</TableCell>
                       <TableCell>{staff.email}</TableCell>
-                      <TableCell>{staff.joinDate}</TableCell>
                       <TableCell>
-                        <Badge
-                          className={
-                            staff.status === "Active"
-                              ? `${themeColors.accentBg} text-white`
-                              : staff.status === "Inactive"
-                                ? "bg-red-500 text-white"
-                                : `${themeColors.secondaryBg} text-white`
-                          }
-                        >
-                          {staff.status}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={
+                              "inline-block w-2 h-2 rounded-full " +
+                              (staff.status === "Active"
+                                ? "bg-green-500"
+                                : staff.status === "Inactive"
+                                ? "bg-red-500"
+                                : "bg-yellow-400")
+                            }
+                            title={staff.status}
+                          />
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
