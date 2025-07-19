@@ -366,12 +366,7 @@ classDiagram
         +LocalDateTime createdAt
         +LocalDateTime updatedAt
         +Boolean isDeleted
-        +createSchool()
-        +updateSchool()
-        +deleteSchool()
-        +getSubscriptionStatus()
     }
-    
     class User {
         +UUID id
         +String firstName
@@ -382,11 +377,7 @@ classDiagram
         +String status
         +LocalDateTime createdAt
         +LocalDateTime updatedAt
-        +authenticate()
-        +updateProfile()
-        +changePassword()
     }
-    
     class Student {
         +Long id
         +String firstName
@@ -401,96 +392,76 @@ classDiagram
         +String township
         +String address
         +LocalDateTime createdAt
-        +enrollInClass()
-        +updateProfile()
-        +getAcademicRecord()
     }
-    
     class ClassModel {
         +UUID id
         +String name
         +LocalDateTime createdAt
-        +addStudent()
-        +removeStudent()
-        +getStudentList()
-        +getClassPerformance()
     }
-    
     class Assessment {
         +Long id
         +String name
         +BigDecimal totalMarks
         +LocalDate dateOfAssessment
         +LocalDateTime createdAt
-        +createAssessment()
-        +gradeStudent()
-        +getAssessmentResults()
     }
-    
     class Subject {
         +Long id
         +String name
         +String code
         +String url
         +LocalDateTime createdAt
-        +assignTeacher()
-        +getSubjectPerformance()
     }
-    
-    School ||--o{ User : has
-    School ||--o{ Student : enrolls
-    School ||--o{ ClassModel : contains
-    School ||--o{ Subject : offers
-    User ||--o{ ClassModel : teaches
-    Student ||--o{ ClassStudent : belongs_to
-    ClassModel ||--o{ ClassStudent : enrolls
-    ClassModel ||--o{ ClassSubject : offers
-    Subject ||--o{ ClassSubject : taught_in
-    ClassSubject ||--o{ Assessment : has
-    Assessment ||--o{ StudentAssessment : evaluated_in
-    Student ||--o{ StudentAssessment : takes
+
+    School "1" o-- "*" User : has
+    School "1" o-- "*" Student : enrolls
+    School "1" o-- "*" ClassModel : contains
+    School "1" o-- "*" Subject : offers
+    User "1" o-- "*" ClassModel : teaches
+    Student "1" o-- "*" ClassModel : enrolled_in
+    ClassModel "1" o-- "*" Assessment : has
+    ClassModel "1" o-- "*" Subject : includes
 ```
 
 **Use Case Diagram**
 
 ```mermaid
-graph TB
-    subgraph "School Administrator"
-        Admin[School Administrator]
-        Admin -->|Manage Users| UC1[User Management]
-        Admin -->|Configure School| UC2[School Configuration]
-        Admin -->|Generate Reports| UC3[Report Generation]
-        Admin -->|Manage Classes| UC4[Class Management]
-    end
-    
-    subgraph "Teacher"
-        Teacher[Teacher]
-        Teacher -->|Create Assessments| UC5[Assessment Creation]
-        Teacher -->|Enter Grades| UC6[Grade Entry]
-        Teacher -->|View Student Performance| UC7[Performance View]
-        Teacher -->|Manage Class| UC8[Class Management]
-    end
-    
-    subgraph "Parent"
-        Parent[Parent/Guardian]
-        Parent -->|View Student Progress| UC9[Progress View]
-        Parent -->|Update Contact Info| UC10[Contact Update]
-        Parent -->|Receive Notifications| UC11[Notifications]
-    end
-    
-    subgraph "Student"
-        Student[Student]
-        Student -->|View Grades| UC12[Grade View]
-        Student -->|Update Profile| UC13[Profile Update]
-    end
-    
-    subgraph "System"
-        System[Edu-Track System]
-        System -->|Authenticate Users| UC14[Authentication]
-        System -->|Manage Data| UC15[Data Management]
-        System -->|Generate Reports| UC16[Report Generation]
-        System -->|Send Notifications| UC17[Notification Service]
-    end
+graph TD
+    Admin[School Administrator]
+    Teacher[Teacher]
+    Parent[Parent/Guardian]
+    Student[Student]
+    System[Edu-Track System]
+
+    UC1[User Management]
+    UC2[School Configuration]
+    UC3[Report Generation]
+    UC4[Class Management]
+    UC5[Assessment Creation]
+    UC6[Grade Entry]
+    UC7[Performance View]
+    UC8[Progress View]
+    UC9[Contact Update]
+    UC10[Notifications]
+    UC11[Grade View]
+    UC12[Profile Update]
+    UC13[Authentication]
+    UC14[Data Management]
+
+    Admin -- Manages --> UC1
+    Admin -- Configures --> UC2
+    Admin -- Generates --> UC3
+    Admin -- Manages --> UC4
+    Teacher -- Creates --> UC5
+    Teacher -- Enters --> UC6
+    Teacher -- Views --> UC7
+    Parent -- Views --> UC8
+    Parent -- Updates --> UC9
+    Parent -- Receives --> UC10
+    Student -- Views --> UC11
+    Student -- Updates --> UC12
+    System -- Authenticates --> UC13
+    System -- Manages --> UC14
 ```
 
 **Sequence Diagram - Student Registration Process**
