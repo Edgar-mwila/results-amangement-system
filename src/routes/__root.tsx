@@ -15,11 +15,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function NavBar() {
   return (
     <div className='fixed top-0 left-0 right-0 flex justify-between m-auto items-baseline p-5 bg-green-600'>
-      <Link className="text-3xl font-bold text-[#3D405B]">
+      <Link className="text-3xl font-bold text-white">
         Edu-Track
       </Link>
       <div className="flex gap-2">
-            <Link to="/help-desk" className="font-semibold [&.active]:font-bold mr-5 text-custom-text">
+            <Link to="/help-desk" className="font-semibold [&.active]:font-bold mr-5 text-white">
               <HelpCircleIcon className='h-8 w-auto' />
             </Link>
       </div>

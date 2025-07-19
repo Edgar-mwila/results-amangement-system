@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useForm, useFieldArray } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -85,6 +85,14 @@ const schoolFormSchema = z.object({
   curriculum: z.enum(["ECZ", "Cambridge", "Both"], {
     required_error: "Please select a curriculum",
   }),
+  logoUrl: z.string().url({ message: "Please enter a valid URL" }).optional(),
+  township: z.string().min(2, { message: "Township is required" }).optional(),
+  address: z.string().min(10, { message: "Address must be at least 10 characters" }).optional(),
+  postalAddress: z.string().min(5, { message: "Postal address must be at least 5 characters" }).optional(),
+  contacts: z.array(z.object({
+    email: z.string().email({ message: "Please enter a valid email address" }),
+    phone: z.string().min(10, { message: "Phone number must be at least 10 digits" }),
+  })).min(1, { message: "At least one contact is required" }).optional(),
 })
 
 type SchoolFormValues = z.infer<typeof schoolFormSchema>
@@ -106,6 +114,11 @@ const defaultValues: Partial<SchoolFormValues> = {
   school_type: undefined,
   ownership: undefined,
   curriculum: undefined,
+  logoUrl: "",
+  township: "",
+  address: "",
+  postalAddress: "",
+  contacts: [],
 }
 
 // API function to submit school data
@@ -147,33 +160,52 @@ const RegisterSchoolPage = () => {
     mode: "onChange",
   })
 
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'contacts',
+  })
+
   const onSubmit = async (data: SchoolFormValues) => {
     setIsSubmitting(true)
+    toast({ title: 'Registering...', description: 'Submitting school details', duration: 2000 })
     
     try {
-      // const result = await submitSchoolData(data)
-      
-      // if (result.success) {
-        toast({
-          title: "Success",
-          description: "School registered successfully",
-        })
-        
-        // Format school name for URL (simple slug)
-        const schoolSlug = data.name.toLowerCase().replace(/\s+/g, '-')
+      // Map frontend fields to backend fields
+      const payload = {
+        name: data.name,
+        about: data.about,
+        motto: data.motto,
+        registrationNumber: data.registration_number,
+        logoUrl: data.logoUrl,
+        category: data.school_type,
+        ownership: data.ownership,
+        curriculum: data.curriculum === 'Both' ? 'mixed' : data.curriculum === 'ECZ' ? 'national' : data.curriculum === 'Cambridge' ? 'international' : data.curriculum,
+        stateProvince: data.province,
+        city: data.city,
+        township: data.township,
+        address: data.address,
+        postalAddress: data.postalAddress,
+        postalCode: data.postal_code,
+        subdomain: data.subdomain,
+        contacts: data.contacts && data.contacts.length > 0 ? data.contacts : [],
+      }
+      const response = await fetch('/api/schools/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!response.ok) {
+        const result = await response.json()
+        throw new Error(result.message || 'Failed to register school')
+      }
+      toast({ title: 'Success', description: 'School registered successfully' })
+      const schoolSlug = data.subdomain || data.name.toLowerCase().replace(/\s+/g, '-')
         navigate({ to: '/$school', params: { school: schoolSlug } })
-      // } else {
-      //   toast({
-      //     title: "Error",
-      //     description: result.message,
-      //     variant: "destructive",
-      //   })
-      // }
     } catch (error) {
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Something went wrong. Please try again.',
+        variant: 'destructive',
       })
     } finally {
       setIsSubmitting(false)
@@ -270,6 +302,23 @@ const RegisterSchoolPage = () => {
                             className="resize-none"
                             rows={3}
                           />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="logoUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <School className="h-4 w-4 text-blue-600" />
+                          Logo URL
+                        </FormLabel>
+                        <FormControl>
+                          <Input type="url" placeholder="Enter logo URL" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -442,14 +491,107 @@ const RegisterSchoolPage = () => {
                     </div>
                   </div>
                   
-                  {/* <div className="flex justify-between">
-                    <Button type="button" onClick={() => form.setValue('currentTab', 'basic')} variant="outline">
-                      Back
+                  <FormField
+                    control={form.control}
+                    name="township"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-blue-600" />
+                          Township
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter township" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <MapPinned className="h-4 w-4 text-blue-600" />
+                          Address
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Enter address" 
+                            {...field} 
+                            className="resize-none"
+                            rows={2}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="postalAddress"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <MapPinned className="h-4 w-4 text-blue-600" />
+                          Postal Address
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Enter postal address" 
+                            {...field} 
+                            className="resize-none"
+                            rows={2}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Contacts Array */}
+                  <div className="space-y-4">
+                    <label className="block text-md font-medium mb-2">Contacts</label>
+                    {fields.map((item, index) => (
+                      <div key={item.id} className="flex flex-col sm:flex-row gap-2 items-center mb-2">
+                        <FormField
+                          control={form.control}
+                          name={`contacts.${index}.email`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormLabel>Email</FormLabel>
+                              <FormControl>
+                                <Input type="email" placeholder="Contact email" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`contacts.${index}.phone`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormLabel>Phone</FormLabel>
+                              <FormControl>
+                                <Input type="tel" placeholder="Contact phone" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button type="button" variant="destructive" className="h-10 mt-6" onClick={() => remove(index)} disabled={fields.length === 1}>
+                          Remove
                     </Button>
-                    <Button type="button" onClick={() => form.setValue('currentTab', 'details')} variant="outline" className="flex items-center gap-2">
-                      Next <ArrowRight className="h-4 w-4" />
+                      </div>
+                    ))}
+                    <Button type="button" variant="outline" onClick={() => append({ email: '', phone: '' })}>
+                      Add Contact
                     </Button>
-                  </div> */}
+                  </div>
                 </TabsContent>
                 
                 {/* School Details Tab */}

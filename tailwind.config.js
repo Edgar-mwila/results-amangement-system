@@ -9,6 +9,19 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
+  		fontFamily: {
+  			sans: [
+  				'system-ui',
+  				'-apple-system',
+  				'BlinkMacSystemFont',
+  				'Segoe UI',
+  				'Roboto',
+  				'Helvetica Neue',
+  				'Arial',
+  				'Noto Sans',
+  				'sans-serif'
+  			]
+  		},
   		colors: {
   			'custom-text': '#3D405B',
   			'custom-brown': '#F2CC8F',
@@ -45,13 +58,18 @@ export default {
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
-  			chart: {
-  				'1': 'hsl(var(--chart-1))',
-  				'2': 'hsl(var(--chart-2))',
-  				'3': 'hsl(var(--chart-3))',
-  				'4': 'hsl(var(--chart-4))',
-  				'5': 'hsl(var(--chart-5))'
-  			}
+  			"minimal-bg": "#F9FAFB",
+  			"minimal-dark": "#18181B",
+  			"minimal-accent": "#6366F1",
+  			"minimal-muted": "#A1A1AA"
+  		},
+  		screens: {
+  			xs: '360px',
+  			sm: '480px',
+  			md: '768px',
+  			lg: '1024px',
+  			xl: '1280px',
+  			'2xl': '1536px',
   		},
   		keyframes: {
   			'accordion-down': {
@@ -74,6 +92,9 @@ export default {
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out'
+  		},
+  		transitionProperty: {
+  			'colors': 'background, color, border-color',
   		}
   	}
   },

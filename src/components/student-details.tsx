@@ -495,16 +495,16 @@ export default function StudentDetails({ student, classSubjects = [] }: StudentD
   const fullName = getFullName()
   
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-2 sm:p-4">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
         <div className="flex items-center">
           <div>
-            <h1 className="text-3xl font-bold">{fullName}</h1>
-            <p className="text-gray-500">
+            <h1 className="text-2xl sm:text-3xl font-bold">{fullName}</h1>
+            <p className="text-gray-500 text-sm">
               {currentClass ? `${currentClass.name}` : 'No Class Assigned'}
             </p>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
               <span
                 className={
                   student.status === "Active" ? "text-green-500" :
@@ -515,21 +515,21 @@ export default function StudentDetails({ student, classSubjects = [] }: StudentD
               >
                 {student.status}
               </span>
-              <span className="text-gray-500">
+              <span className="text-gray-500 text-xs sm:text-sm">
                 {student.sex === 'M' ? 'Male' : 'Female'}
               </span>
-              <span className="text-gray-500">
+              <span className="text-gray-500 text-xs sm:text-sm">
                 Age {calculateAge()}
               </span>
             </div>
           </div>
         </div>
-        <div className="flex gap-2 mt-4 md:mt-0">
+        <div className="flex gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
           <EditStudentDialog student={student} />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
         {/* Grades Section */}
         <Card className="lg:col-span-2">
           <CardHeader>
@@ -681,7 +681,7 @@ export default function StudentDetails({ student, classSubjects = [] }: StudentD
       </div>
 
       {/* Summary Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="text-center">

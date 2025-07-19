@@ -1,5 +1,3 @@
-
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -10,19 +8,19 @@ import { themeColors } from "./ui/theme-config"
 
 export default function SubjectPerformance() {
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+    <div className="container mx-auto p-2 sm:p-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
         <div>
-          <h1 className="text-3xl font-bold">Subject Performance</h1>
-          <p className="text-gray-500">Mathematics Department</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Subject Performance</h1>
+          <p className="text-gray-500 text-sm">Mathematics Department</p>
         </div>
-        <div className="flex gap-2 mt-4 md:mt-0">
-          <Button variant="outline" className="flex items-center gap-2">
+        <div className="flex gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
+          <Button variant="outline" className="flex-1 sm:flex-none items-center gap-2 min-h-[44px]">
             <Filter size={16} />
             Filter
           </Button>
           <Button
-            className={`flex items-center gap-2 ${themeColors.secondaryBg} ${themeColors.secondaryHover} text-white`}
+            className={`flex-1 sm:flex-none items-center gap-2 min-h-[44px] ${themeColors.secondaryBg} ${themeColors.secondaryHover} text-white`}
           >
             <Download size={16} />
             Export
@@ -30,7 +28,7 @@ export default function SubjectPerformance() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Department Average</CardTitle>
@@ -106,8 +104,8 @@ export default function SubjectPerformance() {
         </Card>
       </div>
 
-      <Tabs defaultValue="overview" className="mb-6">
-        <TabsList className="grid w-full grid-cols-4 mb-6">
+      <Tabs defaultValue="overview" className="mb-4 sm:mb-6">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 mb-4 sm:mb-6">
           <TabsTrigger
             value="overview"
             className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
@@ -458,8 +456,8 @@ export default function SubjectPerformance() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Performance Insights</CardTitle>
-          <CardDescription>Key observations and recommendations</CardDescription>
+          <CardTitle className="text-base sm:text-lg">Performance Insights</CardTitle>
+          <CardDescription className="text-sm">Key observations and recommendations</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

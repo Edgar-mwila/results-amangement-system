@@ -1,5 +1,3 @@
-
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -10,23 +8,23 @@ import { themeColors } from "./ui/theme-config"
 
 export default function TeacherReport() {
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+    <div className="container mx-auto p-2 sm:p-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
         <div>
-          <h1 className="text-3xl font-bold">Teacher Performance Report</h1>
-          <p className="text-gray-500">Spring Semester 2023</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Teacher Performance Report</h1>
+          <p className="text-gray-500 text-sm">Spring Semester 2023</p>
         </div>
-        <div className="flex gap-2 mt-4 md:mt-0">
-          <Button variant="outline" className="flex items-center gap-2">
+        <div className="flex gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
+          <Button variant="outline" className="flex-1 sm:flex-none items-center gap-2 min-h-[44px]">
             <Mail size={16} />
             Email
           </Button>
-          <Button variant="outline" className="flex items-center gap-2">
+          <Button variant="outline" className="flex-1 sm:flex-none items-center gap-2 min-h-[44px]">
             <Printer size={16} />
             Print
           </Button>
           <Button
-            className={`flex items-center gap-2 ${themeColors.secondaryBg} ${themeColors.secondaryHover} text-white`}
+            className={`flex-1 sm:flex-none items-center gap-2 min-h-[44px] ${themeColors.secondaryBg} ${themeColors.secondaryHover} text-white`}
           >
             <Download size={16} />
             Download PDF
@@ -34,13 +32,13 @@ export default function TeacherReport() {
         </div>
       </div>
 
-      <Card className="mb-6">
+      <Card className="mb-4 sm:mb-6">
         <CardHeader>
-          <CardTitle>Department Overview</CardTitle>
-          <CardDescription>Mathematics Department Performance Summary</CardDescription>
+          <CardTitle className="text-base sm:text-lg">Department Overview</CardTitle>
+          <CardDescription className="text-sm">Mathematics Department Performance Summary</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
             <div className="p-4 bg-gray-50 rounded-lg text-center">
               <div className="text-3xl font-bold mb-1">82.4%</div>
               <div className="text-sm text-gray-500">Department Average</div>
@@ -70,8 +68,8 @@ export default function TeacherReport() {
             </div>
           </div>
 
-          <div className="h-[300px] flex items-center justify-center bg-gray-100 rounded-md mb-6">
-            <BarChart className={`h-16 w-16 ${themeColors.accent}`} />
+          <div className="h-[200px] sm:h-[300px] flex items-center justify-center bg-gray-100 rounded-md mb-4 sm:mb-6">
+            <BarChart className={`h-10 w-10 sm:h-16 sm:w-16 ${themeColors.accent}`} />
             <span className="ml-2 text-gray-500">Department Performance Chart</span>
           </div>
 
@@ -185,7 +183,7 @@ export default function TeacherReport() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
         <Card>
           <CardHeader>
             <CardTitle>Course Performance</CardTitle>
@@ -352,11 +350,11 @@ export default function TeacherReport() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Individual Teacher Reports</CardTitle>
-          <CardDescription>Detailed performance reports for each teacher</CardDescription>
+          <CardTitle className="text-base sm:text-lg">Individual Teacher Reports</CardTitle>
+          <CardDescription className="text-sm">Detailed performance reports for each teacher</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {[
               {
                 teacher: "Dr. James Wilson",
@@ -465,13 +463,13 @@ export default function TeacherReport() {
         </CardContent>
       </Card>
 
-      <Card className="mt-6">
+      <Card className="mt-4 sm:mt-6">
         <CardHeader>
-          <CardTitle>Department Recommendations</CardTitle>
-          <CardDescription>Insights and action items for improvement</CardDescription>
+          <CardTitle className="text-base sm:text-lg">Department Recommendations</CardTitle>
+          <CardDescription className="text-sm">Insights and action items for improvement</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-4 sm:space-y-6">
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
               <h3 className={`font-medium mb-2 ${themeColors.secondary}`}>Strengths to Leverage</h3>
               <ul className="list-disc pl-5 space-y-1 text-sm">

@@ -1,5 +1,3 @@
-
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,25 +21,23 @@ export default function EmailDialog() {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} variant="outline" className="flex items-center gap-2">
+      <Button onClick={() => setOpen(true)} variant="outline" className="flex items-center gap-2 w-full sm:w-auto min-h-[44px] rounded-xl">
         <Mail size={16} />
         Email
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="w-full max-w-[95vw] sm:max-w-[600px] p-4 sm:p-6 rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Send Email</DialogTitle>
-            <DialogDescription>Compose and send an email to students or parents.</DialogDescription>
+            <DialogTitle className="text-xl sm:text-2xl font-bold">Send Email</DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">Compose and send an email to students or parents.</DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="recipient-type" className="text-right">
-                Send To
-              </Label>
+          <div className="flex flex-col gap-4 py-2">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="recipient-type">Send To</Label>
               <Select>
-                <SelectTrigger id="recipient-type" className="col-span-3">
+                <SelectTrigger id="recipient-type" className="h-12 rounded-xl px-4">
                   <SelectValue placeholder="Select recipients" />
                 </SelectTrigger>
                 <SelectContent>
@@ -53,13 +49,10 @@ export default function EmailDialog() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="class" className="text-right">
-                Class
-              </Label>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="class">Class</Label>
               <Select>
-                <SelectTrigger id="class" className="col-span-3">
+                <SelectTrigger id="class" className="h-12 rounded-xl px-4">
                   <SelectValue placeholder="Select class" />
                 </SelectTrigger>
                 <SelectContent>
@@ -71,26 +64,17 @@ export default function EmailDialog() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="subject" className="text-right">
-                Subject
-              </Label>
-              <Input id="subject" placeholder="Email subject" className="col-span-3" />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="subject">Subject</Label>
+              <Input id="subject" placeholder="Email subject" className="h-12 rounded-xl px-4" />
             </div>
-
-            <div className="grid grid-cols-4 items-start gap-4">
-              <Label htmlFor="message" className="text-right pt-2">
-                Message
-              </Label>
-              <Textarea id="message" placeholder="Type your message here" className="col-span-3 min-h-[150px]" />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="message">Message</Label>
+              <Textarea id="message" placeholder="Type your message here" className="rounded-xl px-4 min-h-[100px]" />
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <div className="text-right">
-                <Label>Options</Label>
-              </div>
-              <div className="col-span-3 space-y-2">
+            <div className="flex flex-col gap-2">
+              <Label>Options</Label>
+              <div className="flex flex-col gap-2">
                 <div className="flex items-center space-x-2">
                   <Checkbox id="include-grades" />
                   <Label htmlFor="include-grades">Include current grades</Label>
@@ -105,26 +89,21 @@ export default function EmailDialog() {
                 </div>
               </div>
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="attachments" className="text-right">
-                Attachments
-              </Label>
-              <div className="col-span-3">
-                <Button variant="outline" className="w-full flex items-center justify-center gap-2">
-                  <Paperclip size={16} />
-                  Add Attachments
-                </Button>
-              </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="attachments">Attachments</Label>
+              <Button variant="outline" className="w-full flex items-center justify-center gap-2 h-12 rounded-xl px-4">
+                <Paperclip size={16} />
+                Add Attachments
+              </Button>
             </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button variant="outline" onClick={() => setOpen(false)} className="w-full sm:w-auto h-12 rounded-xl">
               Cancel
             </Button>
             <Button
-              className={`${themeColors.accentBg} ${themeColors.accentHover} text-white`}
+              className={`w-full sm:w-auto h-12 rounded-xl ${themeColors.accentBg} ${themeColors.accentHover} text-white`}
               onClick={() => setOpen(false)}
             >
               <Send className="mr-2 h-4 w-4" />

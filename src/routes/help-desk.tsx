@@ -6,17 +6,17 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 const HelpDesk = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="max-w-6xl mx-auto px-6 py-20">
-        <header className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-4 text-gray-800">Help & Support Center</h1>
-          <p className="text-xl text-gray-600">We're here to help you succeed with our platform</p>
+      <div className="max-w-2xl sm:max-w-4xl lg:max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-20">
+        <header className="text-center mb-10 sm:mb-16">
+          <h1 className="text-3xl sm:text-5xl font-bold mb-4 text-gray-800">Help & Support Center</h1>
+          <p className="text-base sm:text-xl text-gray-600">We're here to help you succeed with our platform</p>
         </header>
         
 
         {/* Contact Information */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Contact Us</h2>
-          <div className="grid md:grid-cols-2 gap-8">
+        <section className="mb-10 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center text-gray-800">Contact Us</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-start">
               <div className="bg-blue-100 p-4 rounded-full mr-4">
                 <Phone className="h-8 w-8 text-blue-600" />
@@ -42,8 +42,8 @@ const HelpDesk = () => {
         </section>
 
         {/* FAQ Section */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Frequently Asked Questions</h2>
+        <section className="mb-10 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center text-gray-800">Frequently Asked Questions</h2>
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <Accordion type="single" collapsible className="w-full divide-y divide-gray-200">
               {faqs.map((faq, index) => (
@@ -62,8 +62,8 @@ const HelpDesk = () => {
 
         {/* Quick Tips */}
         <section>
-          <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Quick Tips</h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center text-gray-800">Quick Tips</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {tips.map((tip, index) => (
               <div key={index} className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition-all">
                 <div className="flex items-center mb-3">

@@ -369,35 +369,35 @@ export default function StudentPage({ students }: StudentPageProps) {
   })
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+    <div className="container mx-auto p-2 sm:p-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
         <div>
-          <h1 className="text-3xl font-bold">Student Management</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Student Management</h1>
         </div>
-        <div className="flex gap-2 mt-4 md:mt-0">
+        <div className="flex gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
           <CreateStudentDialog />
         </div>
       </div>
 
-      <Card className="mb-6">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Student Directory</CardTitle>
+      <Card className="mb-4 sm:mb-6">
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+          <CardTitle className="text-base sm:text-lg">Student Directory</CardTitle>
           <div className="text-sm text-gray-500">Total Students: {filteredStudents.length}</div>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-2 sm:gap-4 mb-4 sm:mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
               <Input
                 placeholder="Search by name or ID..."
-                className="pl-8"
+                className="pl-8 h-12 rounded-xl"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full sm:w-auto">
               <select
-                className="border rounded px-2 py-1"
+                className="border rounded px-2 py-1 h-12 min-w-[120px]"
                 value={gradeFilter}
                 onChange={(e) => setGradeFilter(e.target.value)}
               >
@@ -409,7 +409,7 @@ export default function StudentPage({ students }: StudentPageProps) {
                 ))}
               </select>
               <select
-                className="border rounded px-2 py-1"
+                className="border rounded px-2 py-1 h-12 min-w-[120px]"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -423,9 +423,9 @@ export default function StudentPage({ students }: StudentPageProps) {
             </div>
           </div>
 
-          <div className="rounded-md border">
+          <div className="rounded-2xl border overflow-x-auto">
             <div className="bg-gray-50 border-b">
-              <div className="grid grid-cols-6 gap-4 p-4 font-medium">
+              <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 sm:gap-4 p-4 font-medium text-xs sm:text-base">
                 <div>Student</div>
                 <div>ID</div>
                 <div>Grade</div>
@@ -503,7 +503,7 @@ export default function StudentPage({ students }: StudentPageProps) {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
         {/* Students per Grade */}
         <Card>
           <CardHeader>

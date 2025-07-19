@@ -63,46 +63,35 @@ function SchoolPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="py-20 px-6 text-center bg-gradient-to-r from-blue-400 to-green-400 text-white shadow-lg">
-        <div className="max-w-5xl mx-auto">
+      <section className="py-10 sm:py-20 px-4 sm:px-6 text-center bg-gradient-to-r from-blue-400 to-green-400 text-white shadow-lg">
+        <div className="max-w-2xl sm:max-w-5xl mx-auto">
           {school.logoUrl && (
             <img
               src={school.logoUrl}
               alt={school.name}
-              className="mx-auto mb-6 h-24 w-24 object-contain rounded-full bg-white shadow"
+              className="mx-auto mb-4 sm:mb-6 h-20 w-20 sm:h-24 sm:w-24 object-contain rounded-full bg-white shadow"
             />
           )}
-          <h1 className="text-5xl font-bold mb-4">{school.name}</h1>
+          <h1 className="text-3xl sm:text-5xl font-bold mb-2 sm:mb-4">{school.name}</h1>
           {school.motto && (
-            <p className="text-xl mb-4 italic opacity-90">"{school.motto}"</p>
+            <p className="text-lg sm:text-xl mb-2 sm:mb-4 italic opacity-90">"{school.motto}"</p>
           )}
-          <p className="text-lg mb-10 opacity-90">
-            {school.about ||
-              'Empowering education through innovative management solutions.'}
+          <p className="text-base sm:text-lg mb-6 sm:mb-10 opacity-90">
+            {school.about || 'Empowering education through innovative management solutions.'}
           </p>
-          <div className="flex flex-wrap justify-center gap-6 mt-8">
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 sm:gap-6 mt-4 sm:mt-8">
             <Button
               size="lg"
-              className="font-semibold px-8 py-6 bg-white text-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-all shadow-md"
-              onClick={() =>
-                navigate({
-                  to: '/$school/auth/login',
-                  params: { school: subdomain },
-                })
-              }
+              className="font-semibold px-6 sm:px-8 py-4 sm:py-6 bg-white text-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-all shadow-md rounded-xl min-h-[48px]"
+              onClick={() => navigate({ to: '/$school/auth/login', params: { school: subdomain } })}
             >
               Login
             </Button>
             <Button
               variant="outline"
               size="lg"
-              className="font-semibold px-8 py-6 bg-transparent border-2 border-white text-white hover:bg-white/10 transition-all"
-              onClick={() =>
-                navigate({
-                  to: '/$school/auth/register',
-                  params: { school: subdomain },
-                })
-              }
+              className="font-semibold px-6 sm:px-8 py-4 sm:py-6 bg-transparent border-2 border-white text-white hover:bg-white/10 transition-all rounded-xl min-h-[48px]"
+              onClick={() => navigate({ to: '/$school/auth/register', params: { school: subdomain } })}
             >
               Check Student Results
             </Button>
@@ -112,20 +101,20 @@ function SchoolPage() {
 
       {/* About Section */}
       {(school.about || school.category || school.ownership || school.curriculum) && (
-        <section className="py-20 px-6 bg-white">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-3 text-gray-800 inline-block relative">
+        <section className="py-8 sm:py-20 px-4 sm:px-6 bg-white">
+          <div className="max-w-2xl sm:max-w-4xl mx-auto">
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-gray-800 inline-block relative">
                 About Us
                 <span className="absolute bottom-0 left-0 w-full h-1 bg-green-400 rounded-full"></span>
               </h2>
             </div>
             {school.about && (
-              <p className="text-lg text-gray-700 leading-relaxed text-center mb-6">
+              <p className="text-base sm:text-lg text-gray-700 leading-relaxed text-center mb-4 sm:mb-6">
                 {school.about}
               </p>
             )}
-            <div className="flex flex-wrap justify-center gap-6 text-gray-600 text-center">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 sm:gap-6 text-gray-600 text-center">
               {school.category && (
                 <div>
                   <span className="font-semibold">Category:</span> {school.category}
@@ -147,53 +136,53 @@ function SchoolPage() {
       )}
 
       {/* Help Desk Section */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-3 text-gray-800 inline-block relative">
+      <section className="py-8 sm:py-20 px-4 sm:px-6 bg-white">
+        <div className="max-w-2xl sm:max-w-4xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-gray-800 inline-block relative">
               Help Desk
               <span className="absolute bottom-0 left-0 w-full h-1 bg-green-400 rounded-full"></span>
             </h2>
-            <p className="text-gray-600 mt-4">We're here to help you with any questions</p>
+            <p className="text-gray-600 mt-2 sm:mt-4">We're here to help you with any questions</p>
           </div>
-            <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100">
-            <div className="grid md:grid-cols-3 gap-6">
+          <div className="bg-white p-4 sm:p-8 rounded-xl shadow-md border border-gray-100">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
               <div className="flex flex-col items-center text-center p-6 hover:bg-blue-50 rounded-lg transition-all">
-              <div className="bg-blue-100 p-4 rounded-full mb-4">
-                <Mail className="h-6 w-6 text-blue-500" />
-              </div>
-              <h3 className="font-semibold text-gray-800 mb-2">Email</h3>
-              <p className="text-gray-600 break-all">
-                {school.contacts?.find(c => c.email)?.email ||
-                `support@${school.subdomain}school.com`}
-              </p>
+                <div className="bg-blue-100 p-4 rounded-full mb-4">
+                  <Mail className="h-6 w-6 text-blue-500" />
+                </div>
+                <h3 className="font-semibold text-gray-800 mb-2">Email</h3>
+                <p className="text-gray-600 break-all">
+                  {school.contacts?.find(c => c.email)?.email ||
+                  `support@${school.subdomain}school.com`}
+                </p>
               </div>
               <div className="flex flex-col items-center text-center p-6 hover:bg-green-50 rounded-lg transition-all">
-              <div className="bg-green-100 p-4 rounded-full mb-4">
-                <Phone className="h-6 w-6 text-green-500" />
-              </div>
-              <h3 className="font-semibold text-gray-800 mb-2">Phone</h3>
-              <p className="text-gray-600">
-                {school.contacts?.find(c => c.phone)?.phone || '(N/A)'}
-              </p>
+                <div className="bg-green-100 p-4 rounded-full mb-4">
+                  <Phone className="h-6 w-6 text-green-500" />
+                </div>
+                <h3 className="font-semibold text-gray-800 mb-2">Phone</h3>
+                <p className="text-gray-600">
+                  {school.contacts?.find(c => c.phone)?.phone || '(N/A)'}
+                </p>
               </div>
               <div className="flex flex-col items-center text-center p-6 hover:bg-blue-50 rounded-lg transition-all">
-              <div className="bg-blue-100 p-4 rounded-full mb-4">
-                <Clock className="h-6 w-6 text-blue-500" />
-              </div>
-              <h3 className="font-semibold text-gray-800 mb-2">Hours</h3>
-              <p className="text-gray-600">
-                Monday - Friday<br />8:00 AM - 4:00 PM
-              </p>
+                <div className="bg-blue-100 p-4 rounded-full mb-4">
+                  <Clock className="h-6 w-6 text-blue-500" />
+                </div>
+                <h3 className="font-semibold text-gray-800 mb-2">Hours</h3>
+                <p className="text-gray-600">
+                  Monday - Friday<br />8:00 AM - 4:00 PM
+                </p>
               </div>
             </div>
-            </div>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-10 px-6 bg-gray-50 border-t border-gray-200">
-        <div className="max-w-6xl mx-auto text-center">
+      <footer className="py-6 sm:py-10 px-4 sm:px-6 bg-gray-50 border-t border-gray-200">
+        <div className="max-w-2xl sm:max-w-6xl mx-auto text-center">
           <p className="text-gray-600">
             © {new Date().getFullYear()} {school.name}. All rights reserved.
           </p>

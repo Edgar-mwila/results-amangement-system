@@ -1,5 +1,3 @@
-
-
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -122,14 +120,14 @@ export default function AssessmentsTab() {
   )
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+    <div className="container mx-auto p-2 sm:p-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
         <div>
-          <h1 className="text-3xl font-bold">Assessments</h1>
-          <p className="text-gray-500">Manage and track student assessments</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Assessments</h1>
+          <p className="text-gray-500 text-sm">Manage and track student assessments</p>
         </div>
-        <div className="flex gap-2 mt-4 md:mt-0">
-          <Button variant="outline" className="flex items-center gap-2">
+        <div className="flex gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
+          <Button variant="outline" className="flex-1 sm:flex-none items-center gap-2 min-h-[44px]">
             <Download size={16} />
             Export
           </Button>
@@ -137,7 +135,7 @@ export default function AssessmentsTab() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Total Assessments</CardTitle>
@@ -207,8 +205,8 @@ export default function AssessmentsTab() {
         </Card>
       </div>
 
-      <Tabs defaultValue="all" className="mb-6">
-        <TabsList className="grid w-full grid-cols-5 mb-6">
+      <Tabs defaultValue="all" className="mb-4 sm:mb-6">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-4 sm:mb-6">
           <TabsTrigger
             value="all"
             className={`data-[state=active]:${themeColors.accentBg} data-[state=active]:text-white`}
@@ -244,23 +242,23 @@ export default function AssessmentsTab() {
         <TabsContent value="all">
           <Card>
             <CardHeader>
-              <CardTitle>Assessment Management</CardTitle>
-              <CardDescription>View and manage all assessments</CardDescription>
+              <CardTitle className="text-base sm:text-lg">Assessment Management</CardTitle>
+              <CardDescription className="text-sm">View and manage all assessments</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex flex-col md:flex-row gap-2 sm:gap-4 mb-4 sm:mb-6">
                 <div className="relative flex-1">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                   <Input
                     placeholder="Search assessments..."
-                    className="pl-8"
+                    className="pl-8 h-12 rounded-xl"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 w-full sm:w-auto">
                   <Select>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-full sm:w-[180px] h-12 rounded-xl">
                       <SelectValue placeholder="All Classes" />
                     </SelectTrigger>
                     <SelectContent>
@@ -273,7 +271,7 @@ export default function AssessmentsTab() {
                   </Select>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" className="flex items-center gap-2">
+                      <Button variant="outline" className="flex items-center gap-2 h-12 rounded-xl w-full sm:w-auto">
                         <CalendarIcon size={16} />
                         {selectedDate ? format(selectedDate, "PPP") : "Date Range"}
                       </Button>
@@ -282,14 +280,14 @@ export default function AssessmentsTab() {
                       <Calendar mode="single" selected={selectedDate} onSelect={setSelectedDate} initialFocus />
                     </PopoverContent>
                   </Popover>
-                  <Button variant="outline" className="flex items-center gap-2">
+                  <Button variant="outline" className="flex items-center gap-2 h-12 rounded-xl w-full sm:w-auto">
                     <Filter size={16} />
                     Filters
                   </Button>
                 </div>
               </div>
 
-              <div className="rounded-md border">
+              <div className="rounded-2xl border overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -612,7 +610,7 @@ export default function AssessmentsTab() {
         </TabsContent>
       </Tabs>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <Card>
           <CardHeader>
             <CardTitle>Upcoming Assessments</CardTitle>

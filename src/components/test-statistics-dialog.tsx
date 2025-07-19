@@ -1,5 +1,3 @@
-
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,20 +18,20 @@ export default function TestStatisticsDialog() {
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)} className="flex items-center gap-2">
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)} className="flex items-center gap-2 w-full sm:w-auto min-h-[44px] rounded-xl">
         <BarChart size={16} />
         Statistics
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[800px]">
+        <DialogContent className="w-full max-w-[95vw] sm:max-w-[800px] p-4 sm:p-6 rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Test Statistics</DialogTitle>
-            <DialogDescription>Midterm Exam - Mathematics 101 (March 15, 2023)</DialogDescription>
+            <DialogTitle className="text-xl sm:text-2xl font-bold">Test Statistics</DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">Midterm Exam - Mathematics 101 (March 15, 2023)</DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-6 py-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-4 py-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
               <div className="p-4 bg-gray-50 rounded-lg text-center">
                 <div className="text-sm text-gray-500">Class Average</div>
                 <div className="text-2xl font-bold mt-1">76%</div>
@@ -56,7 +54,7 @@ export default function TestStatisticsDialog() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-6">
               <div>
                 <h3 className="font-medium mb-3">Score Distribution</h3>
                 <div className="h-[200px] flex items-center justify-center bg-gray-100 rounded-md">
@@ -131,7 +129,7 @@ export default function TestStatisticsDialog() {
 
             <div>
               <h3 className="font-medium mb-3">Student Performance</h3>
-              <div className="border rounded-md max-h-[250px] overflow-y-auto">
+              <div className="border rounded-2xl max-h-[250px] overflow-y-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -196,7 +194,7 @@ export default function TestStatisticsDialog() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 sm:space-y-6">
               <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <h3 className={`font-medium mb-2 ${themeColors.secondary}`}>Insights</h3>
                 <ul className="list-disc pl-5 space-y-1 text-sm">
@@ -219,15 +217,15 @@ export default function TestStatisticsDialog() {
             </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button variant="outline" onClick={() => setOpen(false)} className="w-full sm:w-auto h-12 rounded-xl">
               Close
             </Button>
-            <Button className={`${themeColors.secondaryBg} ${themeColors.secondaryHover} text-white`}>
+            <Button className={`w-full sm:w-auto h-12 rounded-xl ${themeColors.secondaryBg} ${themeColors.secondaryHover} text-white`}>
               <Download className="mr-2 h-4 w-4" />
               Export Report
             </Button>
-            <Button className={`${themeColors.accentBg} ${themeColors.accentHover} text-white`}>
+            <Button className={`w-full sm:w-auto h-12 rounded-xl ${themeColors.accentBg} ${themeColors.accentHover} text-white`}>
               <FileText className="mr-2 h-4 w-4" />
               Print Analysis
             </Button>

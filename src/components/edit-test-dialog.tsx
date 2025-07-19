@@ -1,5 +1,3 @@
-
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -27,32 +25,27 @@ export default function EditTestDialog() {
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)} className="flex items-center gap-2">
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)} className="flex items-center gap-2 w-full sm:w-auto min-h-[44px] rounded-xl">
         <Pencil size={16} />
         Edit
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="w-full max-w-[95vw] sm:max-w-[525px] p-4 sm:p-6 rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Edit Test</DialogTitle>
-            <DialogDescription>Update the details of your test.</DialogDescription>
+            <DialogTitle className="text-xl sm:text-2xl font-bold">Edit Test</DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">Update the details of your test.</DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="test-name" className="text-right">
-                Test Name
-              </Label>
-              <Input id="test-name" defaultValue="Final Exam" className="col-span-3" />
+          <div className="flex flex-col gap-4 py-2">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="test-name">Test Name</Label>
+              <Input id="test-name" defaultValue="Final Exam" className="h-12 rounded-xl px-4" />
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="test-type" className="text-right">
-                Test Type
-              </Label>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="test-type">Test Type</Label>
               <Select defaultValue="exam">
-                <SelectTrigger id="test-type" className="col-span-3">
+                <SelectTrigger id="test-type" className="h-12 rounded-xl px-4">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -63,17 +56,14 @@ export default function EditTestDialog() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="test-date" className="text-right">
-                Test Date
-              </Label>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="test-date">Test Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     id="test-date"
                     variant={"outline"}
-                    className={cn("col-span-3 justify-start text-left font-normal", !date && "text-muted-foreground")}
+                    className={cn("justify-start text-left font-normal h-12 rounded-xl px-4", !date && "text-muted-foreground")}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {date ? format(date, "PPP") : <span>Pick a date</span>}
@@ -84,27 +74,18 @@ export default function EditTestDialog() {
                 </PopoverContent>
               </Popover>
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="total-points" className="text-right">
-                Total Points
-              </Label>
-              <Input id="total-points" type="number" defaultValue="100" className="col-span-3" />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="total-points">Total Points</Label>
+              <Input id="total-points" type="number" defaultValue="100" className="h-12 rounded-xl px-4" />
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="duration" className="text-right">
-                Duration (min)
-              </Label>
-              <Input id="duration" type="number" defaultValue="120" className="col-span-3" />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="duration">Duration (min)</Label>
+              <Input id="duration" type="number" defaultValue="120" className="h-12 rounded-xl px-4" />
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="class" className="text-right">
-                Class
-              </Label>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="class">Class</Label>
               <Select defaultValue="math101">
-                <SelectTrigger id="class" className="col-span-3">
+                <SelectTrigger id="class" className="h-12 rounded-xl px-4">
                   <SelectValue placeholder="Select class" />
                 </SelectTrigger>
                 <SelectContent>
@@ -115,25 +96,22 @@ export default function EditTestDialog() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Description
-              </Label>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
                 defaultValue="Comprehensive final exam covering all topics from the semester. Calculators allowed but no notes."
-                className="col-span-3"
+                className="rounded-xl px-4 min-h-[60px]"
               />
             </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button variant="outline" onClick={() => setOpen(false)} className="w-full sm:w-auto h-12 rounded-xl">
               Cancel
             </Button>
             <Button
-              className={`${themeColors.secondaryBg} ${themeColors.secondaryHover} text-white`}
+              className={`w-full sm:w-auto h-12 rounded-xl ${themeColors.secondaryBg} ${themeColors.secondaryHover} text-white`}
               onClick={() => setOpen(false)}
             >
               Save Changes

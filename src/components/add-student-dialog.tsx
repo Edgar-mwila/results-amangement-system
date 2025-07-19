@@ -1,5 +1,3 @@
-
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,55 +21,47 @@ import { themeColors } from "./ui/theme-config"
 
 export default function AddStudentDialog() {
   const [open, setOpen] = useState(false)
-  const [dob, setDob] = useState<Date>()
-  const [enrollmentDate, setEnrollmentDate] = useState<Date>(new Date())
+  const [dob, setDob] = useState<Date | undefined>()
+  const [enrollmentDate, setEnrollmentDate] = useState<Date | undefined>(new Date())
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className={`${themeColors.accentBg} ${themeColors.accentHover} text-white`}>
+      <Button
+        onClick={() => setOpen(true)}
+        className={`w-full sm:w-auto flex items-center justify-center gap-2 ${themeColors.accentBg} ${themeColors.accentHover} text-white rounded-xl px-5 py-3 min-h-[44px]`}
+      >
         <Plus className="mr-2 h-4 w-4" />
         Add Student
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="w-full max-w-[95vw] sm:max-w-[500px] p-4 sm:p-6 rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Add New Student</DialogTitle>
-            <DialogDescription>Enter student information to add them to the system.</DialogDescription>
+            <DialogTitle className="text-xl sm:text-2xl font-bold">Add New Student</DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">Enter student information to add them to the system.</DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="first-name" className="text-right">
-                First Name
-              </Label>
-              <Input id="first-name" placeholder="John" className="col-span-3" />
+          <div className="flex flex-col gap-4 py-2">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="first-name">First Name</Label>
+              <Input id="first-name" placeholder="John" className="h-12 rounded-xl px-4" />
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="last-name" className="text-right">
-                Last Name
-              </Label>
-              <Input id="last-name" placeholder="Doe" className="col-span-3" />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="last-name">Last Name</Label>
+              <Input id="last-name" placeholder="Doe" className="h-12 rounded-xl px-4" />
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="student-id" className="text-right">
-                Student ID
-              </Label>
-              <Input id="student-id" placeholder="ST12345" className="col-span-3" />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="student-id">Student ID</Label>
+              <Input id="student-id" placeholder="ST12345" className="h-12 rounded-xl px-4" />
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="dob" className="text-right">
-                Date of Birth
-              </Label>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="dob">Date of Birth</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     id="dob"
                     variant={"outline"}
-                    className={cn("col-span-3 justify-start text-left font-normal", !dob && "text-muted-foreground")}
+                    className={cn("justify-start text-left font-normal h-12 rounded-xl px-4", !dob && "text-muted-foreground")}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dob ? format(dob, "PPP") : <span>Pick a date</span>}
@@ -82,13 +72,10 @@ export default function AddStudentDialog() {
                 </PopoverContent>
               </Popover>
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="grade" className="text-right">
-                Grade Level
-              </Label>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="grade">Grade Level</Label>
               <Select>
-                <SelectTrigger id="grade" className="col-span-3">
+                <SelectTrigger id="grade" className="h-12 rounded-xl px-4">
                   <SelectValue placeholder="Select grade" />
                 </SelectTrigger>
                 <SelectContent>
@@ -99,17 +86,14 @@ export default function AddStudentDialog() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="enrollment-date" className="text-right">
-                Enrollment Date
-              </Label>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="enrollment-date">Enrollment Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     id="enrollment-date"
                     variant={"outline"}
-                    className={cn("col-span-3 justify-start text-left font-normal")}
+                    className={cn("justify-start text-left font-normal h-12 rounded-xl px-4", !enrollmentDate && "text-muted-foreground")}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {enrollmentDate ? format(enrollmentDate, "PPP") : <span>Pick a date</span>}
@@ -120,72 +104,45 @@ export default function AddStudentDialog() {
                 </PopoverContent>
               </Popover>
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="email" className="text-right">
-                Email
-              </Label>
-              <Input id="email" type="email" placeholder="student@example.com" className="col-span-3" />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" placeholder="student@example.com" className="h-12 rounded-xl px-4" />
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="phone" className="text-right">
-                Phone
-              </Label>
-              <Input id="phone" placeholder="(555) 123-4567" className="col-span-3" />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="phone">Phone</Label>
+              <Input id="phone" placeholder="(555) 123-4567" className="h-12 rounded-xl px-4" />
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="address" className="text-right">
-                Address
-              </Label>
-              <Textarea id="address" placeholder="123 Main St, City, State, ZIP" className="col-span-3" />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="address">Address</Label>
+              <Textarea id="address" placeholder="123 Main St, City, State, ZIP" className="rounded-xl px-4 min-h-[60px]" />
             </div>
-
-            <div className="grid grid-cols-4 items-start gap-4">
-              <Label className="text-right pt-2">Parent/Guardian</Label>
-              <div className="col-span-3 space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="parent-name">Name</Label>
-                  <Input id="parent-name" placeholder="Jane Doe" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="parent-email">Email</Label>
-                  <Input id="parent-email" type="email" placeholder="parent@example.com" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="parent-phone">Phone</Label>
-                  <Input id="parent-phone" placeholder="(555) 987-6543" />
-                </div>
+            <div className="flex flex-col gap-2">
+              <Label>Parent/Guardian</Label>
+              <div className="flex flex-col gap-2">
+                <Input id="parent-name" placeholder="Name" className="h-12 rounded-xl px-4" />
+                <Input id="parent-email" type="email" placeholder="parent@example.com" className="h-12 rounded-xl px-4" />
+                <Input id="parent-phone" placeholder="(555) 987-6543" className="h-12 rounded-xl px-4" />
               </div>
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="photo" className="text-right">
-                Student Photo
-              </Label>
-              <div className="col-span-3">
-                <Button variant="outline" className="w-full flex items-center justify-center gap-2">
-                  <Upload size={16} />
-                  Upload Photo
-                </Button>
-              </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="photo">Student Photo</Label>
+              <Button variant="outline" className="w-full flex items-center justify-center gap-2 h-12 rounded-xl px-4">
+                <Upload size={16} />
+                Upload Photo
+              </Button>
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="notes" className="text-right">
-                Additional Notes
-              </Label>
-              <Textarea id="notes" placeholder="Any additional information about the student" className="col-span-3" />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="notes">Additional Notes</Label>
+              <Textarea id="notes" placeholder="Any additional information about the student" className="rounded-xl px-4 min-h-[60px]" />
             </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button variant="outline" onClick={() => setOpen(false)} className="w-full sm:w-auto h-12 rounded-xl">
               Cancel
             </Button>
             <Button
-              className={`${themeColors.accentBg} ${themeColors.accentHover} text-white`}
+              className={`w-full sm:w-auto h-12 rounded-xl ${themeColors.accentBg} ${themeColors.accentHover} text-white`}
               onClick={() => setOpen(false)}
             >
               Add Student

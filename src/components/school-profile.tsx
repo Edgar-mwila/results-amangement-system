@@ -406,37 +406,36 @@ export default function SchoolProfile({ school, onUpdateSchool }: { school: Scho
   const StatusIcon = subscriptionStatusInfo.icon;
 
   return (
-    <>
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+    <div className="container mx-auto p-2 sm:p-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
         <div className="flex items-center gap-4">
           {school?.logoUrl && (
             <img 
               src={school.logoUrl} 
               alt={`${school.name} logo`}
-              className="w-16 h-16 rounded-lg object-cover"
+              className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-cover"
             />
           )}
           <div>
-            <h1 className="text-3xl font-bold">{school?.name || 'School Name'}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">{school?.name || 'School Name'}</h1>
             {school?.motto && (
-              <p className="text-gray-600 italic mt-1">"{school.motto}"</p>
+              <p className="text-gray-600 italic mt-1 text-sm">"{school.motto}"</p>
             )}
           </div>
         </div>
-        <div className="flex gap-2 mt-4 md:mt-0">
-          <Button variant="outline" className="flex items-center gap-2" onClick={() => handleExportProfile()}>
+        <div className="flex gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
+          <Button variant="outline" className="flex-1 sm:flex-none items-center gap-2 min-h-[44px]">
             <Download size={16} />
             Export Profile
           </Button>
-          <Button className={`flex items-center gap-2 ${themeColors.accentBg} ${themeColors.accentHover} text-white`} onClick={() => setIsEditDialogOpen(true)}>
+          <Button className={`flex-1 sm:flex-none items-center gap-2 min-h-[44px] ${themeColors.accentBg} ${themeColors.accentHover} text-white`} onClick={() => setIsEditDialogOpen(true)}>
             <Edit size={16} />
             Edit Profile
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle>School Overview</CardTitle>
@@ -627,195 +626,194 @@ export default function SchoolProfile({ school, onUpdateSchool }: { school: Scho
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogHeader>
+          <DialogTitle className="text-xl sm:text-2xl font-bold">Edit School Profile</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <DialogContent className="w-full max-w-[95vw] sm:max-w-[700px] p-4 sm:p-6 rounded-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              {/* Basic Information */}
+              <div className="space-y-4">
+                <h4 className="font-medium text-gray-900 border-b pb-2">Basic Information</h4>
+                <div>
+                  <Label htmlFor="name">School Name *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name || ''}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    className={errors.name ? 'border-red-500' : ''}
+                  />
+                  {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="registrationNumber">Registration Number *</Label>
+                  <Input
+                    id="registrationNumber"
+                    value={formData.registrationNumber || ''}
+                    onChange={(e) => handleInputChange('registrationNumber', e.target.value)}
+                    className={errors.registrationNumber ? 'border-red-500' : ''}
+                  />
+                  {errors.registrationNumber && <p className="text-red-500 text-xs mt-1">{errors.registrationNumber}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="subdomain">Subdomain *</Label>
+                  <Input
+                    id="subdomain"
+                    value={formData.subdomain || ''}
+                    onChange={(e) => handleInputChange('subdomain', e.target.value.toLowerCase())}
+                    className={errors.subdomain ? 'border-red-500' : ''}
+                    placeholder="yourschool"
+                  />
+                  {errors.subdomain && <p className="text-red-500 text-xs mt-1">{errors.subdomain}</p>}
+                  <p className="text-xs text-gray-500 mt-1">yourschool.yourdomain.com</p>
+                </div>
+                <div>
+                  <Label htmlFor="logoUrl">Logo URL</Label>
+                  <Input
+                    id="logoUrl"
+                    value={formData.logoUrl || ''}
+                    onChange={(e) => handleInputChange('logoUrl', e.target.value)}
+                    placeholder="https://example.com/logo.png"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="motto">School Motto</Label>
+                  <Input
+                    id="motto"
+                    value={formData.motto || ''}
+                    onChange={(e) => handleInputChange('motto', e.target.value)}
+                    placeholder="Enter school motto"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="about">About</Label>
+                  <Textarea
+                    id="about"
+                    value={formData.about || ''}
+                    onChange={(e) => handleInputChange('about', e.target.value)}
+                    placeholder="Describe your school"
+                    rows={4}
+                  />
+                </div>
+              </div>
+              {/* School Details */}
+              <div className="space-y-4">
+                <h4 className="font-medium text-gray-900 border-b pb-2">School Details</h4>
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={formData.category || ''}
+                    onValueChange={(value) => handleInputChange('category', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SCHOOL_CATEGORIES.map((cat) => (
+                        <SelectItem key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="ownership">Ownership</Label>
+                  <Select
+                    value={formData.ownership || ''}
+                    onValueChange={(value) => handleInputChange('ownership', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select ownership" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {OWNERSHIP_TYPES.map((own) => (
+                        <SelectItem key={own.value} value={own.value}>
+                          {own.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="curriculum">Curriculum</Label>
+                  <Select
+                    value={formData.curriculum || ''}
+                    onValueChange={(value) => handleInputChange('curriculum', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select curriculum" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CURRICULUM_TYPES.map((cur) => (
+                        <SelectItem key={cur.value} value={cur.value}>
+                          {cur.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="stateProvince">State/Province</Label>
+                  <Input
+                    id="stateProvince"
+                    value={formData.stateProvince || ''}
+                    onChange={(e) => handleInputChange('stateProvince', e.target.value)}
+                    placeholder="Enter state or province"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="city">City</Label>
+                  <Input
+                    id="city"
+                    value={formData.city || ''}
+                    onChange={(e) => handleInputChange('city', e.target.value)}
+                    placeholder="Enter city"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="township">Township</Label>
+                  <Input
+                    id="township"
+                    value={formData.township || ''}
+                    onChange={(e) => handleInputChange('township', e.target.value)}
+                    placeholder="Enter township"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    value={formData.address || ''}
+                    onChange={(e) => handleInputChange('address', e.target.value)}
+                    placeholder="Enter address"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="postalAddress">Postal Address</Label>
+                  <Input
+                    id="postalAddress"
+                    value={formData.postalAddress || ''}
+                    onChange={(e) => handleInputChange('postalAddress', e.target.value)}
+                    placeholder="Enter postal address"
+                  />
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)} className="w-full sm:w-auto h-12 rounded-xl">
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isLoading} className="w-full sm:w-auto h-12 rounded-xl">
+              {isLoading ? "Saving..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </Dialog>
     </div>
-    
-    {/* Edit Dialog */}
-    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-      <DialogHeader>
-        <DialogTitle>Edit School Profile</DialogTitle>
-      </DialogHeader>
-      <form onSubmit={handleSubmit}>
-        <DialogContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Basic Information */}
-            <div className="space-y-4">
-              <h4 className="font-medium text-gray-900 border-b pb-2">Basic Information</h4>
-              <div>
-                <Label htmlFor="name">School Name *</Label>
-                <Input
-                  id="name"
-                  value={formData.name || ''}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  className={errors.name ? 'border-red-500' : ''}
-                />
-                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
-              </div>
-              <div>
-                <Label htmlFor="registrationNumber">Registration Number *</Label>
-                <Input
-                  id="registrationNumber"
-                  value={formData.registrationNumber || ''}
-                  onChange={(e) => handleInputChange('registrationNumber', e.target.value)}
-                  className={errors.registrationNumber ? 'border-red-500' : ''}
-                />
-                {errors.registrationNumber && <p className="text-red-500 text-xs mt-1">{errors.registrationNumber}</p>}
-              </div>
-              <div>
-                <Label htmlFor="subdomain">Subdomain *</Label>
-                <Input
-                  id="subdomain"
-                  value={formData.subdomain || ''}
-                  onChange={(e) => handleInputChange('subdomain', e.target.value.toLowerCase())}
-                  className={errors.subdomain ? 'border-red-500' : ''}
-                  placeholder="yourschool"
-                />
-                {errors.subdomain && <p className="text-red-500 text-xs mt-1">{errors.subdomain}</p>}
-                <p className="text-xs text-gray-500 mt-1">yourschool.yourdomain.com</p>
-              </div>
-              <div>
-                <Label htmlFor="logoUrl">Logo URL</Label>
-                <Input
-                  id="logoUrl"
-                  value={formData.logoUrl || ''}
-                  onChange={(e) => handleInputChange('logoUrl', e.target.value)}
-                  placeholder="https://example.com/logo.png"
-                />
-              </div>
-              <div>
-                <Label htmlFor="motto">School Motto</Label>
-                <Input
-                  id="motto"
-                  value={formData.motto || ''}
-                  onChange={(e) => handleInputChange('motto', e.target.value)}
-                  placeholder="Enter school motto"
-                />
-              </div>
-              <div>
-                <Label htmlFor="about">About</Label>
-                <Textarea
-                  id="about"
-                  value={formData.about || ''}
-                  onChange={(e) => handleInputChange('about', e.target.value)}
-                  placeholder="Describe your school"
-                  rows={4}
-                />
-              </div>
-            </div>
-            {/* School Details */}
-            <div className="space-y-4">
-              <h4 className="font-medium text-gray-900 border-b pb-2">School Details</h4>
-              <div>
-                <Label htmlFor="category">Category</Label>
-                <Select
-                  value={formData.category || ''}
-                  onValueChange={(value) => handleInputChange('category', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SCHOOL_CATEGORIES.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="ownership">Ownership</Label>
-                <Select
-                  value={formData.ownership || ''}
-                  onValueChange={(value) => handleInputChange('ownership', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select ownership" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {OWNERSHIP_TYPES.map((own) => (
-                      <SelectItem key={own.value} value={own.value}>
-                        {own.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="curriculum">Curriculum</Label>
-                <Select
-                  value={formData.curriculum || ''}
-                  onValueChange={(value) => handleInputChange('curriculum', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select curriculum" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CURRICULUM_TYPES.map((cur) => (
-                      <SelectItem key={cur.value} value={cur.value}>
-                        {cur.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="stateProvince">State/Province</Label>
-                <Input
-                  id="stateProvince"
-                  value={formData.stateProvince || ''}
-                  onChange={(e) => handleInputChange('stateProvince', e.target.value)}
-                  placeholder="Enter state or province"
-                />
-              </div>
-              <div>
-                <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  value={formData.city || ''}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
-                  placeholder="Enter city"
-                />
-              </div>
-              <div>
-                <Label htmlFor="township">Township</Label>
-                <Input
-                  id="township"
-                  value={formData.township || ''}
-                  onChange={(e) => handleInputChange('township', e.target.value)}
-                  placeholder="Enter township"
-                />
-              </div>
-              <div>
-                <Label htmlFor="address">Address</Label>
-                <Input
-                  id="address"
-                  value={formData.address || ''}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder="Enter address"
-                />
-              </div>
-              <div>
-                <Label htmlFor="postalAddress">Postal Address</Label>
-                <Input
-                  id="postalAddress"
-                  value={formData.postalAddress || ''}
-                  onChange={(e) => handleInputChange('postalAddress', e.target.value)}
-                  placeholder="Enter postal address"
-                />
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : "Save Changes"}
-          </Button>
-        </DialogFooter>
-      </form>
-    </Dialog>
-    </>
   );
 }

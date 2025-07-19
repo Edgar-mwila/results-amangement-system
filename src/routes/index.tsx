@@ -38,7 +38,7 @@ function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="px-6 lg:px-20 py-16">
+      <div className="px-4 sm:px-6 lg:px-8 py-10 sm:py-16 relative">
         {/* Background pattern overlay */}
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <svg className="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -50,14 +50,14 @@ function HomePage() {
         </div>
 
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-12">
         {/* Hero Content */}
-        <div className="flex-1 space-y-8 text-center lg:text-left">
-          <h1 className="text-4xl lg:text-5xl font-bold block text-green-700 animate-fade-in">
+        <div className="flex-1 space-y-6 sm:space-y-8 text-center lg:text-left">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold block text-green-700 animate-fade-in">
             Transform Your
             <span className="block text-green-700">Results Management</span>
           </h1>
-          <p className="text-xl lg:text-2xl text-gray-800 leading-relaxed max-w-2xl">
+          <p className="text-base sm:text-xl lg:text-2xl text-gray-800 leading-relaxed max-w-2xl mx-auto lg:mx-0">
             Empower your school with our comprehensive solution for managing
             <span className="font-medium"> academics</span>,
             <span className="font-medium"> staff</span>,
@@ -66,34 +66,32 @@ function HomePage() {
           </p>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-8">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mt-6 sm:mt-8">
             <Button 
-          className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-6 text-lg
-            transform transition-all hover:scale-105 focus:ring-4 focus:ring-green-300"
-          onClick={() => navigate({to: '/register-school'})}
+              className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-xl min-h-[48px]"
+              onClick={() => navigate({to: '/register-school'})}
             >
-          Get Started
+              Get Started
             </Button>
             
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button 
               variant="outline" 
-              className="border-2 border-gray-800 bg-transparent text-gray-800 hover:bg-green-700 
-            hover:text-white font-bold px-8 py-6 text-lg transition-colors"
+              className="border-2 border-gray-800 bg-transparent text-gray-800 hover:bg-green-700 hover:text-white font-bold px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-xl min-h-[48px]"
             >
               Find Your School
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <div className="p-6">
-              <h2 className="text-2xl font-bold mb-4 text-gray-800">Find Your School</h2>
+          <DialogContent className="w-full max-w-[95vw] sm:max-w-md p-4 sm:p-6 rounded-2xl">
+            <div className="p-0 sm:p-6">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-gray-800">Find Your School</h2>
               <div className="relative">
             <Input 
               placeholder="Search by school name..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 mb-4"
+              className="pl-10 mb-4 h-12 rounded-xl"
               aria-label="Search schools"
             />
             <svg className="w-5 h-5 absolute left-3 top-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,7 +124,7 @@ function HomePage() {
 
         {/* Decorative Image/Illustration */}
         <div className="flex-1 hidden lg:block">
-          <div className="relative w-full h-96">
+          <div className="relative w-full h-64 sm:h-96">
             <svg className="absolute inset-0 w-full h-full text-green-600 opacity-10" viewBox="0 0 200 200">
           <path fill="currentColor" d="M45,-76.9C58.5,-69.7,69.8,-56.6,77.7,-41.8C85.7,-27,90.3,-10.5,88.7,5.4C87.1,21.2,79.3,36.4,68.8,49.5C58.3,62.6,45.1,73.7,29.7,79.1C14.3,84.5,-3.3,84.3,-19.9,79.1C-36.5,74,-52.1,64,-63.5,50.6C-74.9,37.2,-82.1,20.4,-83.7,2.8C-85.4,-14.8,-81.4,-33.2,-71.3,-47.2C-61.2,-61.2,-45,-70.8,-29.8,-76.6C-14.6,-82.4,-0.3,-84.4,13.8,-82.5C27.9,-80.6,55.8,-75,45,-76.9Z" transform="translate(100 100)" />
             </svg>
@@ -137,9 +135,9 @@ function HomePage() {
       </div>
 
       {/* Features Section */}
-      <section className="py-24 px-6">
+      <section className="py-12 sm:py-24 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-blue-100 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -179,26 +177,26 @@ function HomePage() {
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-6 py-20">
-        <header className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-6 text-gray-800">About My Edu-track</h1>
-          <div className="w-24 h-1 bg-green-600 mx-auto"></div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-20">
+        <header className="text-center mb-10 sm:mb-16">
+          <h1 className="text-3xl sm:text-5xl font-bold mb-4 sm:mb-6 text-gray-800">About My Edu-track</h1>
+          <div className="w-16 sm:w-24 h-1 bg-green-600 mx-auto"></div>
         </header>
 
-        <section className="mb-20">
+        <section className="mb-10 sm:mb-20">
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div className="md:flex">
-              <div className="md:w-1/2 bg-gradient-to-br from-green-200 to-green-400 p-12 text-white">
-                <h2 className="text-3xl font-bold mb-6">Transforming School Results Management</h2>
-                <p className="text-lg opacity-90 leading-relaxed">
+            <div className="flex flex-col md:flex-row">
+              <div className="md:w-1/2 bg-gradient-to-br from-green-200 to-green-400 p-6 sm:p-12 text-white">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Transforming School Results Management</h2>
+                <p className="text-base sm:text-lg opacity-90 leading-relaxed">
                   Welcome to our comprehensive My Edu-track, designed specifically for schools 
                   seeking to modernize their academic record-keeping and reporting processes.
                 </p>
               </div>
-              <div className="md:w-1/2 p-12">
-                <div className="mb-10">
-                  <h3 className="text-2xl font-bold mb-6 text-gray-800">Why Choose Us?</h3>
-                  <ul className="space-y-4">
+              <div className="md:w-1/2 p-6 sm:p-12">
+                <div className="mb-6 sm:mb-10">
+                  <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Why Choose Us?</h3>
+                  <ul className="space-y-3 sm:space-y-4">
                     <li className="flex items-center">
                       <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
                         <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -235,8 +233,8 @@ function HomePage() {
                 </div>
                 
                 <div>
-                  <h3 className="text-2xl font-bold mb-6 text-gray-800">Benefits</h3>
-                  <ul className="space-y-4">
+                  <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Benefits</h3>
+                  <ul className="space-y-3 sm:space-y-4">
                     <li className="flex items-center">
                       <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
                         <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">

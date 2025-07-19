@@ -39,6 +39,7 @@ import { Route as SchoolDashboardClassesIdAssessmentsImport } from './routes/$sc
 import { Route as SchoolDashboardClassesIdStudentIdImport } from './routes/$school/dashboard/classes/$id/student.$id'
 import { Route as SchoolDashboardClassManagementIdSubjectIdImport } from './routes/$school/dashboard/class-management/$id/subject.$id'
 import { Route as SchoolDashboardClassManagementIdStudentIdImport } from './routes/$school/dashboard/class-management/$id/student.$id'
+import { Route as SchoolDashboardSystemAdminIndexImport } from './routes/system-admin/index'
 
 // Create/Update Routes
 
@@ -201,6 +202,11 @@ const SchoolDashboardClassManagementIdStudentIdRoute =
     path: '/class-management/$id/student/$id',
     getParentRoute: () => SchoolDashboardIndexRoute,
   } as any)
+
+const SchoolDashboardSystemAdminIndexRoute = SchoolDashboardSystemAdminIndexImport.update({
+  path: '/system-admin/',
+  getParentRoute: () => SchoolDashboardIndexRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -402,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SchoolDashboardClassManagementIdStudentIdImport
       parentRoute: typeof SchoolDashboardIndexRoute
     }
+    '/$school/dashboard/system-admin/': {
+      id: '/$school/dashboard/system-admin/',
+      path: '/system-admin',
+      fullPath: '/$school/dashboard/system-admin',
+      preLoaderRoute: typeof SchoolDashboardSystemAdminIndexImport,
+      parentRoute: typeof SchoolDashboardIndexRoute,
+    },
   }
 }
 
@@ -436,6 +449,7 @@ export interface FileRoutesByFullPath {
   '/$school/dashboard/classes/$id/student/$id': typeof SchoolDashboardClassesIdStudentIdRoute
   '/$school/dashboard/class-management/$id/subject/$id': typeof SchoolDashboardClassManagementIdSubjectIdRoute
   '/$school/dashboard/class-management/$id/student/$id': typeof SchoolDashboardClassManagementIdStudentIdRoute
+  '/$school/dashboard/system-admin/': typeof SchoolDashboardSystemAdminIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -467,6 +481,7 @@ export interface FileRoutesByTo {
   '/$school/dashboard/classes/$id/student/$id': typeof SchoolDashboardClassesIdStudentIdRoute
   '/$school/dashboard/class-management/$id/subject/$id': typeof SchoolDashboardClassManagementIdSubjectIdRoute
   '/$school/dashboard/class-management/$id/student/$id': typeof SchoolDashboardClassManagementIdStudentIdRoute
+  '/$school/dashboard/system-admin/': typeof SchoolDashboardSystemAdminIndexRoute
 }
 
 export interface FileRoutesById {
@@ -499,6 +514,7 @@ export interface FileRoutesById {
   '/$school/dashboard/classes/$id/student/$id': typeof SchoolDashboardClassesIdStudentIdRoute
   '/$school/dashboard/class-management/$id/subject/$id': typeof SchoolDashboardClassManagementIdSubjectIdRoute
   '/$school/dashboard/class-management/$id/student/$id': typeof SchoolDashboardClassManagementIdStudentIdRoute
+  '/$school/dashboard/system-admin/': typeof SchoolDashboardSystemAdminIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -532,6 +548,7 @@ export interface FileRouteTypes {
     | '/$school/dashboard/classes/$id/student/$id'
     | '/$school/dashboard/class-management/$id/subject/$id'
     | '/$school/dashboard/class-management/$id/student/$id'
+    | '/$school/dashboard/system-admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -562,6 +579,7 @@ export interface FileRouteTypes {
     | '/$school/dashboard/classes/$id/student/$id'
     | '/$school/dashboard/class-management/$id/subject/$id'
     | '/$school/dashboard/class-management/$id/student/$id'
+    | '/$school/dashboard/system-admin/'
   id:
     | '__root__'
     | '/'
@@ -592,6 +610,7 @@ export interface FileRouteTypes {
     | '/$school/dashboard/classes/$id/student/$id'
     | '/$school/dashboard/class-management/$id/subject/$id'
     | '/$school/dashboard/class-management/$id/student/$id'
+    | '/$school/dashboard/system-admin/'
   fileRoutesById: FileRoutesById
 }
 
@@ -624,6 +643,7 @@ export interface RootRouteChildren {
   SchoolDashboardClassesIdStudentIdRoute: typeof SchoolDashboardClassesIdStudentIdRoute
   SchoolDashboardClassManagementIdSubjectIdRoute: typeof SchoolDashboardClassManagementIdSubjectIdRoute
   SchoolDashboardClassManagementIdStudentIdRoute: typeof SchoolDashboardClassManagementIdStudentIdRoute
+  SchoolDashboardSystemAdminIndexRoute: typeof SchoolDashboardSystemAdminIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -654,7 +674,8 @@ const rootRouteChildren: RootRouteChildren = {
   SchoolDashboardClassesIdAssessmentsRoute,
   SchoolDashboardClassesIdStudentIdRoute,
   SchoolDashboardClassManagementIdSubjectIdRoute,
-  SchoolDashboardClassManagementIdStudentIdRoute
+  SchoolDashboardClassManagementIdStudentIdRoute,
+  SchoolDashboardSystemAdminIndexRoute
 }
 
 export const routeTree = rootRoute
@@ -783,6 +804,9 @@ export const routeTree = rootRoute
     },
     "/$school/dashboard/subject-management/": {
       "filePath": "$school/dashboard/subject-management/index.tsx"
+    },
+    "/$school/dashboard/system-admin/": {
+      "filePath": "$school/dashboard/system-admin/index.tsx"
     }
   }
 }

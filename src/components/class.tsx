@@ -41,22 +41,22 @@ export default function ClassComponent({ classData }: ClassComponentProps) {
   ) || [];
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+    <div className="container mx-auto p-2 sm:p-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-2xl sm:text-3xl font-bold">
             {classData?.grade?.level || "N/A"} - {classData?.name || "N/A"}
           </h1>
-          <p className="text-gray-600 mt-1">{classData?.academicYear?.year || "N/A"}</p>
+          <p className="text-gray-600 mt-1 text-sm">{classData?.academicYear?.year || "N/A"}</p>
         </div>
-        <div className="flex gap-2 mt-4 md:mt-0">
-          <span>
+        <div className="flex gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
+          <span className="text-sm sm:text-base">
             Class teacher: {classData?.classTeacher?.firstName || "N/A"} {classData?.classTeacher?.lastName || ""}
           </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Students</CardTitle>
@@ -106,9 +106,9 @@ export default function ClassComponent({ classData }: ClassComponentProps) {
         </Card>
       </div>
 
-      <div className="flex justify-around border-b mb-6">
+      <div className="flex flex-col sm:flex-row justify-around border-b mb-4 sm:mb-6">
         <button
-          className={`px-4 py-2 font-medium ${
+          className={`px-4 py-2 font-medium w-full sm:w-auto ${
             activeTab === "students" ? `border-b-2 ${themeColors.accentBorder} ${themeColors.accent}` : "text-gray-500"
           }`}
           onClick={() => setActiveTab("students")}
@@ -116,7 +116,7 @@ export default function ClassComponent({ classData }: ClassComponentProps) {
           Students
         </button>
         <button
-          className={`px-4 py-2 font-medium ${
+          className={`px-4 py-2 font-medium w-full sm:w-auto ${
             activeTab === "subjects" ? `border-b-2 ${themeColors.accentBorder} ${themeColors.accent}` : "text-gray-500"
           }`}
           onClick={() => setActiveTab("subjects")}
@@ -124,7 +124,7 @@ export default function ClassComponent({ classData }: ClassComponentProps) {
           Subjects
         </button>
         <button
-          className={`px-4 py-2 font-medium ${
+          className={`px-4 py-2 font-medium w-full sm:w-auto ${
             activeTab === "assessments"
               ? `border-b-2 ${themeColors.accentBorder} ${themeColors.accent}`
               : "text-gray-500"

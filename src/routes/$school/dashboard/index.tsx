@@ -10,6 +10,7 @@ import {
   BookmarkIcon,
   ClipboardCheckIcon,
   // MessageSquareIcon,
+  Menu,
 } from "lucide-react"
 import { User } from "@/types"
 import { Button } from "@/components/ui/button"
@@ -27,6 +28,7 @@ type RouteConfig = {
 
 const Layout = () => {
   const [activeOption, setActiveOption] = useState("dashboard")
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const { school } = useParams({ from: "/$school/dashboard/" })
 
   const navigate = useNavigate()
@@ -71,8 +73,12 @@ const Layout = () => {
 
   return (
     <div className="flex h-[88vh]">
-      {/* Sidebar */}
-      <div className="w-64 shadow-md">
+      {/* Sidebar for desktop, collapsible for mobile */}
+      {/* Overlay for mobile sidebar */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 z-30 sm:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+      <div className={`fixed sm:static z-40 top-0 left-0 h-full w-64 bg-white shadow-md transition-transform duration-200 sm:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0`}>
         {/* User info */}
         <div className="px-6 py-3 border-b border-gray-200">
           <div className="flex items-center">
@@ -85,7 +91,6 @@ const Layout = () => {
             </div>
           </div>
         </div>
-
         {/* Navigation */}
         <nav className="px-2 py-4">
           <ul className="space-y-1">
@@ -94,12 +99,8 @@ const Layout = () => {
                 <Link
                   to={`/$school/dashboard/${path}`}
                   params={{ school }}
-                  className={`flex items-center px-4 py-3 text-sm rounded-md transition-colors ${
-                    activeOption === path
-                      ? "bg-green-100 text-green-600 font-medium"
-                      : "text-gray-700 hover:bg-green-50"
-                  }`}
-                  onClick={() => setActiveOption(path)}
+                  className={`flex items-center px-4 py-3 text-sm rounded-md transition-colors ${activeOption === path ? "bg-green-100 text-green-600 font-medium" : "text-gray-700 hover:bg-green-50"}`}
+                  onClick={() => { setActiveOption(path); setSidebarOpen(false); }}
                 >
                   <Icon />
                   {label}
@@ -118,7 +119,14 @@ const Layout = () => {
           </Button>
         </nav>
       </div>
-
+      {/* Hamburger menu for mobile */}
+      <button
+        className="fixed top-4 left-4 z-50 sm:hidden bg-white rounded-full p-2 shadow-md border border-gray-200"
+        onClick={() => setSidebarOpen(true)}
+        aria-label="Open sidebar"
+      >
+        <Menu className="h-6 w-6 text-gray-700" />
+      </button>
       {/* Main Content */}
       <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
         <Outlet />
