@@ -1,10 +1,8 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
-  Badge,
   BookOpen,
   Calendar,
   ChevronDown,
@@ -100,8 +98,7 @@ interface StudentData {
   firstName: string;
   lastName: string;
   otherName?: string;
-  sex: string;
-  gender?: string;
+  gender: string;
   status: string;
   dateOfBirth: string;
   province: string;
@@ -136,9 +133,8 @@ function EditStudentDialog({ student }: { student: Student }) {
     firstName: student?.firstName || "",
     otherName: student?.otherName || "",
     lastName: student?.lastName || "",
-    sex: student?.sex || "M",
     dateOfBirth: student?.dateOfBirth || "",
-    gender: student?.gender || "",
+    gender: student?.gender || "Male",
     status: student?.status || "Active",
     stateProvince: student?.stateProvince || "",
     city: student?.city || "",
@@ -155,9 +151,8 @@ function EditStudentDialog({ student }: { student: Student }) {
         firstName: student.firstName || "",
         otherName: student.otherName || "",
         lastName: student.lastName || "",
-        sex: student.sex || "M",
         dateOfBirth: student.dateOfBirth || "",
-        gender: student.gender || "",
+        gender: student.gender || "Male",
         status: student.status || "Active",
         stateProvince: student.stateProvince || "",
         city: student.city || "",
@@ -234,21 +229,15 @@ function EditStudentDialog({ student }: { student: Student }) {
           </div>
           <div className="flex gap-2">
             <select
-              name="sex"
-              value={form.sex}
+              name="gender"
+              value={form.gender}
               onChange={handleChange}
               className="border rounded px-2 py-1"
               required
             >
-              <option value="M">Male</option>
-              <option value="F">Female</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
             </select>
-            <Input
-              name="gender"
-              placeholder="Gender"
-              value={form.gender}
-              onChange={handleChange}
-            />
             <Input
               name="dateOfBirth"
               type="date"
@@ -516,7 +505,7 @@ export default function StudentDetails({ student, classSubjects = [] }: StudentD
                 {student.status}
               </span>
               <span className="text-gray-500 text-xs sm:text-sm">
-                {student.sex === 'M' ? 'Male' : 'Female'}
+                {student.gender}
               </span>
               <span className="text-gray-500 text-xs sm:text-sm">
                 Age {calculateAge()}

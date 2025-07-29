@@ -1,9 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-
 import { Plus, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import {
@@ -16,6 +14,8 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import { useNavigate, useParams } from "@tanstack/react-router"
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "./ui/table"
+import { ClassModel } from "@/types"
 
 // Updated type definitions to match your backend interface
 interface SubjectData {
@@ -101,7 +101,6 @@ export interface StudentData {
   firstName: string;
   lastName: string;
   otherName: string;
-  sex: 'M' | 'F';
   gender: string;
   status: string;
   dateOfBirth: string;
@@ -125,73 +124,97 @@ const themeColors = {
 };
 
 function CreateStudentDialog() {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
     otherName: "",
     lastName: "",
-    sex: "M",
     dateOfBirth: "",
-    gender: "",
+    gender: "Male",
     status: "Active",
     province: "",
     city: "",
     township: "",
     address: "",
     postalAddress: "",
-  })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  });
+  const [studentClassId, setStudentClassId] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [classes, setClasses] = useState<ClassModel[]>([]);
+  const { school } = useParams({strict: false});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  useEffect(() => {
+    const getClasses = async () => {
+    try {
+      const res = await fetch(`/api/${school}/classes/`);
+      if (!res.ok) throw new Error("Failed to fetch classes");
+      const data: ClassModel[] = await res.json();
+      setClasses(data);
+      if (data.length > 0) setStudentClassId(data[0].id); // Default to first
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+    if (open) getClasses();
+  }, [open, school]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const sendData = {
+      student: form,
+      student_class_id: studentClassId,
+    };
+
     try {
-      const res = await fetch(`/api/students/`, {
+      const res = await fetch(`/api/${school}/students/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      })
-      if (!res.ok) throw new Error("Failed to create student")
-      setOpen(false)
+        body: JSON.stringify(sendData),
+      });
+      if (!res.ok) throw new Error("Failed to create student");
+
+      setOpen(false);
       setForm({
         firstName: "",
         otherName: "",
         lastName: "",
-        sex: "M",
         dateOfBirth: "",
-        gender: "",
+        gender: "Male",
         status: "Active",
         province: "",
         city: "",
         township: "",
         address: "",
         postalAddress: "",
-      })
-      // Reload the page to refresh the student list
-      window.location.reload()
+      });
+      setStudentClassId("");
+      window.location.reload();
     } catch (err) {
       setError(
         err && typeof err === "object" && "message" in err
           ? String((err as { message?: unknown }).message)
           : "Error creating student"
-      )
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          className={`flex items-center gap-2 ${themeColors.accentBg} ${themeColors.accentHover} text-white`}
-        >
+        <Button className={`flex items-center gap-2 ${themeColors.accentBg} ${themeColors.accentHover} text-white`}>
           <Plus size={16} />
           Add Student
         </Button>
@@ -200,73 +223,23 @@ function CreateStudentDialog() {
         <DialogHeader>
           <DialogTitle>Add New Student</DialogTitle>
         </DialogHeader>
-        <div className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div className="flex gap-2">
-            <Input
-              name="firstName"
-              placeholder="First Name"
-              value={form.firstName}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              name="otherName"
-              placeholder="Other Name"
-              value={form.otherName}
-              onChange={handleChange}
-            />
-            <Input
-              name="lastName"
-              placeholder="Last Name"
-              value={form.lastName}
-              onChange={handleChange}
-              required
-            />
+            <Input name="firstName" placeholder="First Name" value={form.firstName} onChange={handleChange} required />
+            <Input name="otherName" placeholder="Other Name" value={form.otherName} onChange={handleChange} />
+            <Input name="lastName" placeholder="Last Name" value={form.lastName} onChange={handleChange} required />
           </div>
           <div className="flex gap-2">
-            <select
-              name="sex"
-              value={form.sex}
-              onChange={handleChange}
-              className="border rounded px-2 py-1"
-              required
-            >
-              <option value="M">Male</option>
-              <option value="F">Female</option>
+            <select name="gender" value={form.gender} onChange={handleChange} className="border rounded px-2 py-1" required>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
             </select>
-            <Input
-              name="gender"
-              placeholder="Gender"
-              value={form.gender}
-              onChange={handleChange}
-            />
-            <Input
-              name="dateOfBirth"
-              type="date"
-              value={form.dateOfBirth}
-              onChange={handleChange}
-              required
-            />
+            <Input name="dateOfBirth" type="date" value={form.dateOfBirth} onChange={handleChange} required />
           </div>
           <div className="flex gap-2">
-            <Input
-              name="province"
-              placeholder="Province"
-              value={form.province}
-              onChange={handleChange}
-            />
-            <Input
-              name="city"
-              placeholder="City"
-              value={form.city}
-              onChange={handleChange}
-            />
-            <Input
-              name="township"
-              placeholder="Township"
-              value={form.township}
-              onChange={handleChange}
-            />
+            <Input name="province" placeholder="Province" value={form.province} onChange={handleChange} />
+            <Input name="city" placeholder="City" value={form.city} onChange={handleChange} />
+            <Input name="township" placeholder="Township" value={form.township} onChange={handleChange} />
           </div>
           <div>
             <textarea
@@ -279,12 +252,7 @@ function CreateStudentDialog() {
             />
           </div>
           <div className="flex gap-2">
-            <Input
-              name="postalAddress"
-              placeholder="Postal Address"
-              value={form.postalAddress}
-              onChange={handleChange}
-            />
+            <Input name="postalAddress" placeholder="Postal Address" value={form.postalAddress} onChange={handleChange} />
             <select
               name="status"
               value={form.status}
@@ -296,9 +264,24 @@ function CreateStudentDialog() {
               <option value="Graduated">Graduated</option>
             </select>
           </div>
+          <div>
+            <label className="block mb-1 text-sm font-medium">Select Class</label>
+            <select
+              value={studentClassId}
+              onChange={(e) => setStudentClassId(e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+              required
+            >
+              {classes.map((cls) => (
+                <option key={cls.id} value={cls.id}>
+                  {cls.name}
+                </option>
+              ))}
+            </select>
+          </div>
           {error && <div className="text-red-500 text-sm">{error}</div>}
           <DialogFooter>
-            <Button type="submit" disabled={loading} onClick={handleSubmit}>
+            <Button type="submit" disabled={loading}>
               {loading ? "Saving..." : "Save"}
             </Button>
             <DialogClose asChild>
@@ -307,11 +290,12 @@ function CreateStudentDialog() {
               </Button>
             </DialogClose>
           </DialogFooter>
-          </div>
+        </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
+
 
 export default function StudentPage({ students }: StudentPageProps) {
   const { school } = useParams({ strict: false });
@@ -422,55 +406,40 @@ export default function StudentPage({ students }: StudentPageProps) {
               </select>
             </div>
           </div>
-
-          <div className="rounded-2xl border overflow-x-auto">
-            <div className="bg-gray-50 border-b">
-              <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 sm:gap-4 p-4 font-medium text-xs sm:text-base">
-                <div>Student</div>
-                <div>ID</div>
-                <div>Grade</div>
-                <div>Gender</div>
-                <div>Status</div>
-                <div>Guardians</div>
-              </div>
-            </div>
-            <div className="divide-y">
+<div className="rounded-md border">
+          <Table>
+            <TableHeader className="bg-gray-50 border-b">
+              <TableRow className="hover:bg-gray-50">
+                <TableHead className="font-medium text-xs sm:text-base p-4">Student</TableHead>
+                <TableHead className="font-medium text-xs sm:text-base p-4">ID</TableHead>
+                <TableHead className="font-medium text-xs sm:text-base p-4">Grade</TableHead>
+                <TableHead className="font-medium text-xs sm:text-base p-4">Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y">
               {filteredStudents.map((student) => {
                 const fullName = getFullName(student)
                 const studentId = getStudentIdDisplay(student)
                 const currentGrade = getCurrentGrade(student)
-                const guardianCount = student.guardians?.length || 0
                 
                 return (
-                  <div 
-                    key={student.id} 
+                  <TableRow
+                    key={student.id}
                     onClick={() => navigate({ to: '/$school/dashboard/student-management/student/$id', params: { school: school, id: student.id } })}
-                    className="cursor-pointer hover:bg-gray-50 p-4 grid grid-cols-6 gap-4 items-center"
+                    className="cursor-pointer hover:bg-gray-50"
                   >
-                    <div className="flex items-center">
-                      <Avatar className="h-8 w-8 mr-2">
-                        <AvatarImage src={`/placeholder.svg?height=32&width=32`} />
-                        <AvatarFallback>
-                          {student.firstName[0]}{student.lastName[0]}
-                        </AvatarFallback>
-                      </Avatar>
+                    <TableCell className="p-4">
+                      <div className="font-medium">{fullName}</div>
+                    </TableCell>
+                    <TableCell className="p-4">
+                      <div className="font-mono">{studentId}</div>
+                    </TableCell>
+                    <TableCell className="p-4">
                       <div>
-                        <div className="font-medium">{fullName}</div>
-                        <div className="text-sm text-gray-500">
-                          {student.city && student.province ? `${student.city}, ${student.province}` : 'No location'}
-                        </div>
+                        {currentGrade !== 'N/A' ? `Grade ${currentGrade}` : 'Not Enrolled'}
                       </div>
-                    </div>
-                    <div className="font-mono">{studentId}</div>
-                    <div>
-                      {currentGrade !== 'N/A' ? `Grade ${currentGrade}` : 'Not Enrolled'}
-                    </div>
-                    <div>
-                      <Badge variant="outline">
-                        {student.sex === 'M' ? 'Male' : 'Female'}
-                      </Badge>
-                    </div>
-                    <div>
+                    </TableCell>
+                    <TableCell className="p-4">
                       <Badge
                         className={
                           student.status === "Active"
@@ -484,21 +453,19 @@ export default function StudentPage({ students }: StudentPageProps) {
                       >
                         {student.status || 'Active'}
                       </Badge>
-                    </div>
-                    <div>
-                      <Badge variant="secondary">
-                        {guardianCount} Guardian{guardianCount !== 1 ? 's' : ''}
-                      </Badge>
-                    </div>
-                  </div>
+                    </TableCell>
+                  </TableRow>
                 )
               })}
               {filteredStudents.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  No students found matching your criteria
-                </div>
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                    No students found matching your criteria
+                  </TableCell>
+                </TableRow>
               )}
-            </div>
+            </TableBody>
+          </Table>
           </div>
         </CardContent>
       </Card>
@@ -586,7 +553,7 @@ export default function StudentPage({ students }: StudentPageProps) {
             <div className="space-y-2">
               {Array.from(
                 students.reduce((acc, student) => {
-                  const gender = student.sex === 'M' ? 'Male' : 'Female'
+                  const gender = student.gender === 'Male' ? 'Male' : 'Female'
                   acc.set(gender, (acc.get(gender) || 0) + 1)
                   return acc
                 }, new Map<string, number>())

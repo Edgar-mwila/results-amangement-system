@@ -287,7 +287,6 @@ export interface Student {
   firstName: string
   otherName?: string
   lastName: string
-  sex: 'M' | 'F'
   dateOfBirth: string
   gender: string
   status: string
@@ -369,7 +368,6 @@ export interface Student {
   firstName: string
   otherName?: string
   lastName: string
-  sex: 'M' | 'F'
   dateOfBirth: string
   gender: string
   status: string

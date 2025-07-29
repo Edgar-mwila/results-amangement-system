@@ -2,7 +2,7 @@ import type React from "react"
 import { Input } from "@/components/ui/input"
 import { TableRow, TableCell, TableBody, Table, TableHead, TableHeader } from "@/components/ui/table"
 import { createFileRoute, useParams, useRouter } from "@tanstack/react-router"
-import { Search, UserPlus, Filter } from "lucide-react"
+import { Search, UserPlus } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -13,12 +13,9 @@ import { themeColors } from "@/components/ui/theme-config"
 import { useQuery } from "@tanstack/react-query"
 import { Skeleton } from "@/components/ui/skeleton"
 
-
-
 const StaffManagement = () => {
   const { school } = useParams({ strict: false })
   const [search, setSearch] = useState("")
-  const [roleFilter, setRoleFilter] = useState<string>("all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const router = useRouter()
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -244,7 +241,6 @@ const StaffManagement = () => {
     const firstName = staff.firstName ?? ""
     const lastName = staff.lastName ?? ""
     const email = staff.email ?? ""
-    const role = staff.role ?? ""
     const status = staff.status ?? ""
 
     const nameMatch =
@@ -252,10 +248,9 @@ const StaffManagement = () => {
       lastName.toLowerCase().includes(search.toLowerCase()) ||
       email.toLowerCase().includes(search.toLowerCase())
 
-    const roleMatch = roleFilter === "all" || role.name === roleFilter
     const statusMatch = statusFilter === "all" || status === statusFilter
 
-    return nameMatch && roleMatch && statusMatch
+    return nameMatch && statusMatch
   })
 
   const staffCounts = {
@@ -280,7 +275,7 @@ const StaffManagement = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2 md:gap-6 md:mb-6">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Total Staff</CardTitle>
@@ -321,7 +316,7 @@ const StaffManagement = () => {
 
       <Card>
         <CardContent>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <div className="flex flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div className="relative w-full md:w-auto">
               <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500" />
               <Input
@@ -333,19 +328,6 @@ const StaffManagement = () => {
               />
             </div>
             <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-              <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-gray-500" />
-                <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger className="w-full md:w-40">
-                    <SelectValue placeholder="Filter by role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Roles</SelectItem>
-                    <SelectItem value="Teacher">Teachers</SelectItem>
-                    <SelectItem value="Administrator">Administrators</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-full md:w-40">
                   <SelectValue placeholder="Filter by status" />

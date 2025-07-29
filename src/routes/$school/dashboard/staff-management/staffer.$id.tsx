@@ -124,6 +124,7 @@ const ErrorMessage = ({ error, onRetry }: { error: Error; onRetry: () => void })
 const Staffer = () => {
   const { school, id } = Route.useParams();
 
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   // Fetch user data
   const {
     data: userData,
@@ -188,7 +189,7 @@ const Staffer = () => {
     <UserProfile 
       user={userData} 
       api={apiEndpoints} 
-      canEditRole={true} 
+      isCurrentUser={userData.id == currentUser.id}
     />
   );
 };
