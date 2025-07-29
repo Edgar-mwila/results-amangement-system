@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react"
+import { ReactElement, useState, useEffect } from "react"
 import {
   BarChart,
   BookOpen,
@@ -9,6 +9,7 @@ import {
   Trash2,
   X,
 } from "lucide-react"
+import { useRef } from "react"
 
 // Define theme colors inline since we don't have the theme config
 const themeColors = {
@@ -18,21 +19,6 @@ const themeColors = {
   accent: "text-blue-600",
   accentBorder: "border-blue-500"
 }
-
-// Mock data for dropdowns (in real app, these would come from API)
-const mockTeachers = [
-  { id: "1", firstName: "John", lastName: "Smith", email: "john@school.com", phone: "123-456-7890", status: "active", role: { name: "Teacher" } },
-  { id: "2", firstName: "Jane", lastName: "Doe", email: "jane@school.com", phone: "123-456-7891", status: "active", role: { name: "Teacher" } },
-  { id: "3", firstName: "Mike", lastName: "Johnson", email: "mike@school.com", phone: "123-456-7892", status: "active", role: { name: "Teacher" } },
-]
-
-const mockSubjects = [
-  { name: "Mathematics", code: "MATH101", url: "/subjects/math" },
-  { name: "English Literature", code: "ENG101", url: "/subjects/english" },
-  { name: "Science", code: "SCI101", url: "/subjects/science" },
-  { name: "History", code: "HIST101", url: "/subjects/history" },
-  { name: "Geography", code: "GEO101", url: "/subjects/geography" },
-]
 
 interface StudentData {
   id: number;
@@ -54,6 +40,7 @@ interface UserData {
 }
 
 interface SubjectData {
+  id: string;
   name: string;
   code: string;
   url: string;
@@ -80,6 +67,7 @@ interface AssessmentData {
 }
 
 interface ClassSubjectData {
+  id: string;
   subject: SubjectData;
   assessments: AssessmentData[];
   teacher: UserData;
@@ -101,6 +89,7 @@ interface ClassData {
   academicYear: AcademicYear;
   classSubjects: ClassSubjectData[];
   classStudents: ClassStudentData[];
+  tenant: string; // Added for backend API calls
 }
 
 export interface ClassComponentProps {
@@ -135,6 +124,45 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
   const [addingAssessment, setAddingAssessment] = useState<string | null>(null)
   const [newSubject, setNewSubject] = useState({ subject: "", teacher: "" })
   const [newAssessment, setNewAssessment] = useState({ name: "", totalMarks: "", term: "Term 1" })
+  const [teachers, setTeachers] = useState<UserData[]>([])
+  const [subjects, setSubjects] = useState<SubjectData[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [showAssessmentModal, setShowAssessmentModal] = useState<{ open: boolean, subject: ClassSubjectData | null }>({ open: false, subject: null })
+  const [assessmentForm, setAssessmentForm] = useState({ name: '', totalMarks: '', termId: '', dateOfAssessment: '' })
+  const assessmentModalRef = useRef<HTMLDivElement>(null)
+
+  // Get current user and role
+  const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}') : null
+  const userRole = user?.role?.name?.toLowerCase() || ''
+  const isAdmin = userRole === 'administrator'
+  const isClassTeacher = classData.classTeacher?.id === user?.id
+  const isSubjectTeacher = classData.classSubjects?.some(cs => cs.teacher?.id === user?.id)
+
+  // Fetch teachers and subjects on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        // Assume tenant is available in classData or from route params
+        const tenant = classData?.id ? (classData as any).tenant || '' : ''
+        // Fetch teachers
+        const teachersRes = await fetch(`/api/${tenant}/users/`)
+        const teachersData = await teachersRes.json()
+        setTeachers(teachersData.filter((u: UserData) => u.role?.name?.toLowerCase() === 'teacher'))
+        // Fetch subjects
+        const subjectsRes = await fetch(`/api/${tenant}/subjects/`)
+        const subjectsData = await subjectsRes.json()
+        setSubjects(subjectsData)
+      } catch (err: any) {
+        setError('Failed to load teachers or subjects')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [classData])
 
   // Derive computed values from props
   const studentsCount = classData.classStudents?.length || 0;
@@ -153,91 +181,143 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
     })) || []
   ) || [];
 
-  // CRUD Operations
-  const handleUpdateSubjectTeacher = (subjectCode: string, newTeacherId: string) => {
-    const newTeacher = mockTeachers.find(t => t.id === newTeacherId)
-    if (!newTeacher) return
-
-    setClassData(prev => ({
-      ...prev,
-      classSubjects: prev.classSubjects.map(classSubject => 
-        classSubject.subject.code === subjectCode 
-          ? { ...classSubject, teacher: newTeacher }
-          : classSubject
-      )
-    }))
-    setEditingSubject(null)
-  }
-
-  const handleUpdateClassTeacher = (newTeacherId: string) => {
-    const newTeacher = mockTeachers.find(t => t.id === newTeacherId)
-    if (!newTeacher) return
-
-    setClassData(prev => ({
-      ...prev,
-      classTeacher: newTeacher
-    }))
-    setEditingClassTeacher(false)
-  }
-
-  const handleAddSubject = () => {
-    const subject = mockSubjects.find(s => s.code === newSubject.subject)
-    const teacher = mockTeachers.find(t => t.id === newSubject.teacher)
-    
-    if (!subject || !teacher) return
-
-    const newClassSubject: ClassSubjectData = {
-      subject,
-      teacher,
-      assessments: []
+  // Admin: Add subject to class
+  const handleAddSubject = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const tenant = (classData as any).tenant || ''
+      const subjectObj = subjects.find(s => s.code === newSubject.subject)
+      const teacherObj = teachers.find(t => t.id === newSubject.teacher)
+      if (!subjectObj || !teacherObj) return
+      const res = await fetch(`/api/${tenant}/class-subjects/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          classId: classData.id,
+          subjectId: subjectObj.id,
+          teacherId: teacherObj.id
+        })
+      })
+      if (!res.ok) throw new Error('Failed to add subject')
+      // Refetch or update classData
+      const updatedClassData = await res.json()
+      setClassData(updatedClassData)
+      setAddingSubject(false)
+      setNewSubject({ subject: '', teacher: '' })
+    } catch (err: any) {
+      setError('Failed to add subject')
+    } finally {
+      setLoading(false)
     }
-
-    setClassData(prev => ({
-      ...prev,
-      classSubjects: [...prev.classSubjects, newClassSubject]
-    }))
-    
-    setAddingSubject(false)
-    setNewSubject({ subject: "", teacher: "" })
   }
 
-  const handleRemoveSubject = (subjectCode: string) => {
-    setClassData(prev => ({
-      ...prev,
-      classSubjects: prev.classSubjects.filter(cs => cs.subject.code !== subjectCode)
-    }))
-  }
-
-  const handleAddAssessment = (subjectCode: string) => {
-    const assessment: AssessmentData = {
-      id: Date.now(),
-      name: newAssessment.name,
-      totalMarks: parseInt(newAssessment.totalMarks),
-      term: { id: 1, name: newAssessment.term, startDate: "", endDate: "", createdAt: "" },
-      createdAt: new Date().toISOString()
+  // Admin: Change class teacher
+  const handleUpdateClassTeacher = async (newTeacherId: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+      const tenant = (classData as any).tenant || ''
+      const res = await fetch(`/api/${tenant}/classes/${classData.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...classData, classTeacher: { id: newTeacherId } })
+      })
+      if (!res.ok) throw new Error('Failed to update class teacher')
+      // Refetch or update classData
+      const updatedClassData = await res.json()
+      setClassData(updatedClassData)
+      setEditingClassTeacher(false)
+    } catch (err: any) {
+      setError('Failed to update class teacher')
+    } finally {
+      setLoading(false)
     }
-
-    setClassData(prev => ({
-      ...prev,
-      classSubjects: prev.classSubjects.map(classSubject =>
-        classSubject.subject.code === subjectCode
-          ? { ...classSubject, assessments: [...classSubject.assessments, assessment] }
-          : classSubject
-      )
-    }))
-    
-    setAddingAssessment(null)
-    setNewAssessment({ name: "", totalMarks: "", term: "Term 1" })
   }
 
-  const handleRemoveAssessment = (assessmentId: number) => {
-    setClassData(prev => ({
-      ...prev,
-      classSubjects: prev.classSubjects.map(classSubject => ({
-        ...classSubject,
-        assessments: classSubject.assessments.filter(a => a.id !== assessmentId)
-      }))
-    }))
+  // Admin: Reassign subject teacher
+  const handleUpdateSubjectTeacher = async (subjectCode: string, newTeacherId: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+      const tenant = (classData as any).tenant || ''
+      const classSubject = classData.classSubjects.find(cs => cs.subject.code === subjectCode)
+      if (!classSubject) return
+      const res = await fetch(`/api/${tenant}/class-subjects/${classSubject.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...classSubject, teacher: { id: newTeacherId } })
+      })
+      if (!res.ok) throw new Error('Failed to update subject teacher')
+      // Refetch or update classData
+      const updatedClassData = await res.json()
+      setClassData(updatedClassData)
+      setEditingSubject(null)
+    } catch (err: any) {
+      setError('Failed to update subject teacher')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Admin: Remove subject from class
+  const handleRemoveSubject = async (subjectCode: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+      const tenant = (classData as any).tenant || ''
+      const classSubject = classData.classSubjects.find(cs => cs.subject.code === subjectCode)
+      if (!classSubject) return
+      const res = await fetch(`/api/${tenant}/class-subjects/${classSubject.id}`, {
+        method: 'DELETE' })
+      if (!res.ok) throw new Error('Failed to remove subject')
+      // Refetch or update classData
+      const updatedClassData = await res.json()
+      setClassData(updatedClassData)
+    } catch (err: any) {
+      setError('Failed to remove subject')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Only show assessment management for admin and class teacher
+  const canManageAssessments = isAdmin || isClassTeacher
+
+  // Only show subject row if admin, class teacher, or subject teacher for that subject
+  const visibleSubjects = isAdmin || isClassTeacher
+    ? classData.classSubjects
+    : classData.classSubjects.filter(cs => cs.teacher?.id === user?.id)
+
+  // Add handler for creating assessment
+  const handleCreateAssessment = async () => {
+    if (!showAssessmentModal.subject) return
+    try {
+      setLoading(true)
+      setError(null)
+      const tenant = (classData as any).tenant || ''
+      const res = await fetch(`/api/${tenant}/assessments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: assessmentForm.name,
+          classSubjectId: showAssessmentModal.subject.id,
+          termId: assessmentForm.termId,
+          totalMarks: Number(assessmentForm.totalMarks),
+          dateOfAssessment: assessmentForm.dateOfAssessment
+        })
+      })
+      if (!res.ok) throw new Error('Failed to create assessment')
+      // Refetch or update classData
+      const updatedClassData = await res.json()
+      setClassData(updatedClassData)
+      setShowAssessmentModal({ open: false, subject: null })
+      setAssessmentForm({ name: '', totalMarks: '', termId: '', dateOfAssessment: '' })
+    } catch (err: any) {
+      setError('Failed to create assessment')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -304,12 +384,14 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b flex justify-between items-center">
             <h3 className="text-lg font-semibold">Subjects List</h3>
-            <button
-              onClick={() => setAddingSubject(true)}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => setAddingSubject(true)}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
+            )}
           </div>
           <div className="p-6">
             <div className="overflow-x-auto">
@@ -324,7 +406,7 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
                   </tr>
                 </thead>
                 <tbody>
-                  {classData.classSubjects?.map((subject, index) => (
+                  {visibleSubjects.map((subject, index) => (
                     <tr key={`${subject.subject?.code}-${index}`} className="border-b">
                       <td className="py-3 flex items-center gap-2">
                         <BookOpen className="h-4 w-4 text-gray-500" />
@@ -335,28 +417,51 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
                       <td className="py-3">
                         <div className="flex items-center gap-2">
                           <span>{subject.assessments?.length || 0}</span>
-                          <button
-                            onClick={() => setAddingAssessment(subject.subject.code)}
-                            className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs hover:bg-green-200"
-                          >
-                            Add
-                          </button>
+                          {canManageAssessments && (
+                            <button
+                              onClick={() => setAddingAssessment(subject.subject.code)}
+                              className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs hover:bg-green-200"
+                            >
+                              Add
+                            </button>
+                          )}
+                          {/* Subject teacher can add assessment for their subject */}
+                          {isSubjectTeacher && subject.teacher?.id === user?.id && (
+                            <button
+                              onClick={() => setShowAssessmentModal({ open: true, subject })}
+                              className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs hover:bg-blue-200"
+                            >
+                              Add Assessment
+                            </button>
+                          )}
                         </div>
                       </td>
                       <td className="py-3">
                         <div className="flex gap-2">
-                          <button
-                            onClick={() => setEditingSubject(subject)}
-                            className="bg-gray-100 hover:bg-gray-200 p-2 rounded"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => handleRemoveSubject(subject.subject.code)}
-                            className="bg-red-100 hover:bg-red-200 p-2 rounded text-red-600"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+                          {isAdmin && (
+                            <>
+                              <button
+                                onClick={() => setEditingSubject(subject)}
+                                className="bg-gray-100 hover:bg-gray-200 p-2 rounded"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => handleRemoveSubject(subject.subject.code)}
+                                className="bg-red-100 hover:bg-red-200 p-2 rounded text-red-600"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </>
+                          )}
+                          {isSubjectTeacher && subject.teacher?.id === user?.id && (
+                            <button
+                              onClick={() => setEditingSubject(subject)}
+                              className="bg-gray-100 hover:bg-gray-200 p-2 rounded"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -485,7 +590,7 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
               onChange={(e) => handleUpdateClassTeacher(e.target.value)}
             >
               <option value="">Choose a teacher</option>
-              {mockTeachers.map(teacher => (
+              {teachers.map(teacher => (
                 <option key={teacher.id} value={teacher.id}>
                   {teacher.firstName} {teacher.lastName}
                 </option>
@@ -510,7 +615,7 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
               onChange={(e) => setNewSubject(prev => ({ ...prev, subject: e.target.value }))}
             >
               <option value="">Choose a subject</option>
-              {mockSubjects.filter(subject => 
+              {subjects.filter(subject => 
                 !classData.classSubjects.some(cs => cs.subject.code === subject.code)
               ).map(subject => (
                 <option key={subject.code} value={subject.code}>
@@ -527,7 +632,7 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
               onChange={(e) => setNewSubject(prev => ({ ...prev, teacher: e.target.value }))}
             >
               <option value="">Choose a teacher</option>
-              {mockTeachers.map(teacher => (
+              {teachers.map(teacher => (
                 <option key={teacher.id} value={teacher.id}>
                   {teacher.firstName} {teacher.lastName}
                 </option>
@@ -570,7 +675,7 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
                 onChange={(e) => handleUpdateSubjectTeacher(editingSubject.subject.code, e.target.value)}
               >
                 <option value="">Choose a teacher</option>
-                {mockTeachers.map(teacher => (
+                {teachers.map(teacher => (
                   <option key={teacher.id} value={teacher.id}>
                     {teacher.firstName} {teacher.lastName}
                   </option>
@@ -637,6 +742,72 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
           </div>
         </div>
       </Modal>
+
+      {/* Assessment creation modal for subject teacher */}
+      {showAssessmentModal.open && showAssessmentModal.subject && (
+        <Modal
+          isOpen={showAssessmentModal.open}
+          onClose={() => setShowAssessmentModal({ open: false, subject: null })}
+          title={`Create Assessment for ${showAssessmentModal.subject.subject.name}`}
+        >
+          <div ref={assessmentModalRef} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Assessment Name</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={assessmentForm.name}
+                onChange={e => setAssessmentForm(f => ({ ...f, name: e.target.value }))}
+                placeholder="Enter assessment name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Total Marks</label>
+              <input
+                type="number"
+                className="w-full p-2 border rounded"
+                value={assessmentForm.totalMarks}
+                onChange={e => setAssessmentForm(f => ({ ...f, totalMarks: e.target.value }))}
+                placeholder="Enter total marks"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Term ID</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={assessmentForm.termId}
+                onChange={e => setAssessmentForm(f => ({ ...f, termId: e.target.value }))}
+                placeholder="Enter term ID"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Date of Assessment</label>
+              <input
+                type="date"
+                className="w-full p-2 border rounded"
+                value={assessmentForm.dateOfAssessment}
+                onChange={e => setAssessmentForm(f => ({ ...f, dateOfAssessment: e.target.value }))}
+              />
+            </div>
+            <div className="flex gap-2 pt-4">
+              <button
+                onClick={() => setShowAssessmentModal({ open: false, subject: null })}
+                className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateAssessment}
+                disabled={!assessmentForm.name || !assessmentForm.totalMarks || !assessmentForm.termId || !assessmentForm.dateOfAssessment}
+                className="flex-1 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:opacity-50"
+              >
+                Create Assessment
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }

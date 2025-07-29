@@ -715,6 +715,39 @@ const Assessments = () => {
     loadData()
   }, [loadData])
 
+  // Determine user role and ID
+  const userId = user?.id
+  const userRole = user?.role
+  const isAdmin = userRole === 'ADMIN'
+  const isTeacher = userRole === 'TEACHER'
+
+  // Helper: is this assessment created by the current user?
+  const isAssessmentOwner = (assessment: Assessment) => {
+    return assessment.classSubjects.teacher.id === userId
+  }
+
+  // Helper: is this assessment for a class the user manages (class teacher)?
+  const isClassTeacherAssessment = (assessment: Assessment) => {
+    // If user is class teacher for this class
+    return assessment.classSubjects.classModel.classTeacherId === userId
+  }
+
+  // Helper: is this assessment for a subject the user teaches?
+  const isSubjectTeacherAssessment = (assessment: Assessment) => {
+    return assessment.classSubjects.teacher.id === userId
+  }
+
+  // Filter assessments for display
+  let visibleAssessments: Assessment[] = []
+  if (isAdmin) {
+    visibleAssessments = assessments
+  } else if (isTeacher) {
+    // Class teacher: all for their class, subject teacher: only their subjects
+    visibleAssessments = assessments.filter(a =>
+      isClassTeacherAssessment(a) || isSubjectTeacherAssessment(a)
+    )
+  }
+
   // Extract unique filter options
   const classes = [...new Set(assessments.map((a) => a.classSubjects.classModel.name))]
   const subjects = [...new Set(assessments.map((a) => a.classSubjects.subject.name))]
@@ -997,14 +1030,57 @@ const Assessments = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredAssessments.map((assessment) => {
+                  const owner = isAssessmentOwner(assessment)
                   return (
-                    <StudentGradingDialog
-                      user={user}
-                      key={assessment.id}
-                      assessment={assessment}
-                      school={school}
-                      onGradingComplete={loadData}
-                    />
+                    <tr key={assessment.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {assessment.name}
+                          {owner && <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 rounded text-xs">You created this</span>}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {assessment.classSubjects.subject.name}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {assessment.classSubjects.classModel.name}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div
+                              className="bg-blue-600 h-2.5 rounded-full"
+                              style={{
+                                width: `${calculateCompletion(assessment).percentage}%`,
+                              }}
+                            ></div>
+                          </div>
+                          <span className="text-sm text-gray-900 ml-2">
+                            {calculateCompletion(assessment).completed}/{calculateCompletion(assessment).total}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {calculateCompletion(assessment).completed > 0
+                          ? `${Math.round((averageScore / assessment.totalMarks) * 100)}%`
+                          : '-'}
+                        <div className="text-sm text-gray-500">
+                          total: {assessment.totalMarks} pts
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        {owner && (
+                          <StudentGradingDialog
+                            user={user}
+                            assessment={assessment}
+                            school={school}
+                            onGradingComplete={loadData}
+                          />
+                        )}
+                      </td>
+                    </tr>
                   )
                 })}
               </tbody>

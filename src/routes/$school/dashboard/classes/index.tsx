@@ -91,22 +91,24 @@ const Classes = () => {
   } = useQuery({
     queryKey: ['teacher-classes', school, teacherId],
     queryFn: async (): Promise<ClassModel[]> => {
+      // Updated endpoint as per user instruction
       const response = await fetch(`/api/${school}/classes/teacher/${teacherId}`)
       if (!response.ok) {
         throw new Error('Failed to fetch classes')
       }
-      const data: ClassesResponse = await response.json()
-      return data.classes
+      // Assume the new endpoint returns an array of ClassModel directly
+      const data: ClassModel[] = await response.json()
+      return data
     },
     enabled: !!school && !!teacherId,
   })
 
   // Transform API data to match the original mock structure
-  const transformedClasses = classesData?.map(classItem => ({
+  const transformedClasses = classesData?.map((classItem: ClassModel) => ({
     id: classItem.id.toString(),
     name: classItem.name,
     grade: classItem.grade,
-    subjects: classItem.subjects.map(cs => cs.subject.name),
+    subjects: classItem.subjects.map((cs: ClassSubject) => cs.subject.name),
     schedule: classItem.schedule || "Schedule TBD",
     students: classItem.students.length,
     averagePerformance: 0, // You might want to calculate this from assessments
@@ -119,11 +121,11 @@ const Classes = () => {
 
   // Filter classes based on search term
   const filteredClasses = transformedClasses.filter(
-    (cls) =>
+    (cls: any) =>
       cls.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cls.grade.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cls.subjects.some((subject) => subject.toLowerCase().includes(searchTerm.toLowerCase())),
-  ).sort((a, b) => a.name.localeCompare(b.name))
+      cls.subjects.some((subject: string) => subject.toLowerCase().includes(searchTerm.toLowerCase())),
+  ).sort((a: any, b: any) => a.name.localeCompare(b.name))
 
   // Loading skeleton component
   const ClassSkeleton = () => (
