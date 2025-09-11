@@ -78,7 +78,7 @@ export default function TestStatisticsDialog() {
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-blue-300 mr-2"></div>
+                      <div className="w-3 h-3 rounded-full bg-green-300 mr-2"></div>
                       <span>70-79% (C)</span>
                     </div>
                     <span className="font-medium">12 students</span>
@@ -178,7 +178,7 @@ export default function TestStatisticsDialog() {
                                 : student.status === "Good"
                                   ? `${themeColors.secondaryBg} text-white`
                                   : student.status === "Average"
-                                    ? "bg-blue-100 text-blue-800"
+                                    ? "bg-green-100 text-green-800"
                                     : student.status === "At Risk"
                                       ? "bg-yellow-100 text-yellow-800"
                                       : "bg-red-100 text-red-800"
@@ -195,7 +195,7 @@ export default function TestStatisticsDialog() {
             </div>
 
             <div className="space-y-4 sm:space-y-6">
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                 <h3 className={`font-medium mb-2 ${themeColors.secondary}`}>Insights</h3>
                 <ul className="list-disc pl-5 space-y-1 text-sm">
                   <li>Students performed well on basic algebra concepts (Questions 1-3)</li>

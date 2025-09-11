@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import {
   Mail,
   Phone,
-  Clock,
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { School } from '@/types'
@@ -63,15 +62,8 @@ function SchoolPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="py-10 sm:py-20 px-4 sm:px-6 text-center bg-gradient-to-r from-blue-400 to-green-400 text-white shadow-lg">
+      <section className="py-10 sm:py-20 px-4 sm:px-6 text-center">
         <div className="max-w-2xl sm:max-w-5xl mx-auto">
-          {school.logoUrl && (
-            <img
-              src={school.logoUrl}
-              alt={school.name}
-              className="mx-auto mb-4 sm:mb-6 h-20 w-20 sm:h-24 sm:w-24 object-contain rounded-full bg-white shadow"
-            />
-          )}
           <h1 className="text-3xl sm:text-5xl font-bold mb-2 sm:mb-4">{school.name}</h1>
           {school.motto && (
             <p className="text-lg sm:text-xl mb-2 sm:mb-4 italic opacity-90">"{school.motto}"</p>
@@ -81,8 +73,9 @@ function SchoolPage() {
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 sm:gap-6 mt-4 sm:mt-8">
             <Button
+              variant="outline"
               size="lg"
-              className="font-semibold px-6 sm:px-8 py-4 sm:py-6 bg-white text-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-all shadow-md rounded-xl min-h-[48px]"
+              className="font-semibold px-6 sm:px-8 py-4 sm:py-6 border-custom-text hover:bg-green-50 hover:text-custom-text transition-all  shadow-md rounded-xl min-h-[48px]"
               onClick={() => navigate({ to: '/$school/auth/login', params: { school: subdomain } })}
             >
               Login
@@ -90,7 +83,7 @@ function SchoolPage() {
             <Button
               variant="outline"
               size="lg"
-              className="font-semibold px-6 sm:px-8 py-4 sm:py-6 bg-transparent border-2 border-white text-white hover:bg-white/10 transition-all rounded-xl min-h-[48px]"
+              className="font-semibold px-6 sm:px-8 py-4 sm:py-6 border-custom-text hover:bg-green-50 hover:text-custom-text transition-all  shadow-md rounded-xl min-h-[48px]"
               onClick={() => navigate({ to: '/$school/auth/register', params: { school: subdomain } })}
             >
               Check Student Results
@@ -146,10 +139,10 @@ function SchoolPage() {
             <p className="text-gray-600 mt-2 sm:mt-4">We're here to help you with any questions</p>
           </div>
           <div className="bg-white p-4 sm:p-8 rounded-xl shadow-md border border-gray-100">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-              <div className="flex flex-col items-center text-center p-6 hover:bg-blue-50 rounded-lg transition-all">
-                <div className="bg-blue-100 p-4 rounded-full mb-4">
-                  <Mail className="h-6 w-6 text-blue-500" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="flex flex-col items-center text-center p-6 hover:bg-green-50 rounded-lg transition-all">
+                <div className="bg-green-100 p-4 rounded-full mb-4">
+                  <Mail className="h-6 w-6 text-green-500" />
                 </div>
                 <h3 className="font-semibold text-gray-800 mb-2">Email</h3>
                 <p className="text-gray-600 break-all">
@@ -164,15 +157,6 @@ function SchoolPage() {
                 <h3 className="font-semibold text-gray-800 mb-2">Phone</h3>
                 <p className="text-gray-600">
                   {school.contacts?.find(c => c.phone)?.phone || '(N/A)'}
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center p-6 hover:bg-blue-50 rounded-lg transition-all">
-                <div className="bg-blue-100 p-4 rounded-full mb-4">
-                  <Clock className="h-6 w-6 text-blue-500" />
-                </div>
-                <h3 className="font-semibold text-gray-800 mb-2">Hours</h3>
-                <p className="text-gray-600">
-                  Monday - Friday<br />8:00 AM - 4:00 PM
                 </p>
               </div>
             </div>

@@ -191,7 +191,7 @@ const ClassAssessment = () => {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "Upcoming":
-        return "bg-blue-100 text-blue-800 border border-blue-200"
+        return "bg-green-100 text-green-800 border border-green-200"
       case "Active":
         return "bg-green-100 text-green-800 border border-green-200"
       case "Grading":
@@ -207,7 +207,7 @@ const ClassAssessment = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Upcoming":
-        return "bg-blue-400"
+        return "bg-green-400"
       case "Active":
         return "bg-green-400"
       case "Grading":
@@ -287,13 +287,13 @@ const ClassAssessment = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {/* Overall Average Card */}
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 overflow-hidden relative">
-          <div className="absolute top-0 left-0 w-full h-1 bg-blue-400"></div>
+          <div className="absolute top-0 left-0 w-full h-1 bg-green-400"></div>
           <div className="flex justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500">Overall Average</p>
               <p className="text-3xl font-bold text-gray-800 mt-1">{classStatistics.overallAverage}%</p>
             </div>
-            <div className="p-2.5 bg-blue-100 rounded-lg text-blue-600">
+            <div className="p-2.5 bg-green-100 rounded-lg text-green-600">
               <BarChart3 className="w-6 h-6" />
             </div>
           </div>
@@ -303,7 +303,7 @@ const ClassAssessment = () => {
                 <span className="text-sm text-gray-600">{subject}</span>
                 <div className="flex items-center gap-2">
                   <div className="w-24 bg-gray-100 rounded-full h-1.5">
-                    <div className="bg-blue-400 h-1.5 rounded-full" style={{ width: `${avg}%` }}></div>
+                    <div className="bg-green-400 h-1.5 rounded-full" style={{ width: `${avg}%` }}></div>
                   </div>
                   <span className="text-sm font-medium">{avg}%</span>
                 </div>
@@ -340,13 +340,13 @@ const ClassAssessment = () => {
 
         {/* Assessments Card */}
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 overflow-hidden relative">
-          <div className="absolute top-0 left-0 w-full h-1 bg-blue-400"></div>
+          <div className="absolute top-0 left-0 w-full h-1 bg-green-400"></div>
           <div className="flex justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500">Assessments</p>
               <p className="text-3xl font-bold text-gray-800 mt-1">{classAssessmentsData.length}</p>
             </div>
-            <div className="p-2.5 bg-blue-100 rounded-lg text-blue-600">
+            <div className="p-2.5 bg-green-100 rounded-lg text-green-600">
               <ClipboardList className="w-6 h-6" />
             </div>
           </div>
@@ -414,7 +414,7 @@ const ClassAssessment = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                className="bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
+                className="bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all"
                 placeholder="Search assessments..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -442,7 +442,7 @@ const ClassAssessment = () => {
                 <label className="text-sm text-gray-600">View:</label>
                 <div className="flex border border-gray-200 rounded-lg overflow-hidden">
                   <button
-                    className={`p-2 ${viewMode === "table" ? "bg-blue-400 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}
+                    className={`p-2 ${viewMode === "table" ? "bg-green-400 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}
                     onClick={() => setViewMode("table")}
                     title="Table view"
                   >
@@ -462,7 +462,7 @@ const ClassAssessment = () => {
                     </svg>
                   </button>
                   <button
-                    className={`p-2 ${viewMode === "grid" ? "bg-blue-400 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}
+                    className={`p-2 ${viewMode === "grid" ? "bg-green-400 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}
                     onClick={() => setViewMode("grid")}
                     title="Grid view"
                   >
@@ -487,7 +487,7 @@ const ClassAssessment = () => {
               <div className="flex items-center gap-2">
                 <label className="text-sm text-gray-600">Sort:</label>
                 <select
-                  className="bg-white border border-gray-200 text-gray-900 text-sm rounded-lg block w-40 p-2.5 focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                  className="bg-white border border-gray-200 text-gray-900 text-sm rounded-lg block w-40 p-2.5 focus:ring-2 focus:ring-green-400 focus:border-green-400"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -517,7 +517,7 @@ const ClassAssessment = () => {
             <button
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === "all"
-                  ? "border-blue-400 text-blue-600"
+                  ? "border-green-400 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200"
               }`}
               onClick={() => setActiveTab("all")}
@@ -527,20 +527,20 @@ const ClassAssessment = () => {
             <button
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === "upcoming"
-                  ? "border-blue-400 text-blue-600"
+                  ? "border-green-400 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200"
               }`}
               onClick={() => setActiveTab("upcoming")}
             >
               Upcoming{" "}
-              <span className="ml-1 bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">
+              <span className="ml-1 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
                 {statusCounts.upcoming}
               </span>
             </button>
             <button
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === "active"
-                  ? "border-blue-400 text-blue-600"
+                  ? "border-green-400 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200"
               }`}
               onClick={() => setActiveTab("active")}
@@ -553,7 +553,7 @@ const ClassAssessment = () => {
             <button
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === "grading"
-                  ? "border-blue-400 text-blue-600"
+                  ? "border-green-400 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200"
               }`}
               onClick={() => setActiveTab("grading")}
@@ -566,7 +566,7 @@ const ClassAssessment = () => {
             <button
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === "completed"
-                  ? "border-blue-400 text-blue-600"
+                  ? "border-green-400 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200"
               }`}
               onClick={() => setActiveTab("completed")}
@@ -633,7 +633,7 @@ const ClassAssessment = () => {
                           <div className="text-xs text-gray-500 truncate max-w-xs">{assessment.description}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-100">
                             {assessment.subject}
                           </span>
                         </td>
@@ -662,7 +662,7 @@ const ClassAssessment = () => {
                           <div className="flex items-center">
                             <div className="w-20 bg-gray-100 rounded-full h-1.5 mr-2">
                               <div
-                                className="bg-blue-400 h-1.5 rounded-full transition-all duration-500"
+                                className="bg-green-400 h-1.5 rounded-full transition-all duration-500"
                                 style={{
                                   width: `${(assessment.studentsCompleted / assessment.studentsTotal) * 100}%`,
                                 }}
@@ -683,7 +683,7 @@ const ClassAssessment = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex justify-end space-x-2">
                             <button
-                              className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                              className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 transition-colors"
                               onClick={(e) => {
                                 e.stopPropagation()
                                 // Navigate to edit page
@@ -759,7 +759,7 @@ const ClassAssessment = () => {
                     </div>
 
                     <div className="flex flex-wrap gap-2 mb-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-100">
                         {assessment.subject}
                       </span>
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-50 text-gray-700 border border-gray-100">
@@ -792,7 +792,7 @@ const ClassAssessment = () => {
                         </div>
                         <div className="w-full bg-gray-100 rounded-full h-1.5">
                           <div
-                            className="bg-blue-400 h-1.5 rounded-full transition-all duration-500"
+                            className="bg-green-400 h-1.5 rounded-full transition-all duration-500"
                             style={{
                               width: `${(assessment.studentsCompleted / assessment.studentsTotal) * 100}%`,
                             }}
@@ -812,7 +812,7 @@ const ClassAssessment = () => {
 
                     <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end space-x-2">
                       <button
-                        className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                        className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 transition-colors"
                         onClick={(e) => {
                           e.stopPropagation()
                           navigate({ to: `/$school/dashboard/assessments/${assessment.id}/edit` })
@@ -914,7 +914,7 @@ const ClassAssessment = () => {
                 </button>
                 <button
                   aria-current="page"
-                  className="z-10 bg-blue-50 border-blue-400 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+                  className="z-10 bg-green-50 border-green-400 text-green-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
                 >
                   1
                 </button>

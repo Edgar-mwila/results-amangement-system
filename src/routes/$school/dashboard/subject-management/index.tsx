@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/input'
 import { TableRow, TableCell, TableBody, Table } from '@/components/ui/table'
 import { createFileRoute, useParams } from '@tanstack/react-router'
-import { Search, Filter, X, BookOpen, AlertCircle } from 'lucide-react'
+import { Search, X, BookOpen, AlertCircle } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -204,14 +204,14 @@ const SubjectDetailsDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto">
-        <div className="h-2 bg-gradient-to-r from-green-400 to-blue-400 -mx-6 -mt-6 rounded-t-lg" />
+        <div className="h-2 bg-gradient-to-r from-green-400 to-green-400 -mx-6 -mt-6 rounded-t-lg" />
         <DialogHeader className="pt-2">
           <DialogTitle className="text-2xl font-bold text-gray-800">
             {subject.name} ({subject.code})
           </DialogTitle>
           {subject.url && (
             <p className="text-sm text-gray-500">
-              URL: <a href={subject.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{subject.url}</a>
+              URL: <a href={subject.url} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">{subject.url}</a>
             </p>
           )}
         </DialogHeader>
@@ -242,7 +242,7 @@ const SubjectDetailsDialog = ({
                     <p className="text-sm text-gray-500">Academic Years</p>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {subject.academicYears.map((year, i) => (
-                        <Badge key={i} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                        <Badge key={i} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
                           {year}
                         </Badge>
                       ))}
@@ -289,7 +289,6 @@ const SubjectManagement = () => {
   const [search, setSearch] = useState('');
   const [selectedSubject, setSelectedSubject] = useState<SubjectDisplay | null>(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
-  const [filterDepartment, setFilterDepartment] = useState('');
 
   // Fetch subjects using TanStack Query
   const {
@@ -310,15 +309,6 @@ const SubjectManagement = () => {
     return transformSubjectsForDisplay(subjects);
   }, [subjects]);
 
-  // Get unique departments for filtering
-  const availableDepartments = useMemo(() => {
-    const departments = new Set<string>();
-    displaySubjects.forEach(subject => {
-      subject.departments.forEach(dept => departments.add(dept));
-    });
-    return Array.from(departments).sort();
-  }, [displaySubjects]);
-
   // Clear search functionality
   const clearSearch = () => {
     setSearch('');
@@ -333,14 +323,13 @@ const SubjectManagement = () => {
         subject.departments.some(dept => dept.toLowerCase().includes(search.toLowerCase())) ||
         subject.teachers.some(teacher => teacher.toLowerCase().includes(search.toLowerCase()));
       
-      const matchesDepartment = filterDepartment === '' || subject.departments.includes(filterDepartment);
       
-      return matchesSearch && matchesDepartment;
+      return matchesSearch;
     });
 
     // Sort the filtered subjects
     return filtered.sort((a, b) => a.name.localeCompare(b.name));
-  }, [displaySubjects, search, filterDepartment]);
+  }, [displaySubjects, search]);
 
   const handleSubjectClick = (subject: SubjectDisplay): void => {
     setSelectedSubject(subject);
@@ -421,58 +410,6 @@ const SubjectManagement = () => {
             </button>
           )}
         </div>
-        
-        {/* Department filter */}
-        <div className="flex items-center gap-2">
-          <select
-            value={filterDepartment}
-            onChange={(e) => setFilterDepartment(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-md text-sm focus:border-green-400 focus:ring-green-400"
-          >
-            <option value="">All Departments</option>
-            {availableDepartments.map(dept => (
-              <option key={dept} value={dept}>{dept}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Show results count and filters */}
-      <div className="flex flex-wrap items-center justify-between text-sm text-gray-500">
-        <div>
-          Showing <span className="font-medium text-gray-700">{filteredSubjects.length}</span> of <span className="font-medium text-gray-700">{displaySubjects.length}</span> subjects
-          {filterDepartment && (
-            <>
-              {' '}in <span className="font-medium text-gray-700">{filterDepartment}</span> department
-            </>
-          )}
-          {search && (
-            <>
-              {' '}matching <span className="font-medium text-gray-700">"{search}"</span>
-            </>
-          )}
-        </div>
-        <div className="flex items-center space-x-1">
-          <Filter className="h-4 w-4 text-gray-400" />
-          <span>Filters:</span>
-          {filterDepartment && (
-            <Badge 
-              variant="outline" 
-              className="ml-1 bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-50"
-            >
-              {filterDepartment}
-              <button 
-                className="ml-1 hover:text-blue-900" 
-                onClick={() => setFilterDepartment('')}
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </Badge>
-          )}
-          {!filterDepartment && (
-            <span className="text-gray-400">None</span>
-          )}
-        </div>
       </div>
 
       {/* Display subjects */}
@@ -495,9 +432,6 @@ const SubjectManagement = () => {
             <TableRow className="bg-gray-50 hover:bg-gray-50">
               <TableCell className="font-medium text-gray-700">Subject</TableCell>
               <TableCell className="font-medium text-gray-700">Code</TableCell>
-              <TableCell className="font-medium text-gray-700">Classes</TableCell>
-              <TableCell className="font-medium text-gray-700">Teachers</TableCell>
-              <TableCell className="font-medium text-gray-700">Students</TableCell>
             </TableRow>
             <TableBody>
               {filteredSubjects.map((subject, index) => (
@@ -511,36 +445,6 @@ const SubjectManagement = () => {
                     <Badge variant="outline" className="font-mono text-xs">
                       {subject.code}
                     </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {subject.classes.slice(0, 2).map((cls, i) => (
-                        <Badge key={i} variant="outline" className="text-xs">
-                          {cls}
-                        </Badge>
-                      ))}
-                      {subject.classes.length > 2 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{subject.classes.length - 2} more
-                        </Badge>
-                      )}
-                      {subject.classes.length === 0 && (
-                        <span className="text-xs text-gray-400">No classes</span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm text-gray-600">
-                      {subject.teachers.length > 0 
-                        ? `${subject.teachers.length} teacher${subject.teachers.length > 1 ? 's' : ''}`
-                        : 'No teachers'
-                      }
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm font-medium text-gray-800">
-                      {subject.students}
-                    </div>
                   </TableCell>
                 </TableRow>
               ))}

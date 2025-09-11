@@ -9,7 +9,6 @@ export const Route = createFileRoute('/$school/auth/register')({
 function GuardianLogin() {
   const router = useRouter()
   const { school } = useParams({ strict: false })
-  const [email, setEmail] = useState('')
   const [studentId, setStudentId] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -35,8 +34,8 @@ function GuardianLogin() {
     e.preventDefault()
     setError('')
     setSubmitting(true)
-    if (!email || !studentId) {
-      setError('Please enter a guardian email and a student ID.')
+    if (!studentId) {
+      setError('Please enter a student ID.')
       setSubmitting(false)
       return
     }
@@ -70,7 +69,7 @@ function GuardianLogin() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12">
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg">
         <h1 className="text-2xl font-bold text-center mb-4 text-gray-800">
-          Guardian Login
+          Check student results
         </h1>
         {error && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -78,20 +77,6 @@ function GuardianLogin() {
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Guardian Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter email"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-400 focus:border-green-400"
-              autoComplete="email"
-              required
-            />
-          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Student ID

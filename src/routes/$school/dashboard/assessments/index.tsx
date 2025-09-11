@@ -1,8 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, ReactNode } from 'react'
+
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { AcademicYear, Role } from '@/types'
+import { Edit } from 'lucide-react'
 
 // Updated Types based on your new backend interface
 type Assessment = {
@@ -67,38 +69,40 @@ type StudentAssessment = {
   comment?: string
 }
 
-type CreateAssessmentData = {
-  name: string
-  classSubjectId: string
-  termId: string
-  totalMarks: number
-  dateOfAssessment: string
-}
+// type CreateAssessmentData = {
+//   name: string
+//   classSubjectId: string
+//   termId: string
+//   totalMarks: number
+//   dateOfAssessment: string
+// }
 
-type ClassSubject = {
-  id: string
-  classModel: {
-    id: string
-    name: string
-    grade: {
-      name: string
-    }
-  }
-  subject: {
-    name: string
-  }
-}
+// type ClassSubject = {
+//   id: string
+//   classModel: {
+//     id: string
+//     name: string
+//     grade: {
+//       name: string
+//     }
+//   }
+//   subject: {
+//     name: string
+//   }
+// }
 
-type Term = {
-  id: string
-  name: string
-  startDate: string
-  endDate: string
-}
+// type Term = {
+//   id: string
+//   name: string
+//   startDate: string
+//   endDate: string
+// }
 
 type User = {
   id: string
-  role: 'TEACHER' | 'ADMIN'
+  role: {
+    name: string
+  }
   firstName: string
   lastName: string
 }
@@ -127,10 +131,7 @@ const TableSkeleton = () => (
               Class
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Completion
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Average Score
+              Status
             </th>
           </tr>
         </thead>
@@ -146,10 +147,6 @@ const TableSkeleton = () => (
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="h-2 bg-gray-200 rounded animate-pulse"></div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="h-4 bg-gray-200 rounded animate-pulse mb-1"></div>
-                <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2"></div>
               </td>
             </tr>
           ))}
@@ -180,20 +177,20 @@ const fetchAssessments = async (school: string): Promise<Assessment[]> => {
   return apiCall(`/api/${school}/assessments/`)
 }
 
-const fetchClassSubjects = async (school: string): Promise<ClassSubject[]> => {
-  return apiCall(`/api/${school}/assessments/class-subjects`)
-}
+// const fetchClassSubjects = async (school: string): Promise<ClassSubject[]> => {
+//   return apiCall(`/api/${school}/assessments/class-subjects`)
+// }
 
-const fetchTerms = async (school: string): Promise<Term[]> => {
-  return apiCall(`/api/${school}/assessments/terms`)
-}
+// const fetchTerms = async (school: string): Promise<Term[]> => {
+//   return apiCall(`/api/${school}/assessments/terms`)
+// }
 
-const createAssessment = async (school: string, data: CreateAssessmentData): Promise<Assessment> => {
-  return apiCall(`/api/${school}/assessments/`, {
-    method: 'POST',
-    body: JSON.stringify(data),
-  })
-}
+// const createAssessment = async (school: string, data: CreateAssessmentData): Promise<Assessment> => {
+//   return apiCall(`/api/${school}/assessments/`, {
+//     method: 'POST',
+//     body: JSON.stringify(data),
+//   })
+// }
 
 const updateStudentAssessment = async (
   school: string, 
@@ -228,199 +225,184 @@ const calculateCompletion = (assessment: Assessment) => {
 // Helper function to check if user can grade assessment
 const canUserGradeAssessment = (user: User | null, assessment: Assessment): boolean => {
   if (!user) return false
-  if (user.role === 'ADMIN') return true
-  if (user.role === 'TEACHER' && user.id === assessment.classSubjects.teacher.id) return true
+  // Only the assigned teacher (creator) can edit/grade this assessment
+  if (user.role.name === 'teacher' && user.id === assessment.classSubjects.teacher.id) return true
   return false
 }
 
-// Create Assessment Dialog
-const CreateAssessmentDialog = ({ 
-  school, 
-  onAssessmentCreated 
-}: { 
-  school: string
-  onAssessmentCreated: () => void
-}) => {
-  const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [classSubjects, setClassSubjects] = useState<ClassSubject[]>([])
-  const [terms, setTerms] = useState<Term[]>([])
-  const [formData, setFormData] = useState<CreateAssessmentData>({
-    name: '',
-    classSubjectId: '',
-    termId: '',
-    totalMarks: 0,
-    dateOfAssessment: ''
-  })
+//   onAssessmentCreated 
+// }: { 
+//   school: string
+//   onAssessmentCreated: () => void
+// }) => {
+//   const [open, setOpen] = useState(false)
+//   const [loading, setLoading] = useState(false)
+//   const [classSubjects, setClassSubjects] = useState<ClassSubject[]>([])
+//   const [terms, setTerms] = useState<Term[]>([])
+//   const [formData, setFormData] = useState<CreateAssessmentData>({
+//     name: '',
+//     classSubjectId: '',
+//     termId: '',
+//     totalMarks: 0,
+//     dateOfAssessment: ''
+//   })
 
-  useEffect(() => {
-    if (open) {
-      Promise.all([
-        fetchClassSubjects(school),
-        fetchTerms(school)
-      ]).then(([classSubjectsData, termsData]) => {
-        setClassSubjects(classSubjectsData)
-        setTerms(termsData)
-      }).catch(console.error)
-    }
-  }, [open, school])
+//   useEffect(() => {
+//     if (open) {
+//       Promise.all([
+//         fetchClassSubjects(school),
+//         fetchTerms(school)
+//       ]).then(([classSubjectsData, termsData]) => {
+//         setClassSubjects(classSubjectsData)
+//         setTerms(termsData)
+//       }).catch(console.error)
+//     }
+//   }, [open, school])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    try {
-      await createAssessment(school, formData)
-      setOpen(false)
-      setFormData({
-        name: '',
-        classSubjectId: '',
-        termId: '',
-        totalMarks: 0,
-        dateOfAssessment: ''
-      })
-      onAssessmentCreated()
-    } catch (error) {
-      console.error('Error creating assessment:', error)
-      alert('Failed to create assessment. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault()
+//     setLoading(true)
+//     try {
+//       await createAssessment(school, formData)
+//       setOpen(false)
+//       setFormData({
+//         name: '',
+//         classSubjectId: '',
+//         termId: '',
+//         totalMarks: 0,
+//         dateOfAssessment: ''
+//       })
+//       onAssessmentCreated()
+//     } catch (error) {
+//       console.error('Error creating assessment:', error)
+//       alert('Failed to create assessment. Please try again.')
+//     } finally {
+//       setLoading(false)
+//     }
+//   }
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg flex items-center">
-          <svg
-            className="w-4 h-4 mr-2"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
-          </svg>
-          New Assessment
-        </button>
-      </DialogTrigger>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Create New Assessment</DialogTitle>
-          <DialogDescription>
-            Fill in the details to create a new assessment for your class.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Assessment Name
-            </label>
-            <input
-              type="text"
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="Enter assessment name"
-            />
-          </div>
+//   return (
+//     <Dialog open={open} onOpenChange={setOpen}>
+//       <DialogTrigger asChild>
+//         <button className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center">
+//           <Plus />
+//         </button>
+//       </DialogTrigger>
+//       <DialogContent className="max-w-md">
+//         <DialogHeader>
+//           <DialogTitle>Create New Assessment</DialogTitle>
+//           <DialogDescription>
+//             Fill in the details to create a new assessment for your class.
+//           </DialogDescription>
+//         </DialogHeader>
+//         <form onSubmit={handleSubmit} className="space-y-4">
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700 mb-1">
+//               Assessment Name
+//             </label>
+//             <input
+//               type="text"
+//               required
+//               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+//               value={formData.name}
+//               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+//               placeholder="Enter assessment name"
+//             />
+//           </div>
           
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Class & Subject
-            </label>
-            <select
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.classSubjectId}
-              onChange={(e) => setFormData(prev => ({ ...prev, classSubjectId: e.target.value }))}
-            >
-              <option value="">Select class and subject</option>
-              {classSubjects.map((cs) => (
-                <option key={cs.id} value={cs.id}>
-                  {cs.classModel.name} - {cs.subject.name}
-                </option>
-              ))}
-            </select>
-          </div>
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700 mb-1">
+//               Class & Subject
+//             </label>
+//             <select
+//               required
+//               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+//               value={formData.classSubjectId}
+//               onChange={(e) => setFormData(prev => ({ ...prev, classSubjectId: e.target.value }))}
+//             >
+//               <option value="">Select class and subject</option>
+//               {classSubjects.map((cs) => (
+//                 <option key={cs.id} value={cs.id}>
+//                   {cs.classModel.name} - {cs.subject.name}
+//                 </option>
+//               ))}
+//             </select>
+//           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Term
-            </label>
-            <select
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.termId}
-              onChange={(e) => setFormData(prev => ({ ...prev, termId: e.target.value }))}
-            >
-              <option value="">Select term</option>
-              {terms.map((term) => (
-                <option key={term.id} value={term.id}>
-                  {term.name}
-                </option>
-              ))}
-            </select>
-          </div>
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700 mb-1">
+//               Term
+//             </label>
+//             <select
+//               required
+//               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+//               value={formData.termId}
+//               onChange={(e) => setFormData(prev => ({ ...prev, termId: e.target.value }))}
+//             >
+//               <option value="">Select term</option>
+//               {terms.map((term) => (
+//                 <option key={term.id} value={term.id}>
+//                   {term.name}
+//                 </option>
+//               ))}
+//             </select>
+//           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Total Marks
-            </label>
-            <input
-              type="number"
-              required
-              min="1"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.totalMarks || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, totalMarks: parseInt(e.target.value) || 0 }))}
-              placeholder="Enter total marks"
-            />
-          </div>
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700 mb-1">
+//               Total Marks
+//             </label>
+//             <input
+//               type="number"
+//               required
+//               min="1"
+//               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+//               value={formData.totalMarks || ''}
+//               onChange={(e) => setFormData(prev => ({ ...prev, totalMarks: parseInt(e.target.value) || 0 }))}
+//               placeholder="Enter total marks"
+//             />
+//           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Assessment Date
-            </label>
-            <input
-              type="date"
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.dateOfAssessment}
-              onChange={(e) => setFormData(prev => ({ ...prev, dateOfAssessment: e.target.value }))}
-            />
-          </div>
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700 mb-1">
+//               Assessment Date
+//             </label>
+//             <input
+//               type="date"
+//               required
+//               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+//               value={formData.dateOfAssessment}
+//               onChange={(e) => setFormData(prev => ({ ...prev, dateOfAssessment: e.target.value }))}
+//             />
+//           </div>
 
-          <DialogFooter>
-            <Button type="button" disabled={loading}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Creating...' : 'Create Assessment'}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  )
-}
+//           <DialogFooter>
+//             <Button type="button" disabled={loading}>
+//               Cancel
+//             </Button>
+//             <Button type="submit" disabled={loading}>
+//               {loading ? 'Creating...' : 'Create Assessment'}
+//             </Button>
+//           </DialogFooter>
+//         </form>
+//       </DialogContent>
+//     </Dialog>
+//   )
+// }
 
 // Enhanced Student Grading Dialog
 const StudentGradingDialog = ({ 
   assessment, 
   school,
   user,
-  onGradingComplete 
+  onGradingComplete,
+  triggerContent
 }: { 
   assessment: Assessment
   school: string
   user: User | null
   onGradingComplete: () => void 
+  triggerContent?: ReactNode
 }) => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -519,58 +501,14 @@ const StudentGradingDialog = ({
   if (!assessment) return null
 
   const completion = calculateCompletion(assessment)
-  const averageScore = completion.completed > 0 
-    ? assessment.studentAssessments
-        .filter(sa => sa.marksObtained !== null && sa.marksObtained !== undefined && sa.marksObtained >= 0)
-        .reduce((sum, sa) => sum + (sa.marksObtained || 0), 0) / completion.completed
+  const avgPct = assessment.studentAssessments.length > 0
+    ? Math.round((assessment.studentAssessments.reduce((sum, sa) => sum + (sa.marksObtained ?? 0), 0) / (assessment.studentAssessments.length * assessment.totalMarks)) * 100)
     : 0
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <tr className={`hover:bg-gray-50 ${canGrade ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}>
-          <td className="px-6 py-4 whitespace-nowrap">
-            <div className="text-sm font-medium text-gray-900">
-              {assessment.name}
-              {!canGrade && (
-                <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                  No Access
-                </span>
-              )}
-            </div>
-            <div className="text-sm text-gray-500">
-              {assessment.classSubjects.subject.name}
-            </div>
-          </td>
-          <td className="px-6 py-4 whitespace-nowrap">
-            <div className="text-sm text-gray-900">
-              {assessment.classSubjects.classModel.name}
-            </div>
-          </td>
-          <td className="px-6 py-4 whitespace-nowrap">
-            <div className="flex items-center">
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div
-                  className="bg-blue-600 h-2.5 rounded-full"
-                  style={{
-                    width: `${completion.percentage}%`,
-                  }}
-                ></div>
-              </div>
-              <span className="text-sm text-gray-900 ml-2">
-                {completion.completed}/{completion.total}
-              </span>
-            </div>
-          </td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-            {completion.completed > 0
-              ? `${Math.round((averageScore / assessment.totalMarks) * 100)}%`
-              : '-'}
-            <div className="text-sm text-gray-500">
-              total: {assessment.totalMarks} pts
-            </div>
-          </td>
-        </tr>
+        {triggerContent ? triggerContent : <Edit />}
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
@@ -579,11 +517,10 @@ const StudentGradingDialog = ({
           </DialogTitle>
           <DialogDescription>
             {assessment.classSubjects.classModel.name} - {assessment.classSubjects.subject.name} (Total: {assessment.totalMarks} marks)
-            {!canGrade && (
-              <div className="mt-2 text-red-600 font-medium">
-                You don't have permission to grade this assessment. Only the assigned teacher can grade.
-              </div>
-            )}
+            <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-600">
+              <span>Completion: {completion.completed}/{completion.total} ({Math.round(completion.percentage)}%)</span>
+              <span>Average: {avgPct}%</span>
+            </div>
           </DialogDescription>
         </DialogHeader>
         
@@ -620,7 +557,7 @@ const StudentGradingDialog = ({
                         type="number"
                         min="0"
                         max={assessment.totalMarks}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         value={currentGrade.marks || ''}
                         onChange={(e) => handleGradeChange(studentId, 'marks', parseInt(e.target.value) || 0)}
                         placeholder="Enter marks"
@@ -638,7 +575,7 @@ const StudentGradingDialog = ({
                       </label>
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         value={currentGrade.comment}
                         onChange={(e) => handleGradeChange(studentId, 'comment', e.target.value)}
                         placeholder="Add a comment"
@@ -656,10 +593,30 @@ const StudentGradingDialog = ({
             })}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <div className="text-gray-500">
-              You don't have permission to grade this assessment.
+          <div className="space-y-4">
+            <div className="text-sm text-gray-600">
+              You can view scores but cannot edit this assessment.
             </div>
+            {assessment.classSubjects.classModel.classStudents.map((classStudent) => {
+              const student = classStudent.student
+              const fullName = `${student.firstName} ${student.otherName ? student.otherName + ' ' : ''}${student.lastName}`
+              const existing = assessment.studentAssessments.find(sa => sa.student.id === student.id)
+              const marks = existing?.marksObtained
+              const comment = existing?.comment
+              return (
+                <div key={student.id} className="border rounded-lg p-4">
+                  <div className="flex justify-between items-center">
+                    <div className="font-medium text-gray-900">{fullName}</div>
+                    <div className="text-sm text-gray-600">
+                      {typeof marks === 'number' ? `Marks: ${marks}/${assessment.totalMarks}` : 'Not recorded'}
+                    </div>
+                  </div>
+                  {comment && (
+                    <div className="text-sm text-gray-600 mt-1">Comment: {comment}</div>
+                  )}
+                </div>
+              )
+            })}
           </div>
         )}
 
@@ -717,9 +674,9 @@ const Assessments = () => {
 
   // Determine user role and ID
   const userId = user?.id
-  const userRole = user?.role
-  const isAdmin = userRole === 'ADMIN'
-  const isTeacher = userRole === 'TEACHER'
+  const userRole = user?.role.name
+  const isAdmin = userRole === 'administrator'
+  const isTeacher = userRole === 'teacher'
 
   // Helper: is this assessment created by the current user?
   const isAssessmentOwner = (assessment: Assessment) => {
@@ -729,7 +686,7 @@ const Assessments = () => {
   // Helper: is this assessment for a class the user manages (class teacher)?
   const isClassTeacherAssessment = (assessment: Assessment) => {
     // If user is class teacher for this class
-    return assessment.classSubjects.classModel.classTeacherId === userId
+    return assessment.classSubjects.teacher.id === userId
   }
 
   // Helper: is this assessment for a subject the user teaches?
@@ -749,11 +706,11 @@ const Assessments = () => {
   }
 
   // Extract unique filter options
-  const classes = [...new Set(assessments.map((a) => a.classSubjects.classModel.name))]
-  const subjects = [...new Set(assessments.map((a) => a.classSubjects.subject.name))]
+  const classes = [...new Set(visibleAssessments.map((a) => a.classSubjects.classModel.name))]
+  const subjects = [...new Set(visibleAssessments.map((a) => a.classSubjects.subject.name))]
 
   // Apply filters and sorting
-  const filteredAssessments = assessments
+  const filteredAssessments = visibleAssessments
     .filter((assessment) => {
       return (
         (filters.class === 'all' || assessment.classSubjects.classModel.name === filters.class) &&
@@ -800,6 +757,8 @@ const Assessments = () => {
     }
   }
 
+  // const averageScore: number = 0.0;
+
   if (error) {
     return (
       <div className="p-6 max-w-6xl mx-auto">
@@ -834,13 +793,7 @@ const Assessments = () => {
     <div className="p-6 max-w-6xl mx-auto">
       <header className="mb-8">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-bold text-gray-800">All Assessments</h1>
-          {user && (user.role === 'TEACHER' || user.role === 'ADMIN') && (
-            <CreateAssessmentDialog 
-              school={school} 
-              onAssessmentCreated={loadData}
-            />
-          )}
+          <h1 className="text-3xl font-bold text-gray-800">Assessments</h1>
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
@@ -970,69 +923,18 @@ const Assessments = () => {
                       )}
                     </div>
                   </th>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSortChange('completion')}
-                  >
-                    <div className="flex items-center">
-                      Completion
-                      {sortBy === 'completion' && (
-                        <svg
-                          className="w-3 h-3 ml-1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d={
-                              sortDirection === 'asc'
-                                ? 'M5 15l7-7 7 7'
-                                : 'M19 9l-7 7-7-7'
-                            }
-                          />
-                        </svg>
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSortChange('dateOfAssessment')}
-                  >
-                    <div className="flex items-center">
-                      Average Score
-                      {sortBy === 'dateOfAssessment' && (
-                        <svg
-                          className="w-3 h-3 ml-1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d={
-                              sortDirection === 'asc'
-                                ? 'M5 15l7-7 7 7'
-                                : 'M19 9l-7 7-7-7'
-                            }
-                          />
-                        </svg>
-                      )}
-                    </div>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredAssessments.map((assessment) => {
+                  const completion = calculateCompletion(assessment)
+                  const incomplete = completion.percentage < 100
                   const owner = isAssessmentOwner(assessment)
-                  return (
-                    <tr key={assessment.id}>
+                  const row = (
+                    <tr key={assessment.id} className="cursor-pointer hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
                           {assessment.name}
@@ -1048,39 +950,22 @@ const Assessments = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="w-full bg-gray-200 rounded-full h-2.5">
-                            <div
-                              className="bg-blue-600 h-2.5 rounded-full"
-                              style={{
-                                width: `${calculateCompletion(assessment).percentage}%`,
-                              }}
-                            ></div>
-                          </div>
-                          <span className="text-sm text-gray-900 ml-2">
-                            {calculateCompletion(assessment).completed}/{calculateCompletion(assessment).total}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {calculateCompletion(assessment).completed > 0
-                          ? `${Math.round((averageScore / assessment.totalMarks) * 100)}%`
-                          : '-'}
-                        <div className="text-sm text-gray-500">
-                          total: {assessment.totalMarks} pts
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        {owner && (
-                          <StudentGradingDialog
-                            user={user}
-                            assessment={assessment}
-                            school={school}
-                            onGradingComplete={loadData}
-                          />
-                        )}
+                        <span className={`inline-flex items-center gap-2 text-sm ${incomplete ? 'text-amber-700' : 'text-green-700'}`}>
+                          <span className={`inline-block w-2 h-2 rounded-full ${incomplete ? 'bg-amber-500' : 'bg-green-500'}`}></span>
+                          {incomplete ? 'Not fully recorded' : 'Complete'}
+                        </span>
                       </td>
                     </tr>
+                  )
+                  return (
+                    <StudentGradingDialog
+                      key={`dlg-${assessment.id}`}
+                      user={user}
+                      assessment={assessment}
+                      school={school}
+                      onGradingComplete={loadData}
+                      triggerContent={row}
+                    />
                   )
                 })}
               </tbody>

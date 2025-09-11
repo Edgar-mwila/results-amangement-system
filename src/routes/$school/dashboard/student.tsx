@@ -1,8 +1,7 @@
 import StudentDetails from '@/components/student-details'
-import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
 import { useParams } from '@tanstack/react-router'
-
 
 function StudentDetailsSkeleton() {
   return (
@@ -46,10 +45,7 @@ function StudentDetailsSkeleton() {
           <div className="h-6 w-32 bg-gray-200 rounded mb-4" />
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <div
-                key={i}
-                className="flex items-start p-3 bg-gray-50 rounded-lg"
-              >
+              <div key={i} className="flex items-start p-3 bg-gray-50 rounded-lg">
                 <div className="h-5 w-5 bg-gray-200 rounded-full mr-3 mt-0.5" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 w-24 bg-gray-100 rounded" />
@@ -92,50 +88,26 @@ function StudentDetailsError({ message }: { message?: string }) {
     <div className="container mx-auto p-4">
       <div className="flex flex-col items-center justify-center min-h-[400px]">
         <div className="mb-4">
-          <svg
-            className="h-12 w-12 text-red-400"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-          >
-            <circle
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 8v4m0 4h.01"
-            />
+          <svg className="h-12 w-12 text-red-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01" />
           </svg>
         </div>
-        <h2 className="text-xl font-semibold text-red-600 mb-2">
-          Failed to load student details
-        </h2>
-        <p className="text-gray-500 mb-4">
-          {message || 'Something went wrong. Please try again later.'}
-        </p>
+        <h2 className="text-xl font-semibold text-red-600 mb-2">Failed to load student details</h2>
+        <p className="text-gray-500 mb-4">{message || "Something went wrong. Please try again later."}</p>
         <StudentDetailsSkeleton />
       </div>
     </div>
   )
 }
 
-const ParentStudentPage = () => {
-  const { school } = useParams({ strict: false })
-  const id = localStorage.getItem('studentId')
 
-  const {
-    data: student,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['student', school],
+const StudentPage = () => {
+  const { school } = useParams({ strict: false })
+  const id = localStorage.getItem('studentId');
+
+  const { data: student, isLoading, error } = useQuery({
+    queryKey: ['student', school, id],
     queryFn: async () => {
       const res = await fetch(`/api/${school}/students/${id}`)
       if (!res.ok) throw new Error('Failed to fetch student')
@@ -147,9 +119,9 @@ const ParentStudentPage = () => {
   if (!student) return <StudentDetailsError message="No student data found." />
   if (error) return <StudentDetailsError message={error.message} />
 
-  return <StudentDetails student={student} />
+  return <StudentDetails student={student} classSubjects={student.classStudents[0].classModel.classSubjects} />
 }
 
 export const Route = createFileRoute('/$school/dashboard/student')({
-  component: ParentStudentPage,
+  component: StudentPage,
 })

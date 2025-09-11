@@ -82,7 +82,7 @@ const Layout = () => {
         {/* User info */}
         <div className="px-6 py-3 border-b border-gray-200">
           <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center text-white font-semibold">
+            <div className="w-8 h-8 rounded-full bg-green-400 flex items-center justify-center text-white font-semibold">
               {user?.firstName.charAt(0)} {user?.lastName.charAt(0)}
             </div>
             <div className="ml-3">
@@ -112,6 +112,9 @@ const Layout = () => {
             className="w-full mt-6 px-4 py-3 text-sm rounded-md bg-red-100 text-red-600 font-medium hover:bg-red-200 transition-colors"
             onClick={() => {
               localStorage.removeItem('user');
+              localStorage.removeItem('systemAdminUser');
+              localStorage.removeItem('studentId');
+              localStorage.removeItem('school');
               navigate({ to: `/${school}` });
             }}
           >

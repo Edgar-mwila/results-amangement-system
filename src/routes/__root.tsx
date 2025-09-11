@@ -14,14 +14,14 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function NavBar() {
   return (
-    <div className='fixed top-0 left-0 right-0 flex justify-between m-auto items-baseline p-5 bg-green-600'>
+    <div className='fixed top-0 left-0 right-0 z-50 flex justify-between m-auto items-baseline p-4 bg-green-400'>
       <Link className="text-3xl font-bold text-white">
         Edu-Track
       </Link>
       <div className="flex gap-2">
-            <Link to="/help-desk" className="font-semibold [&.active]:font-bold mr-5 text-white">
-              <HelpCircleIcon className='h-8 w-auto' />
-            </Link>
+        <Link to="/help-desk" className="font-semibold [&.active]:font-bold mr-5 text-white">
+          <HelpCircleIcon className='h-8 w-auto' />
+        </Link>
       </div>
     </div>
   );
@@ -31,7 +31,6 @@ function Root() {
   return (
     <>
       <NavBar />
-      <hr />
       <div className='m-auto text-custom-text pt-[76px]'>
         <Outlet />
       </div>

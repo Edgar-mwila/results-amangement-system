@@ -174,7 +174,7 @@ export default function SubjectPerformance() {
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-blue-300 mr-2"></div>
+                      <div className="w-3 h-3 rounded-full bg-green-300 mr-2"></div>
                       <span>C (70-79%)</span>
                     </div>
                     <span className="font-medium">28%</span>
@@ -290,7 +290,7 @@ export default function SubjectPerformance() {
                               : course.status === "Very Good"
                                 ? `${themeColors.secondaryBg} text-white`
                                 : course.status === "Good"
-                                  ? "bg-blue-100 text-blue-800"
+                                  ? "bg-green-100 text-green-800"
                                   : "bg-yellow-100 text-yellow-800"
                           }
                         >
@@ -402,7 +402,7 @@ export default function SubjectPerformance() {
                               : teacher.status === "Very Good"
                                 ? `${themeColors.secondaryBg} text-white`
                                 : teacher.status === "Good"
-                                  ? "bg-blue-100 text-blue-800"
+                                  ? "bg-green-100 text-green-800"
                                   : "bg-yellow-100 text-yellow-800"
                           }
                         >
@@ -461,7 +461,7 @@ export default function SubjectPerformance() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
               <h3 className={`font-medium mb-2 ${themeColors.secondary}`}>Strengths</h3>
               <ul className="list-disc pl-5 space-y-1 text-sm">
                 <li>AP Calculus continues to be the highest performing course with a 91.2% average</li>

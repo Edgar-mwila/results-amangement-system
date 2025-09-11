@@ -169,7 +169,7 @@ export default function TeacherReport() {
                           : teacher.status === "Very Good"
                             ? `${themeColors.secondaryBg} text-white`
                             : teacher.status === "Good"
-                              ? "bg-blue-100 text-blue-800"
+                              ? "bg-green-100 text-green-800"
                               : "bg-yellow-100 text-yellow-800"
                       }
                     >
@@ -331,7 +331,7 @@ export default function TeacherReport() {
                   </div>
                   <div className="flex justify-between">
                     <span>3.5 - 3.9</span>
-                    <span className="text-blue-600 font-medium">Good</span>
+                    <span className="text-green-600 font-medium">Good</span>
                   </div>
                   <div className="flex justify-between">
                     <span>3.0 - 3.4</span>
@@ -470,7 +470,7 @@ export default function TeacherReport() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4 sm:space-y-6">
-            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
               <h3 className={`font-medium mb-2 ${themeColors.secondary}`}>Strengths to Leverage</h3>
               <ul className="list-disc pl-5 space-y-1 text-sm">
                 <li>Strong performance in advanced mathematics courses (AP Calculus, Calculus I)</li>

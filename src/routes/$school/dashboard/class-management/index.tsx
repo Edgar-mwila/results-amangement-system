@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
@@ -455,9 +454,14 @@ const ClassManagement = () => {
 
   return (
     <div className="flex flex-col space-y-6 p-6 bg-white">
-      <div className="flex flex-col space-y-2">
-        <h1 className="text-2xl font-bold text-gray-800">Class Management</h1>
-        <p className="text-gray-500">Manage all classes, assign teachers, and monitor student enrollment</p>
+      <div className="flex flex-row justify-between">
+        <div className="flex flex-col space-y-2">
+          <h1 className="text-2xl font-bold text-gray-800">Class Management</h1>
+        </div>
+        
+        <div className="flex flex-wrap gap-2 w-full md:w-auto">
+          <CreateClassDialog schoolId={school} />
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
@@ -480,10 +484,6 @@ const ClassManagement = () => {
               <X className="h-4 w-4" />
             </button>
           )}
-        </div>
-
-        <div className="flex flex-wrap gap-2 w-full md:w-auto">
-          <CreateClassDialog schoolId={school} />
         </div>
       </div>
 
@@ -525,7 +525,7 @@ const ClassManagement = () => {
                   })}
                 >
                   <TableCell className="font-medium">
-                    <span className="text-gray-800 hover:text-blue-500 transition-colors">
+                    <span className="text-gray-800 hover:text-green-500 transition-colors">
                       {cls.name}
                     </span>
                   </TableCell>
@@ -536,9 +536,7 @@ const ClassManagement = () => {
                   </TableCell>
                   <TableCell>{cls.grade && cls.grade.level != null ? cls.grade.level : ""}</TableCell>
                   <TableCell>
-                    <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
-                      {cls.studentCount}
-                    </Badge>
+                      {cls.classStudents && cls.classStudents.length > 0 ? cls.classStudents.length : 0}
                   </TableCell>
                 </TableRow>
               ))}

@@ -5,7 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 
 const HelpDesk = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
       <div className="max-w-2xl sm:max-w-4xl lg:max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-20">
         <header className="text-center mb-10 sm:mb-16">
           <h1 className="text-3xl sm:text-5xl font-bold mb-4 text-gray-800">Help & Support Center</h1>
@@ -18,23 +18,23 @@ const HelpDesk = () => {
           <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center text-gray-800">Contact Us</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-start">
-              <div className="bg-blue-100 p-4 rounded-full mr-4">
-                <Phone className="h-8 w-8 text-blue-600" />
+              <div className="bg-green-100 p-4 rounded-full mr-4">
+                <Phone className="h-8 w-8 text-green-600" />
               </div>
               <div>
                 <h3 className="text-xl font-bold mb-2 text-gray-800">Phone Support</h3>
-                <p className="text-2xl font-medium text-blue-600 mb-1">+1 (555) 123-4567</p>
+                <p className="text-2xl font-medium text-green-600 mb-1">+1 (555) 123-4567</p>
                 <p className="text-gray-600">Monday - Friday, 9AM - 5PM</p>
               </div>
             </div>
             
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-start">
-              <div className="bg-blue-100 p-4 rounded-full mr-4">
-                <Mail className="h-8 w-8 text-blue-600" />
+              <div className="bg-green-100 p-4 rounded-full mr-4">
+                <Mail className="h-8 w-8 text-green-600" />
               </div>
               <div>
                 <h3 className="text-xl font-bold mb-2 text-gray-800">Email Support</h3>
-                <p className="text-2xl font-medium text-blue-600 mb-1">support@example.com</p>
+                <p className="text-2xl font-medium text-green-600 mb-1">support@example.com</p>
                 <p className="text-gray-600">24/7 Response</p>
               </div>
             </div>

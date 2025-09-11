@@ -23,7 +23,7 @@ const Login = () => {
       }
       localStorage.setItem('user', JSON.stringify(user))
       localStorage.setItem('isAuthenticated', 'true')
-      if (user.role?.name === 'Administrator') {
+      if (user.role?.name === 'administrator') {
         navigate.navigate({
           to: '/$school/dashboard/school',
           params: { school },
@@ -61,7 +61,7 @@ const Login = () => {
               name="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors"
               placeholder="Enter your email"
               required
             />
@@ -75,7 +75,7 @@ const Login = () => {
               name="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors"
               placeholder="Enter your password"
               required
             />
@@ -92,7 +92,7 @@ const Login = () => {
             </label>
             <a
               href="#"
-              className="text-sm text-blue-600 hover:text-blue-800"
+              className="text-sm text-green-600 hover:text-green-800"
             >
               Forgot password?
             </a>
@@ -102,7 +102,7 @@ const Login = () => {
           )}
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             disabled={loading}
           >
             {loading ? 'Logging in...' : 'Login'}

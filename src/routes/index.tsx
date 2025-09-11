@@ -16,6 +16,63 @@ function HomePage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [schools, setSchools] = useState<School[]>([]);
 
+  const navigation = useNavigate();
+
+  useEffect(() => {
+    const checkStoredData = async () => {
+      try {
+        // Get stored data from localStorage (replacing AsyncStorage)
+        const storedData = [
+          ['user', localStorage.getItem('user')],
+          ['studentId', localStorage.getItem('studentId')],
+          ['systemAdminUser', localStorage.getItem('systemAdminUser')]
+        ] as const;
+
+        // Get school subdomain
+        const school = localStorage.getItem('school');
+        
+        // Check if we have any stored data
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const hasStoredData = storedData.some(([_, value]) => value !== null);
+        
+        if (!hasStoredData) {
+          // No stored data present, do nothing
+          return;
+        }
+
+        if (!school) {
+          // Error handling: stored data exists but no school subdomain
+          console.error('Navigation error: User data found but no school subdomain available');
+          // Optionally, you could redirect to a school selection page or show an error
+          return;
+        }
+
+        // Navigate based on stored data
+        storedData.forEach(([key, value]) => {
+          if (value !== null) {
+            switch (key) {
+              case 'user':
+                navigation({ to: `/${school}/dashboard/` });
+                break;
+              case 'studentId':
+                navigation({ to: `/${school}/dashboard/student` });
+                break;
+              case 'systemAdminUser':
+                navigation({ to: `/system-admin` });
+                break;
+              default:
+                break;
+            }
+          }
+        });
+      } catch (error) {
+        console.error('Error checking stored data:', error);
+      }
+    };
+
+    checkStoredData();
+  }, [navigation]);
+
   useEffect(() => {
     fetch('/api/schools/')
       .then(response => response.json())
@@ -28,6 +85,7 @@ function HomePage() {
   );
 
   const handleSchoolSelect = (school: School) => {
+    localStorage.setItem('school', school.subdomain);
     navigate({ 
       to: '/$school',
       params: { school: school.subdomain }
@@ -139,7 +197,7 @@ function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-blue-100 rounded-full">
+              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-green-100 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -151,7 +209,7 @@ function HomePage() {
             </div>
             
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-blue-100 rounded-full">
+              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-green-100 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
@@ -163,7 +221,7 @@ function HomePage() {
             </div>
             
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-blue-100 rounded-full">
+              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-green-100 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>

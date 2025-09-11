@@ -628,7 +628,7 @@ const CommunicationPage = () => {
                         }
                       </span>
                       <button
-                        className="ml-2 text-sm text-blue-400 hover:underline"
+                        className="ml-2 text-sm text-green-400 hover:underline"
                         onClick={() => setSelectedChild(null)}
                       >
                         Change
@@ -760,16 +760,16 @@ const CommunicationPage = () => {
       )}
 
       {/* Role-specific information section */}
-      <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+      <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-100">
         <div className="flex items-center mb-2">
           {user.role === 'admin' ? (
-            <School size={20} className="text-blue-400 mr-2" />
+            <School size={20} className="text-green-400 mr-2" />
           ) : user.role === 'teacher' ? (
-            <Users size={20} className="text-blue-400 mr-2" />
+            <Users size={20} className="text-green-400 mr-2" />
           ) : (
-            <Calendar size={20} className="text-blue-400 mr-2" />
+            <Calendar size={20} className="text-green-400 mr-2" />
           )}
-          <h3 className="text-lg font-medium text-blue-600">
+          <h3 className="text-lg font-medium text-green-600">
             {user.role === 'admin'
               ? 'Administration Tools'
               : user.role === 'teacher'
@@ -779,7 +779,7 @@ const CommunicationPage = () => {
         </div>
 
         {user.role === 'admin' && (
-          <p className="text-blue-800">
+          <p className="text-green-800">
             As an administrator, you can communicate with all teachers and
             parents. Use this system to send announcements, coordinate events,
             and address concerns.
@@ -787,7 +787,7 @@ const CommunicationPage = () => {
         )}
 
         {user.role === 'teacher' && (
-          <p className="text-blue-800">
+          <p className="text-green-800">
             Keep parents informed about student progress, upcoming assignments,
             and classroom activities. Regular communication helps create a
             supportive learning environment.
@@ -795,7 +795,7 @@ const CommunicationPage = () => {
         )}
 
         {user.role === 'parent' && (
-          <p className="text-blue-800">
+          <p className="text-green-800">
             Stay connected with your child's teachers. Don't hesitate to ask
             questions about assignments, schedule parent-teacher conferences, or
             discuss any concerns.

@@ -1,23 +1,22 @@
 import { ReactElement, useState, useEffect } from "react"
 import {
   BarChart,
-  BookOpen,
-  CheckSquare,
   Users,
   Edit,
   Plus,
   Trash2,
   X,
+  PlusSquare,
 } from "lucide-react"
 import { useRef } from "react"
 
 // Define theme colors inline since we don't have the theme config
 const themeColors = {
-  primaryBg: "bg-blue-500",
+  primaryBg: "bg-green-500",
   secondaryBg: "bg-green-500", 
   accentBg: "bg-purple-500",
-  accent: "text-blue-600",
-  accentBorder: "border-blue-500"
+  accent: "text-green-600",
+  accentBorder: "border-green-500"
 }
 
 interface StudentData {
@@ -89,11 +88,11 @@ interface ClassData {
   academicYear: AcademicYear;
   classSubjects: ClassSubjectData[];
   classStudents: ClassStudentData[];
-  tenant: string; // Added for backend API calls
 }
 
 export interface ClassComponentProps {
   classData: ClassData;
+  school: string;
 }
 
 // Custom Modal Component
@@ -115,7 +114,7 @@ const Modal = ({ isOpen, onClose, title, children }: { isOpen: boolean, onClose:
   );
 };
 
-export default function ClassComponent({ classData: initialClassData }: ClassComponentProps) {
+export default function ClassComponent({ classData: initialClassData, school: school }: ClassComponentProps) {
   const [activeTab, setActiveTab] = useState("students")
   const [classData, setClassData] = useState(initialClassData)
   const [editingSubject, setEditingSubject] = useState<ClassSubjectData | null>(null)
@@ -126,11 +125,11 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
   const [newAssessment, setNewAssessment] = useState({ name: "", totalMarks: "", term: "Term 1" })
   const [teachers, setTeachers] = useState<UserData[]>([])
   const [subjects, setSubjects] = useState<SubjectData[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [showAssessmentModal, setShowAssessmentModal] = useState<{ open: boolean, subject: ClassSubjectData | null }>({ open: false, subject: null })
   const [assessmentForm, setAssessmentForm] = useState({ name: '', totalMarks: '', termId: '', dateOfAssessment: '' })
   const assessmentModalRef = useRef<HTMLDivElement>(null)
+  const [selectedClassTeacherId, setSelectedClassTeacherId] = useState<string>('')
+  const [selectedSubjectTeacherId, setSelectedSubjectTeacherId] = useState<string>('')
 
   // Get current user and role
   const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}') : null
@@ -142,55 +141,46 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
   // Fetch teachers and subjects on mount
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true)
-      setError(null)
       try {
-        // Assume tenant is available in classData or from route params
-        const tenant = classData?.id ? (classData as any).tenant || '' : ''
         // Fetch teachers
-        const teachersRes = await fetch(`/api/${tenant}/users/`)
+        const teachersRes = await fetch(`/api/${school}/users/`)
         const teachersData = await teachersRes.json()
         setTeachers(teachersData.filter((u: UserData) => u.role?.name?.toLowerCase() === 'teacher'))
         // Fetch subjects
-        const subjectsRes = await fetch(`/api/${tenant}/subjects/`)
+        const subjectsRes = await fetch(`/api/${school}/subjects/`)
         const subjectsData = await subjectsRes.json()
         setSubjects(subjectsData)
-      } catch (err: any) {
-        setError('Failed to load teachers or subjects')
-      } finally {
-        setLoading(false)
+      } catch (err) {
+        console.error(`Failed to load teachers or subjects ${err}`)
       }
     }
     fetchData()
-  }, [classData])
+  }, [classData, school])
+
+  // Initialize selected teacher values when modals open
+  useEffect(() => {
+    if (editingClassTeacher) {
+      setSelectedClassTeacherId(classData.classTeacher?.id || '')
+    }
+  }, [editingClassTeacher, classData])
+
+  useEffect(() => {
+    if (editingSubject) {
+      setSelectedSubjectTeacherId(editingSubject.teacher?.id || '')
+    }
+  }, [editingSubject])
 
   // Derive computed values from props
   const studentsCount = classData.classStudents?.length || 0;
   const subjectsCount = classData.classSubjects?.length || 0;
-  const assessmentsCount = classData.classSubjects?.reduce(
-    (total, subject) => total + (subject.assessments?.length || 0), 
-    0
-  ) || 0;
-
-  // Get all assessments from all subjects
-  const allAssessments = classData.classSubjects?.flatMap(subject => 
-    subject.assessments?.map(assessment => ({
-      ...assessment,
-      subject: subject.subject?.name,
-      subjectCode: subject.subject?.code,
-    })) || []
-  ) || [];
 
   // Admin: Add subject to class
   const handleAddSubject = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      const tenant = (classData as any).tenant || ''
       const subjectObj = subjects.find(s => s.code === newSubject.subject)
       const teacherObj = teachers.find(t => t.id === newSubject.teacher)
       if (!subjectObj || !teacherObj) return
-      const res = await fetch(`/api/${tenant}/class-subjects/`, {
+      const res = await fetch(`/api/${school}/class-subjects/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -205,85 +195,74 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
       setClassData(updatedClassData)
       setAddingSubject(false)
       setNewSubject({ subject: '', teacher: '' })
-    } catch (err: any) {
-      setError('Failed to add subject')
-    } finally {
-      setLoading(false)
+    } catch (err) {
+      console.error(`Failed to add subject ${err}`)
     }
   }
 
   // Admin: Change class teacher
   const handleUpdateClassTeacher = async (newTeacherId: string) => {
     try {
-      setLoading(true)
-      setError(null)
-      const tenant = (classData as any).tenant || ''
-      const res = await fetch(`/api/${tenant}/classes/${classData.id}`, {
+      const res = await fetch(`/api/${school}/classes/${classData.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...classData, classTeacher: { id: newTeacherId } })
       })
       if (!res.ok) throw new Error('Failed to update class teacher')
-      // Refetch or update classData
-      const updatedClassData = await res.json()
-      setClassData(updatedClassData)
+      // Refetch class data since backend returns no body
+      const refreshed = await fetch(`/api/${school}/classes/${classData.id}`)
+      if (refreshed.ok) {
+        const updatedClassData = await refreshed.json()
+        setClassData(updatedClassData)
+      }
       setEditingClassTeacher(false)
-    } catch (err: any) {
-      setError('Failed to update class teacher')
-    } finally {
-      setLoading(false)
+    } catch (err) {
+      console.error(`Failed to update class teacher ${err}`)
     }
   }
 
   // Admin: Reassign subject teacher
   const handleUpdateSubjectTeacher = async (subjectCode: string, newTeacherId: string) => {
     try {
-      setLoading(true)
-      setError(null)
-      const tenant = (classData as any).tenant || ''
       const classSubject = classData.classSubjects.find(cs => cs.subject.code === subjectCode)
       if (!classSubject) return
-      const res = await fetch(`/api/${tenant}/class-subjects/${classSubject.id}`, {
+      console.log('classSubject', classSubject);
+      const res = await fetch(`/api/${school}/class-subjects/${classSubject.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...classSubject, teacher: { id: newTeacherId } })
       })
       if (!res.ok) throw new Error('Failed to update subject teacher')
-      // Refetch or update classData
-      const updatedClassData = await res.json()
-      setClassData(updatedClassData)
+      // Refetch class data since backend returns no body
+      const refreshed = await fetch(`/api/${school}/classes/${classData.id}`)
+      if (refreshed.ok) {
+        const updatedClassData = await refreshed.json()
+        setClassData(updatedClassData)
+      }
       setEditingSubject(null)
-    } catch (err: any) {
-      setError('Failed to update subject teacher')
-    } finally {
-      setLoading(false)
+    } catch (err) {
+      console.error(`Failed to update subject teacher ${err}`)
     }
   }
 
   // Admin: Remove subject from class
   const handleRemoveSubject = async (subjectCode: string) => {
     try {
-      setLoading(true)
-      setError(null)
-      const tenant = (classData as any).tenant || ''
       const classSubject = classData.classSubjects.find(cs => cs.subject.code === subjectCode)
       if (!classSubject) return
-      const res = await fetch(`/api/${tenant}/class-subjects/${classSubject.id}`, {
+      const res = await fetch(`/api/${school}/class-subjects/${classSubject.id}`, {
         method: 'DELETE' })
       if (!res.ok) throw new Error('Failed to remove subject')
-      // Refetch or update classData
-      const updatedClassData = await res.json()
-      setClassData(updatedClassData)
-    } catch (err: any) {
-      setError('Failed to remove subject')
-    } finally {
-      setLoading(false)
+      // Refetch class data since backend returns no body
+      const refreshed = await fetch(`/api/${school}/classes/${classData.id}`)
+      if (refreshed.ok) {
+        const updatedClassData = await refreshed.json()
+        setClassData(updatedClassData)
+      }
+    } catch (err) {
+      console.error(`Failed to remove subject ${err}`)
     }
   }
-
-  // Only show assessment management for admin and class teacher
-  const canManageAssessments = isAdmin || isClassTeacher
-
   // Only show subject row if admin, class teacher, or subject teacher for that subject
   const visibleSubjects = isAdmin || isClassTeacher
     ? classData.classSubjects
@@ -293,10 +272,7 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
   const handleCreateAssessment = async () => {
     if (!showAssessmentModal.subject) return
     try {
-      setLoading(true)
-      setError(null)
-      const tenant = (classData as any).tenant || ''
-      const res = await fetch(`/api/${tenant}/assessments`, {
+      const res = await fetch(`/api/${school}/assessments/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -313,10 +289,8 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
       setClassData(updatedClassData)
       setShowAssessmentModal({ open: false, subject: null })
       setAssessmentForm({ name: '', totalMarks: '', termId: '', dateOfAssessment: '' })
-    } catch (err: any) {
-      setError('Failed to create assessment')
-    } finally {
-      setLoading(false)
+    } catch (err) {
+      console.error(`Failed to create assessment ${err}`);
     }
   }
 
@@ -333,16 +307,16 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
           <span className="text-sm sm:text-base">
             Class teacher: {classData?.classTeacher?.firstName || "N/A"} {classData?.classTeacher?.lastName || ""}
           </span>
-          <button
+          {isAdmin && <button
             onClick={() => setEditingClassTeacher(true)}
             className="bg-gray-100 hover:bg-gray-200 p-2 rounded"
           >
             <Edit className="h-4 w-4" />
-          </button>
+          </button>}
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 sm:gap-6 mb-4 sm:mb-6">
+      <div className="grid grid-cols-2 gap-2 sm:gap-6 mb-4 sm:mb-6">
         <div className={`bg-white rounded-lg shadow flex flex-col sm:flex-row items-start sm:items-center sm:justify-between p-2 sm:p-4 ${
             activeTab === "students" ? `border-b-2 ${themeColors.accentBorder} ${themeColors.accent}` : "text-gray-500"
           }`} onClick={() => setActiveTab("students")}>
@@ -366,18 +340,6 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
             <div className="text-2xl font-bold">{subjectsCount}</div>
           </div>
         </div>
-
-        <div className={`bg-white rounded-lg shadow  flex flex-col sm:flex-row items-start sm:items-center sm:justify-between p-2 sm:p-4 ${
-            activeTab === "assessments" ? `border-b-2 ${themeColors.accentBorder} ${themeColors.accent}` : "text-gray-500"
-          }`} onClick={() => setActiveTab("assessments")}>
-          <div className="text-sm font-medium text-gray-500 mb-2">Assessments</div>
-          <div className="flex flex-col sm:flex-row items-center">
-            <div className={`mr-2 rounded-full p-2 ${themeColors.secondaryBg}`}>
-              <CheckSquare className="h-4 w-4 text-white" />
-            </div>
-            <div className="text-2xl font-bold">{assessmentsCount}</div>
-          </div>
-        </div>
       </div>
 
       {activeTab === "subjects" && (
@@ -387,7 +349,7 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
             {isAdmin && (
               <button
                 onClick={() => setAddingSubject(true)}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
+                className="bg-green-400 text-white px-4 py-2 rounded hover:bg-green-500 flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
               </button>
@@ -399,47 +361,21 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
                 <thead>
                   <tr className="border-b">
                     <th className="text-left py-2">Subject</th>
-                    <th className="text-left py-2">Code</th>
                     <th className="text-left py-2">Teacher</th>
-                    <th className="text-left py-2">Assessments</th>
-                    <th className="text-left py-2">Actions</th>
+                    <th className="text-left py-2">{isAdmin ? 'Actions' : 'Assessments'}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {visibleSubjects.map((subject, index) => (
                     <tr key={`${subject.subject?.code}-${index}`} className="border-b">
                       <td className="py-3 flex items-center gap-2">
-                        <BookOpen className="h-4 w-4 text-gray-500" />
-                        {subject.subject?.name || 'N/A'}
+                        <p>{subject.subject?.name || 'N/A'}</p>
+                        <p>({subject.subject?.code || 'N/A'})</p>
                       </td>
-                      <td className="py-3">{subject.subject?.code || 'N/A'}</td>
-                      <td className="py-3">{subject.teacher?.firstName || 'N/A'} {subject.teacher?.lastName || ''}</td>
-                      <td className="py-3">
-                        <div className="flex items-center gap-2">
-                          <span>{subject.assessments?.length || 0}</span>
-                          {canManageAssessments && (
-                            <button
-                              onClick={() => setAddingAssessment(subject.subject.code)}
-                              className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs hover:bg-green-200"
-                            >
-                              Add
-                            </button>
-                          )}
-                          {/* Subject teacher can add assessment for their subject */}
-                          {isSubjectTeacher && subject.teacher?.id === user?.id && (
-                            <button
-                              onClick={() => setShowAssessmentModal({ open: true, subject })}
-                              className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs hover:bg-blue-200"
-                            >
-                              Add Assessment
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-3">
+                      <td className="py-3">{subject.teacher?.firstName || 'N/A'} {subject.teacher?.lastName || ''}</td>                      
+                          {isAdmin ? 
+                            <td className="py-3">
                         <div className="flex gap-2">
-                          {isAdmin && (
-                            <>
                               <button
                                 onClick={() => setEditingSubject(subject)}
                                 className="bg-gray-100 hover:bg-gray-200 p-2 rounded"
@@ -452,18 +388,21 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
-                            </>
-                          )}
-                          {isSubjectTeacher && subject.teacher?.id === user?.id && (
-                            <button
-                              onClick={() => setEditingSubject(subject)}
-                              className="bg-gray-100 hover:bg-gray-200 p-2 rounded"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </button>
-                          )}
                         </div>
                       </td>
+                      : <td className="py-3">
+                      <div className="flex items-center gap-2">
+                        <span>{subject.assessments?.length || 0}</span>
+                        {isSubjectTeacher && subject.teacher?.id === user?.id && (
+                          <button
+                            onClick={() => setShowAssessmentModal({ open: true, subject })}
+                            className="bg-green-400 text-white px-2 py-1 rounded text-xs hover:bg-green-500"
+                          >
+                            <PlusSquare />
+                          </button>
+                        )}
+                      </div>
+                    </td>}
                     </tr>
                   )) || []}
                 </tbody>
@@ -516,66 +455,6 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
         </div>
       )}
 
-      {activeTab === "assessments" && (
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b">
-            <h3 className="text-lg font-semibold">Assessments</h3>
-          </div>
-          <div className="p-6">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Assessment Name</th>
-                    <th className="text-left py-2">Subject</th>
-                    <th className="text-left py-2">Subject Code</th>
-                    <th className="text-left py-2">Total Marks</th>
-                    <th className="text-left py-2">Term</th>
-                    <th className="text-left py-2">Created</th>
-                    <th className="text-left py-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {allAssessments.map((assessment, index) => (
-                    <tr key={`${assessment.id}-${index}`} className="border-b">
-                      <td className="py-3 font-medium">{assessment.name || 'N/A'}</td>
-                      <td className="py-3">{assessment.subject || 'N/A'}</td>
-                      <td className="py-3">
-                        <span className="bg-gray-100 px-2 py-1 rounded text-sm">
-                          {assessment.subjectCode || 'N/A'}
-                        </span>
-                      </td>
-                      <td className="py-3">{assessment.totalMarks || 'N/A'}</td>
-                      <td className="py-3">
-                        <span className={`${themeColors.accentBg} text-white px-2 py-1 rounded text-sm`}>
-                          {assessment.term.name || 'N/A'}
-                        </span>
-                      </td>
-                      <td className="py-3">
-                        {assessment.createdAt ? new Date(assessment.createdAt).toLocaleDateString() : 'N/A'}
-                      </td>
-                      <td className="py-3">
-                        <div className="flex gap-2">
-                          <button className="bg-gray-100 hover:bg-gray-200 p-2 rounded">
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => handleRemoveAssessment(assessment.id)}
-                            className="bg-red-100 hover:bg-red-200 p-2 rounded text-red-600"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Edit Class Teacher Modal */}
       <Modal
         isOpen={editingClassTeacher}
@@ -587,7 +466,8 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
             <label className="block text-sm font-medium mb-2">Select New Class Teacher</label>
             <select
               className="w-full p-2 border rounded"
-              onChange={(e) => handleUpdateClassTeacher(e.target.value)}
+              value={selectedClassTeacherId}
+              onChange={(e) => setSelectedClassTeacherId(e.target.value)}
             >
               <option value="">Choose a teacher</option>
               {teachers.map(teacher => (
@@ -596,6 +476,21 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
                 </option>
               ))}
             </select>
+          </div>
+          <div className="flex gap-2 pt-2">
+            <button
+              onClick={() => setEditingClassTeacher(false)}
+              className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => selectedClassTeacherId && handleUpdateClassTeacher(selectedClassTeacherId)}
+              disabled={!selectedClassTeacherId}
+              className="flex-1 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 disabled:opacity-50"
+            >
+              Save
+            </button>
           </div>
         </div>
       </Modal>
@@ -649,7 +544,7 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
             <button
               onClick={handleAddSubject}
               disabled={!newSubject.subject || !newSubject.teacher}
-              className="flex-1 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:opacity-50"
+              className="flex-1 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 disabled:opacity-50"
             >
               Add Subject
             </button>
@@ -672,7 +567,8 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
               <label className="block text-sm font-medium mb-2">Select New Teacher</label>
               <select
                 className="w-full p-2 border rounded"
-                onChange={(e) => handleUpdateSubjectTeacher(editingSubject.subject.code, e.target.value)}
+                value={selectedSubjectTeacherId}
+                onChange={(e) => setSelectedSubjectTeacherId(e.target.value)}
               >
                 <option value="">Choose a teacher</option>
                 {teachers.map(teacher => (
@@ -681,6 +577,21 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
                   </option>
                 ))}
               </select>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => setEditingSubject(null)}
+                className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => selectedSubjectTeacherId && handleUpdateSubjectTeacher(editingSubject.subject.code, selectedSubjectTeacherId)}
+                disabled={!selectedSubjectTeacherId}
+                className="flex-1 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 disabled:opacity-50"
+              >
+                Save
+              </button>
             </div>
           </div>
         )}
@@ -733,9 +644,9 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
               Cancel
             </button>
             <button
-              onClick={() => addingAssessment ? handleAddAssessment(addingAssessment) : null}
+              onClick={() => addingAssessment ? handleCreateAssessment() : null}
               disabled={!newAssessment.name || !newAssessment.totalMarks}
-              className="flex-1 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:opacity-50"
+              className="flex-1 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 disabled:opacity-50"
             >
               Add Assessment
             </button>
@@ -800,7 +711,7 @@ export default function ClassComponent({ classData: initialClassData }: ClassCom
               <button
                 onClick={handleCreateAssessment}
                 disabled={!assessmentForm.name || !assessmentForm.totalMarks || !assessmentForm.termId || !assessmentForm.dateOfAssessment}
-                className="flex-1 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:opacity-50"
+                className="flex-1 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 disabled:opacity-50"
               >
                 Create Assessment
               </button>

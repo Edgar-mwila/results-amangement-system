@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Search } from "lucide-react"
+import { BarChart, Plus, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import {
   Dialog,
@@ -119,8 +119,8 @@ interface StudentPageProps {
 }
 
 const themeColors = {
-  accentBg: "bg-blue-600",
-  accentHover: "hover:bg-blue-700"
+  accentBg: "bg-green-400",
+  accentHover: "hover:bg-green-500"
 };
 
 function CreateStudentDialog() {
@@ -301,8 +301,6 @@ export default function StudentPage({ students }: StudentPageProps) {
   const { school } = useParams({ strict: false });
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("")
-  const [gradeFilter, setGradeFilter] = useState<string>("")
-  const [statusFilter, setStatusFilter] = useState<string>("")
 
   // Helper function to get full name
   const getFullName = (student: StudentData): string => {
@@ -325,327 +323,181 @@ export default function StudentPage({ students }: StudentPageProps) {
     return `ST${student.id.toString().padStart(5, '0')}`
   }
 
-  // Get unique grades and statuses for filter dropdowns
-  const gradeOptions = Array.from(new Set(
-    students
-      .map(student => getCurrentGrade(student))
-      .filter(grade => grade !== 'N/A')
-  )).sort()
-  
-  const statusOptions = Array.from(new Set(
-    students.map(student => student.status || "Active")
-  ))
 
   // Filter students based on search query, grade, and status
   const filteredStudents = students.filter((student) => {
     const fullName = getFullName(student)
     const studentId = getStudentIdDisplay(student)
-    const currentGrade = getCurrentGrade(student)
     
     const matchesQuery =
       fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       studentId.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    const matchesGrade = gradeFilter ? currentGrade === gradeFilter : true
-    const matchesStatus = statusFilter ? (student.status || "Active") === statusFilter : true
-    
-    return matchesQuery && matchesGrade && matchesStatus
+
+    return matchesQuery
   })
+
+  const StudentStatisticsDialog = () => {
+    // Precompute simple counts to keep JSX clean
+    const gradeMap = students.reduce((acc, s) => {
+      const g = getCurrentGrade(s)
+      if (g !== 'N/A') acc.set(g, (acc.get(g) || 0) + 1)
+      return acc
+    }, new Map<string, number>())
+
+    const genderMap = students.reduce((acc, s) => {
+      const g = s.gender === 'Male' ? 'Male' : 'Female'
+      acc.set(g, (acc.get(g) || 0) + 1)
+      return acc
+    }, new Map<string, number>())
+
+    const total = students.length
+
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className={`flex items-center gap-2 ${themeColors.accentBg} ${themeColors.accentHover} text-white`}>
+            <BarChart size={16} />
+            Statistics
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Student Statistics</DialogTitle>
+            <CardDescription>Overview at a glance</CardDescription>
+          </DialogHeader>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: 'Total', value: total },
+            ].map(({ label, value }) => (
+              <div key={label} className="bg-white rounded-lg border p-3 flex flex-col items-center text-center">
+                <div className="text-xs text-gray-500">{label}</div>
+                <div className="text-xl font-semibold text-green-600">{value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Breakdowns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+            {/* By Grade */}
+            <Card className="bg-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">By Grade</CardTitle>
+                <CardDescription>Students per grade</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {Array.from(gradeMap.entries())
+                    .sort(([a],[b]) => parseInt(a) - parseInt(b))
+                    .map(([g, c]) => (
+                      <div key={g} className="flex items-center justify-between">
+                        <span className="text-sm">Grade {g}</span>
+                        <Badge className="bg-green-500 text-white">{c}</Badge>
+                      </div>
+                    ))}
+                  {students.filter(s => getCurrentGrade(s) === 'N/A').length > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Not Enrolled</span>
+                      <Badge variant="outline">{students.filter(s => getCurrentGrade(s) === 'N/A').length}</Badge>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* By Gender */}
+            <Card className="bg-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">By Gender</CardTitle>
+                <CardDescription>Gender distribution</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {Array.from(genderMap.entries()).map(([g, c]) => (
+                    <div key={g} className="flex items-center justify-between">
+                      <span className="text-sm">{g}</span>
+                      <Badge variant="outline">{c}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
 
   return (
     <div className="container mx-auto p-2 sm:p-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Student Management</h1>
+          <div className="text-sm text-gray-500">Total Students: {filteredStudents.length}</div>
         </div>
         <div className="flex gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
           <CreateStudentDialog />
+          <StudentStatisticsDialog />
         </div>
       </div>
 
-      <Card className="mb-4 sm:mb-6">
-        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
-          <CardTitle className="text-base sm:text-lg">Student Directory</CardTitle>
-          <div className="text-sm text-gray-500">Total Students: {filteredStudents.length}</div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-2 sm:gap-4 mb-4 sm:mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-              <Input
-                placeholder="Search by name or ID..."
-                className="pl-8 h-12 rounded-xl"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-2 w-full sm:w-auto">
-              <select
-                className="border rounded px-2 py-1 h-12 min-w-[120px]"
-                value={gradeFilter}
-                onChange={(e) => setGradeFilter(e.target.value)}
-              >
-                <option value="">All Grades</option>
-                {gradeOptions.map((grade) => (
-                  <option key={grade} value={grade}>
-                    Grade {grade}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="border rounded px-2 py-1 h-12 min-w-[120px]"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <option value="">All Statuses</option>
-                {statusOptions.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-<div className="rounded-md border">
-          <Table>
-            <TableHeader className="bg-gray-50 border-b">
-              <TableRow className="hover:bg-gray-50">
-                <TableHead className="font-medium text-xs sm:text-base p-4">Student</TableHead>
-                <TableHead className="font-medium text-xs sm:text-base p-4">ID</TableHead>
-                <TableHead className="font-medium text-xs sm:text-base p-4">Grade</TableHead>
-                <TableHead className="font-medium text-xs sm:text-base p-4">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="divide-y">
-              {filteredStudents.map((student) => {
-                const fullName = getFullName(student)
-                const studentId = getStudentIdDisplay(student)
-                const currentGrade = getCurrentGrade(student)
-                
-                return (
-                  <TableRow
-                    key={student.id}
-                    onClick={() => navigate({ to: '/$school/dashboard/student-management/student/$id', params: { school: school, id: student.id } })}
-                    className="cursor-pointer hover:bg-gray-50"
-                  >
-                    <TableCell className="p-4">
-                      <div className="font-medium">{fullName}</div>
-                    </TableCell>
-                    <TableCell className="p-4">
-                      <div className="font-mono">{studentId}</div>
-                    </TableCell>
-                    <TableCell className="p-4">
-                      <div>
-                        {currentGrade !== 'N/A' ? `Grade ${currentGrade}` : 'Not Enrolled'}
-                      </div>
-                    </TableCell>
-                    <TableCell className="p-4">
-                      <Badge
-                        className={
-                          student.status === "Active"
-                            ? "bg-green-500 text-white"
-                            : student.status === "Inactive"
-                            ? "bg-red-500 text-white"
-                            : student.status === "Graduated"
-                            ? "bg-blue-500 text-white"
-                            : "bg-yellow-400 text-black"
-                        }
-                      >
-                        {student.status || 'Active'}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-              {filteredStudents.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center py-8 text-gray-500">
-                    No students found matching your criteria
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-          </div>
-        </CardContent>
-      </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
-        {/* Students per Grade */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Students per Grade</CardTitle>
-            <CardDescription>Breakdown of students by grade</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {Array.from(
-                students.reduce((acc, student) => {
-                  const grade = getCurrentGrade(student)
-                  if (grade !== 'N/A') {
-                    acc.set(grade, (acc.get(grade) || 0) + 1)
-                  }
-                  return acc
-                }, new Map<string, number>())
-              )
-              .sort(([a], [b]) => parseInt(a) - parseInt(b))
-              .map(([grade, count]) => (
-                <div key={grade} className="flex justify-between items-center py-1">
-                  <span className="text-sm">Grade {grade}</span>
-                  <Badge variant="secondary">{count}</Badge>
-                </div>
-              ))}
-              {students.filter(s => getCurrentGrade(s) === 'N/A').length > 0 && (
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-sm">Not Enrolled</span>
-                  <Badge variant="outline">
-                    {students.filter(s => getCurrentGrade(s) === 'N/A').length}
-                  </Badge>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Students per Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Students per Status</CardTitle>
-            <CardDescription>Breakdown of students by status</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {Array.from(
-                students.reduce((acc, student) => {
-                  const status = student.status || "Active"
-                  acc.set(status, (acc.get(status) || 0) + 1)
-                  return acc
-                }, new Map<string, number>())
-              ).map(([status, count]) => (
-                <div key={status} className="flex justify-between items-center py-1">
-                  <span className="text-sm">{status}</span>
-                  <Badge
-                    className={
-                      status === "Active"
-                        ? "bg-green-500 text-white"
-                        : status === "Inactive"
-                        ? "bg-red-500 text-white"
-                        : status === "Graduated"
-                        ? "bg-blue-500 text-white"
-                        : "bg-yellow-400 text-black"
-                    }
-                  >
-                    {count}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Students by Gender */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Students by Gender</CardTitle>
-            <CardDescription>Gender distribution</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {Array.from(
-                students.reduce((acc, student) => {
-                  const gender = student.gender === 'Male' ? 'Male' : 'Female'
-                  acc.set(gender, (acc.get(gender) || 0) + 1)
-                  return acc
-                }, new Map<string, number>())
-              ).map(([gender, count]) => (
-                <div key={gender} className="flex justify-between items-center py-1">
-                  <span className="text-sm">{gender}</span>
-                  <Badge variant="outline">{count}</Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Guardian Statistics */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Guardian Statistics</CardTitle>
-            <CardDescription>Student guardian information</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center py-1">
-                <span className="text-sm">Students with Guardians</span>
-                <Badge variant="secondary">
-                  {students.filter(s => s.guardians && s.guardians.length > 0).length}
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center py-1">
-                <span className="text-sm">Without Guardians</span>
-                <Badge variant="outline">
-                  {students.filter(s => !s.guardians || s.guardians.length === 0).length}
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center py-1">
-                <span className="text-sm">Total Guardians</span>
-                <Badge variant="secondary">
-                  {students.reduce((acc, student) => acc + (student.guardians?.length || 0), 0)}
-                </Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Assessment Statistics */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Assessment Statistics</CardTitle>
-            <CardDescription>Student assessment data</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center py-1">
-                <span className="text-sm">Students with Assessments</span>
-                <Badge variant="secondary">
-                  {students.filter(s => s.assessments && s.assessments.length > 0).length}
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center py-1">
-                <span className="text-sm">Total Assessments</span>
-                <Badge variant="outline">
-                  {students.reduce((acc, student) => acc + (student.assessments?.length || 0), 0)}
-                </Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Enrollments */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Enrollments</CardTitle>
-            <CardDescription>Students enrolled in the last 30 days</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {(() => {
-              const thirtyDaysAgo = new Date()
-              thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-              
-              const recentStudents = students.filter(student => {
-                if (!student.createdAt) return false
-                return new Date(student.createdAt) >= thirtyDaysAgo
-              }).length
+      <div className="flex flex-col md:flex-row gap-2 sm:gap-4 mb-4 sm:mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+          <Input
+            placeholder="Search by name or ID..."
+            className="pl-8 h-12 rounded-xl"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader className="bg-gray-50 border-b">
+            <TableRow className="hover:bg-gray-50">
+              <TableHead className="font-medium text-xs sm:text-base p-4">Student</TableHead>
+              <TableHead className="font-medium text-xs sm:text-base p-4">ID</TableHead>
+              <TableHead className="font-medium text-xs sm:text-base p-4">Grade</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="divide-y">
+            {filteredStudents.map((student) => {
+              const fullName = getFullName(student)
+              const studentId = getStudentIdDisplay(student)
+              const currentGrade = getCurrentGrade(student)
               
               return (
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{recentStudents}</div>
-                  <div className="text-sm text-gray-500">New students</div>
-                </div>
+                <TableRow
+                  key={student.id}
+                  onClick={() => navigate({ to: '/$school/dashboard/student-management/student/$id', params: { school: school, id: student.id } })}
+                  className="cursor-pointer hover:bg-gray-50"
+                >
+                  <TableCell className="p-4">
+                    <div className="font-medium">{fullName}</div>
+                  </TableCell>
+                  <TableCell className="p-4">
+                    <div className="font-mono">{studentId}</div>
+                  </TableCell>
+                  <TableCell className="p-4">
+                    <div>
+                      {currentGrade !== 'N/A' ? `Grade ${currentGrade}` : 'Not Enrolled'}
+                    </div>
+                  </TableCell>
+                </TableRow>
               )
-            })()}
-          </CardContent>
-        </Card>
+            })}
+            {filteredStudents.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                  No students found matching your criteria
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   )

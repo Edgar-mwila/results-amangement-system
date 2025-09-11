@@ -215,8 +215,8 @@ const RegisterSchoolPage = () => {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Card className="border-0 shadow-lg">
-        <CardHeader className="bg-blue-50 rounded-t-lg">
-          <CardTitle className="text-2xl font-bold text-blue-800">Register New School</CardTitle>
+        <CardHeader className="bg-green-50 rounded-t-lg">
+          <CardTitle className="text-2xl font-bold text-green-800">Register New School</CardTitle>
           <CardDescription>
             Please complete all required fields to register your school in our system.
           </CardDescription>
@@ -240,7 +240,7 @@ const RegisterSchoolPage = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
-                            <School className="h-4 w-4 text-blue-600" />
+                            <School className="h-4 w-4 text-green-600" />
                             School Name
                           </FormLabel>
                           <FormControl>
@@ -257,7 +257,7 @@ const RegisterSchoolPage = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-blue-600" />
+                            <FileText className="h-4 w-4 text-green-600" />
                             Registration Number
                           </FormLabel>
                           <FormControl>
@@ -275,7 +275,7 @@ const RegisterSchoolPage = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
-                          <FileText className="h-4 w-4 text-blue-600" />
+                          <FileText className="h-4 w-4 text-green-600" />
                           School Motto
                         </FormLabel>
                         <FormControl>
@@ -292,7 +292,7 @@ const RegisterSchoolPage = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
-                          <FileText className="h-4 w-4 text-blue-600" />
+                          <FileText className="h-4 w-4 text-green-600" />
                           About the School
                         </FormLabel>
                         <FormControl>
@@ -314,7 +314,7 @@ const RegisterSchoolPage = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
-                          <School className="h-4 w-4 text-blue-600" />
+                          <School className="h-4 w-4 text-green-600" />
                           Logo URL
                         </FormLabel>
                         <FormControl>
@@ -335,7 +335,7 @@ const RegisterSchoolPage = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
-                            <Mail className="h-4 w-4 text-blue-600" />
+                            <Mail className="h-4 w-4 text-green-600" />
                             Email Address
                           </FormLabel>
                           <FormControl>
@@ -352,7 +352,7 @@ const RegisterSchoolPage = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
-                            <Phone className="h-4 w-4 text-blue-600" />
+                            <Phone className="h-4 w-4 text-green-600" />
                             Phone Number
                           </FormLabel>
                           <FormControl>
@@ -370,7 +370,7 @@ const RegisterSchoolPage = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
-                          <Globe className="h-4 w-4 text-blue-600" />
+                          <Globe className="h-4 w-4 text-green-600" />
                           Subdomain
                         </FormLabel>
                         <FormControl>
@@ -383,7 +383,7 @@ const RegisterSchoolPage = () => {
                   
                   <div className="space-y-4 border p-4 rounded-md bg-slate-50">
                     <h3 className="text-md font-medium flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-blue-600" />
+                      <MapPin className="h-4 w-4 text-green-600" />
                       Physical Address
                     </h3>
                     
@@ -393,7 +393,7 @@ const RegisterSchoolPage = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
-                            <MapPinned className="h-4 w-4 text-blue-600" />
+                            <MapPinned className="h-4 w-4 text-green-600" />
                             Street Address
                           </FormLabel>
                           <FormControl>
@@ -416,7 +416,7 @@ const RegisterSchoolPage = () => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="flex items-center gap-2">
-                              <Building2 className="h-4 w-4 text-blue-600" />
+                              <Building2 className="h-4 w-4 text-green-600" />
                               City/Town
                             </FormLabel>
                             <FormControl>
@@ -479,7 +479,7 @@ const RegisterSchoolPage = () => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="flex items-center gap-2">
-                              <Flag className="h-4 w-4 text-blue-600" />
+                              <Flag className="h-4 w-4 text-green-600" />
                               Country
                             </FormLabel>
                             <FormControl>
@@ -497,7 +497,7 @@ const RegisterSchoolPage = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-blue-600" />
+                          <MapPin className="h-4 w-4 text-green-600" />
                           Township
                         </FormLabel>
                         <FormControl>
@@ -514,7 +514,7 @@ const RegisterSchoolPage = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
-                          <MapPinned className="h-4 w-4 text-blue-600" />
+                          <MapPinned className="h-4 w-4 text-green-600" />
                           Address
                         </FormLabel>
                         <FormControl>
@@ -536,7 +536,7 @@ const RegisterSchoolPage = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
-                          <MapPinned className="h-4 w-4 text-blue-600" />
+                          <MapPinned className="h-4 w-4 text-green-600" />
                           Postal Address
                         </FormLabel>
                         <FormControl>
@@ -603,7 +603,7 @@ const RegisterSchoolPage = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
-                            <School className="h-4 w-4 text-blue-600" />
+                            <School className="h-4 w-4 text-green-600" />
                             School Category
                           </FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -629,7 +629,7 @@ const RegisterSchoolPage = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
-                            <Building className="h-4 w-4 text-blue-600" />
+                            <Building className="h-4 w-4 text-green-600" />
                             Ownership
                           </FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -655,7 +655,7 @@ const RegisterSchoolPage = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
-                            <BookOpen className="h-4 w-4 text-blue-600" />
+                            <BookOpen className="h-4 w-4 text-green-600" />
                             Curriculum
                           </FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -677,7 +677,7 @@ const RegisterSchoolPage = () => {
                   </div>
                   
                   <div className="flex justify-between pt-4">
-                    <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
+                    <Button type="submit" disabled={isSubmitting} className="bg-green-600 hover:bg-green-700 flex items-center gap-2">
                       <Save className="h-4 w-4" />
                       {isSubmitting ? "Registering..." : "Register School"}
                     </Button>

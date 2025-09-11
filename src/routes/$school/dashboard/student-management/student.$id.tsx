@@ -118,7 +118,7 @@ const TeacherStudentPage = () => {
   if (!student) return <StudentDetailsError message="No student data found." />
   if (error) return <StudentDetailsError message={error.message} />
 
-  return <StudentDetails student={student} classSubjects={student.classStudents[0].classModel.classSubjects} />
+  return <StudentDetails student={student} classSubjects={student.classStudents[0].classModel.classSubjects} isAdmin />
 }
 
 export const Route = createFileRoute(

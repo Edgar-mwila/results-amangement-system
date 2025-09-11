@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Edit,
   GraduationCap,
+  ListCheck,
   Mail,
   MapPin,
   Phone,
@@ -113,6 +114,7 @@ interface StudentData {
 interface StudentDetailsProps {
   student: StudentData;
   classSubjects?: ClassSubjectData[];
+  isAdmin?: boolean;
 }
 
 interface SubjectRowProps {
@@ -122,8 +124,8 @@ interface SubjectRowProps {
 
 // Theme colors fallback
 const themeColors = {
-  accentBg: "bg-blue-600",
-  accentHover: "hover:bg-blue-700"
+  accentBg: "bg-green-400",
+  accentHover: "hover:bg-green-500"
 };
 
 function EditStudentDialog({ student }: { student: Student }) {
@@ -197,7 +199,7 @@ function EditStudentDialog({ student }: { student: Student }) {
           className={`flex items-center gap-2 ${themeColors.accentBg} ${themeColors.accentHover} text-white`}
         >
           <Edit size={16} />
-          Edit Profile
+          Edit
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -360,7 +362,7 @@ const SubjectRow = ({ classSubject, studentAssessments }: SubjectRowProps) => {
         <TableCell className="font-medium">
           <div className="flex items-center">
             {isOpen ? <ChevronDown className="h-4 w-4 mr-2" /> : <ChevronRight className="h-4 w-4 mr-2" />}
-            <BookOpen className="h-4 w-4 mr-2 text-blue-600" />
+            <BookOpen className="h-4 w-4 mr-2 text-green-600" />
             {classSubject.subject.name}
           </div>
         </TableCell>
@@ -371,17 +373,12 @@ const SubjectRow = ({ classSubject, studentAssessments }: SubjectRowProps) => {
           <span
             className={
               average.letter.startsWith('A') ? 'text-green-500' :
-              average.letter.startsWith('B') ? 'text-blue-500' :
+              average.letter.startsWith('B') ? 'text-green-500' :
               average.letter.startsWith('C') ? 'text-yellow-500' :
               'text-red-500'
             }
           >
             {average.letter} ({average.percentage}%)
-          </span>
-        </TableCell>
-        <TableCell className="text-right">
-          <span>
-            {subjectAssessments.length} assessment{subjectAssessments.length !== 1 ? 's' : ''}
           </span>
         </TableCell>
       </TableRow>
@@ -433,7 +430,7 @@ const SubjectRow = ({ classSubject, studentAssessments }: SubjectRowProps) => {
   )
 }
 
-export default function StudentDetails({ student, classSubjects = [] }: StudentDetailsProps) {
+export default function StudentDetails({ student, classSubjects = [], isAdmin }: StudentDetailsProps) {
   // Helper functions
   const getFullName = () => {
     const parts = [student.firstName, student.otherName, student.lastName].filter(Boolean)
@@ -479,86 +476,20 @@ export default function StudentDetails({ student, classSubjects = [] }: StudentD
     // fallback: return first value if exists
     return contacts[0]?.value || null
   }
-  
-  const currentClass = getCurrentClass()
-  const fullName = getFullName()
-  
-  return (
-    <div className="container mx-auto p-2 sm:p-4">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
-        <div className="flex items-center">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">{fullName}</h1>
-            <p className="text-gray-500 text-sm">
-              {currentClass ? `${currentClass.name}` : 'No Class Assigned'}
-            </p>
-            <div className="flex items-center gap-2 mt-1 flex-wrap">
-              <span
-                className={
-                  student.status === "Active" ? "text-green-500" :
-                  student.status === "Inactive" ? "text-red-500" :
-                  student.status === "Graduated" ? "text-blue-500" :
-                  "text-black"
-                }
-              >
-                {student.status}
-              </span>
-              <span className="text-gray-500 text-xs sm:text-sm">
-                {student.gender}
-              </span>
-              <span className="text-gray-500 text-xs sm:text-sm">
-                Age {calculateAge()}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="flex gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
-          <EditStudentDialog student={student} />
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
-        {/* Grades Section */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <GraduationCap className="h-5 w-5 mr-2" />
-              Academic Performance
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {classSubjects.length === 0 ? (
-              <div className="text-center py-8">
-                <BookOpen className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-500">No subjects or assessments found</p>
-                <p className="text-sm text-gray-400">Student may not be enrolled in any classes yet</p>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Subject</TableHead>
-                    <TableHead>Teacher</TableHead>
-                    <TableHead>Average Grade</TableHead>
-                    <TableHead className="text-right">Assessments</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {classSubjects.map((classSubject, index) => (
-                    <SubjectRow
-                      key={index}
-                      classSubject={classSubject}
-                      studentAssessments={student.assessments}
-                    />
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Personal Details */}
+  const StudentDetailsDialog = () => {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            className={`flex items-center gap-2 ${themeColors.accentBg} ${themeColors.accentHover} text-white`}
+          >
+            <ListCheck size={16} />
+            Details
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          {/* Personal Details */}
         <Card>
           <CardHeader>
             <CardTitle>Personal Details</CardTitle>
@@ -589,12 +520,12 @@ export default function StudentDetails({ student, classSubjects = [] }: StudentD
 
               {/* Class Information */}
               {currentClass && (
-                <div className="flex items-start p-3 bg-blue-50 rounded-lg">
-                  <GraduationCap className="mr-3 h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                <div className="flex items-start p-3 bg-green-50 rounded-lg">
+                  <GraduationCap className="mr-3 h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h3 className="font-medium text-blue-900">Current Class</h3>
-                    <p className="text-sm text-blue-700">{currentClass.grade.level} {currentClass.name}</p>
-                    <p className="text-sm text-blue-500">
+                    <h3 className="font-medium text-green-900">Current Class</h3>
+                    <p className="text-sm text-green-700">{currentClass.grade.level} {currentClass.name}</p>
+                    <p className="text-sm text-green-500">
                       Academic Year: {currentClass.academicYear.year}
                     </p>
                   </div>
@@ -667,14 +598,12 @@ export default function StudentDetails({ student, classSubjects = [] }: StudentD
             </div>
           </CardContent>
         </Card>
-      </div>
-
-      {/* Summary Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+        {/* Summary Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-green-600">
                 {classSubjects.length}
               </div>
               <div className="text-sm text-gray-500">Subjects</div>
@@ -715,6 +644,78 @@ export default function StudentDetails({ student, classSubjects = [] }: StudentD
           </CardContent>
         </Card>
       </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+  
+  const currentClass = getCurrentClass()
+  const fullName = getFullName()
+  
+  return (
+    <div className="container mx-auto p-2 sm:p-4">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
+        <div className="flex items-center">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold">{fullName}</h1>
+            <p className="text-gray-500 text-sm">
+              {currentClass ? `${currentClass.name}` : 'No Class Assigned'}
+            </p>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <span
+                className={
+                  student.status === "Active" ? "text-green-500" :
+                  student.status === "Inactive" ? "text-red-500" :
+                  student.status === "Graduated" ? "text-green-500" :
+                  "text-black"
+                }
+              >
+                {student.status}
+              </span>
+              <span className="text-gray-500 text-xs sm:text-sm">
+                {student.gender}
+              </span>
+              <span className="text-gray-500 text-xs sm:text-sm">
+                Age {calculateAge()}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
+          {isAdmin && <EditStudentDialog student={student} />}
+          <StudentDetailsDialog />
+        </div>
+      </div>
+        {/* Grades Section */}
+        <Card>
+            {classSubjects.length === 0 ? (
+              <div className="text-center py-8">
+                <BookOpen className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                <p className="text-gray-500">No subjects or assessments found</p>
+                <p className="text-sm text-gray-400">Student may not be enrolled in any classes yet</p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Subject</TableHead>
+                    <TableHead>Teacher</TableHead>
+                    <TableHead>Average Grade</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {classSubjects.map((classSubject, index) => (
+                    <SubjectRow
+                      key={index}
+                      classSubject={classSubject}
+                      studentAssessments={student.assessments}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+        </Card>
     </div>
   )
 }

@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { themeColors } from "@/components/ui/theme-config"
 import { useQuery } from "@tanstack/react-query"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -16,7 +15,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 const StaffManagement = () => {
   const { school } = useParams({ strict: false })
   const [search, setSearch] = useState("")
-  const [statusFilter, setStatusFilter] = useState<string>("all")
   const router = useRouter()
   const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -241,24 +239,14 @@ const StaffManagement = () => {
     const firstName = staff.firstName ?? ""
     const lastName = staff.lastName ?? ""
     const email = staff.email ?? ""
-    const status = staff.status ?? ""
 
     const nameMatch =
       firstName.toLowerCase().includes(search.toLowerCase()) ||
       lastName.toLowerCase().includes(search.toLowerCase()) ||
       email.toLowerCase().includes(search.toLowerCase())
 
-    const statusMatch = statusFilter === "all" || status === statusFilter
-
-    return nameMatch && statusMatch
+    return nameMatch
   })
-
-  const staffCounts = {
-    total: staff.length,
-    active: staff.filter((staff) => staff.status === "Active").length,
-    teachers: staff.filter((staff) => staff.role.name === "Teacher").length,
-    admins: staff.filter((staff) => staff.role.name === "Admin").length,
-  }
 
   return (
     <div className="container mx-auto p-4 bg-white">
@@ -274,48 +262,6 @@ const StaffManagement = () => {
           Add New Staff
         </Button>
       </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2 md:gap-6 md:mb-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Total Staff</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{staffCounts.total}</div>
-            <p className="text-xs text-gray-500">Staff members</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Active Staff</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{staffCounts.active}</div>
-            <p className="text-xs text-gray-500">Currently active</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Teachers</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{staffCounts.teachers}</div>
-            <p className="text-xs text-gray-500">Teaching staff</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Administrators</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{staffCounts.admins}</div>
-            <p className="text-xs text-gray-500">Admin staff</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardContent>
           <div className="flex flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div className="relative w-full md:w-auto">
               <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500" />
@@ -327,19 +273,6 @@ const StaffManagement = () => {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full md:w-40">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Inactive">Inactive</SelectItem>
-                  <SelectItem value="On Leave">On Leave</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           <div className="rounded-md border">
@@ -349,7 +282,6 @@ const StaffManagement = () => {
                   <TableHead className="font-bold">Name</TableHead>
                   <TableHead className="font-bold">Role</TableHead>
                   <TableHead className="font-bold">Email</TableHead>
-                  <TableHead className="font-bold"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -369,21 +301,6 @@ const StaffManagement = () => {
                       </TableCell>
                       <TableCell>{staff.role.name}</TableCell>
                       <TableCell>{staff.email}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={
-                              "inline-block w-2 h-2 rounded-full " +
-                              (staff.status === "Active"
-                                ? "bg-green-500"
-                                : staff.status === "Inactive"
-                                ? "bg-red-500"
-                                : "bg-yellow-400")
-                            }
-                            title={staff.status}
-                          />
-                        </div>
-                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
@@ -396,8 +313,6 @@ const StaffManagement = () => {
               </TableBody>
             </Table>
           </div>
-        </CardContent>
-      </Card>
 
       <AddStaffDialog open={dialogOpen} onOpenChange={setDialogOpen} />
     </div>

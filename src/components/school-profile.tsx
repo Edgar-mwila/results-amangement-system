@@ -6,8 +6,8 @@ import {
   Building,
   Calendar,
   CheckCircle,
-  Clock,
   CreditCard,
+  DollarSign,
   Download,
   Edit,
   Globe,
@@ -24,6 +24,8 @@ import { useState } from "react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
+import { Dialog } from "@radix-ui/react-dialog";
+import { DialogContent, DialogTrigger } from "./ui/dialog";
 
 // School categories, ownership, curriculum options
 const SCHOOL_CATEGORIES = [
@@ -383,37 +385,103 @@ export default function SchoolProfile({ school, onUpdateSchool }: { school: Scho
     }
   };
 
-  // Helper function to get school status info
-  const getSchoolStatusInfo = (status: string | undefined) => {
-    switch (status?.toLowerCase()) {
-      case 'approved':
-        return { color: 'text-green-600', bgColor: 'bg-green-50' };
-      case 'pending':
-        return { color: 'text-yellow-600', bgColor: 'bg-yellow-50' };
-      case 'rejected':
-        return { color: 'text-red-600', bgColor: 'bg-red-50' };
-      case 'suspended':
-        return { color: 'text-orange-600', bgColor: 'bg-orange-50' };
-      default:
-        return { color: 'text-gray-600', bgColor: 'bg-gray-50' };
-    }
-  };
-
   const subscriptionStatusInfo = getSubscriptionStatusInfo(school?.subscriptionStatus);
-  const schoolStatusInfo = getSchoolStatusInfo(school?.status);
   const StatusIcon = subscriptionStatusInfo.icon;
+
+  const SubscriptionDialog = () => {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className={`flex-1 sm:flex-none items-center gap-2 min-h-[44px] ${themeColors.accentBg} ${themeColors.accentHover} text-white`} onClick={() => setIsEditDialogOpen(true)}>
+            <DollarSign size={16} />
+            Subscription
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          
+        <Card>
+          <CardHeader>
+            <CardTitle>Subscription Information</CardTitle>
+            <CardDescription>Current subscription details</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className={`p-4 rounded-lg ${subscriptionStatusInfo.bgColor}`}>
+                <div className="flex items-center gap-2">
+                  <StatusIcon size={16} className={subscriptionStatusInfo.color} />
+                  <div className="text-sm text-gray-500">Subscription Status</div>
+                </div>
+                <div className={`text-2xl font-bold mt-1 capitalize ${subscriptionStatusInfo.color}`}>
+                  {school?.subscriptionStatus || 'Unknown'}
+                </div>
+              </div>
+
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-2 mb-1">
+                  <Calendar size={16} className="text-gray-500" />
+                  <div className="text-sm text-gray-500">Start Date</div>
+                </div>
+                <div className="text-lg font-semibold">
+                  {formatDate(school?.subscriptionStartDate)}
+                </div>
+              </div>
+
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-2 mb-1">
+                  <Calendar size={16} className="text-gray-500" />
+                  <div className="text-sm text-gray-500">End Date</div>
+                </div>
+                <div className="text-lg font-semibold">
+                  {formatDate(school?.subscriptionEndDate)}
+                </div>
+                {school?.subscriptionEndDate && (
+                  <div className="text-xs text-gray-500 mt-1">
+                    {new Date(school.subscriptionEndDate) > new Date() 
+                      ? `${Math.ceil((new Date(school.subscriptionEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days remaining`
+                      : 'Expired'
+                    }
+                  </div>
+                )}
+              </div>
+
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-2 mb-1">
+                  <CreditCard size={16} className="text-gray-500" />
+                  <div className="text-sm text-gray-500">Subdomain</div>
+                </div>
+                <div className="text-lg font-semibold">
+                  {school?.subdomain || 'Not assigned'}
+                </div>
+                {school?.subdomain && (
+                  <div className="text-xs text-green-600 mt-1">
+                    {school.subdomain}.yourdomain.com
+                  </div>
+                )}
+              </div>
+
+              {school?.contacts && school.contacts.length > 0 && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Users size={16} className="text-gray-500" />
+                    <div className="text-sm text-gray-500">Contacts</div>
+                  </div>
+                  <div className="text-lg font-semibold">
+                    {school.contacts.length} contact{school.contacts.length !== 1 ? 's' : ''}
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        </DialogContent>
+      </Dialog>
+    )
+  }
 
   return (
     <div className="container mx-auto p-2 sm:p-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
         <div className="flex items-center gap-4">
-          {school?.logoUrl && (
-            <img 
-              src={school.logoUrl} 
-              alt={`${school.name} logo`}
-              className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-cover"
-            />
-          )}
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">{school?.name || 'School Name'}</h1>
             {school?.motto && (
@@ -422,10 +490,7 @@ export default function SchoolProfile({ school, onUpdateSchool }: { school: Scho
           </div>
         </div>
         <div className="flex gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
-          <Button variant="outline" className="flex-1 sm:flex-none items-center gap-2 min-h-[44px]" onClick={() => handleExportProfile()}>
-            <Download size={16} />
-            Export Profile
-          </Button>
+          <SubscriptionDialog />
           <Button className={`flex-1 sm:flex-none items-center gap-2 min-h-[44px] ${themeColors.accentBg} ${themeColors.accentHover} text-white`} onClick={() => setIsEditDialogOpen(true)}>
             <Edit size={16} />
             Edit Profile
@@ -433,14 +498,20 @@ export default function SchoolProfile({ school, onUpdateSchool }: { school: Scho
         </div>
       </div>
 
-      {!isEditDialogOpen ? <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>School Overview</CardTitle>
-            <CardDescription>General information about the school</CardDescription>
+      {!isEditDialogOpen ?
+        <Card>
+          <CardHeader className="flex flex-row justify-between">
+            <div>
+              <CardTitle>School Overview</CardTitle>
+              <CardDescription>General information about the school</CardDescription>
+            </div>
+            <Button className={`flex-1 sm:flex-none items-center gap-2 min-h-[44px] ${themeColors.accentBg} ${themeColors.accentHover}`} onClick={() => handleExportProfile()}>
+              <Download size={16} />
+              Export Profile
+            </Button>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1  gap-6">
               <div className="space-y-4">
                 <div className="flex items-start">
                   <Building className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
@@ -506,37 +577,6 @@ export default function SchoolProfile({ school, onUpdateSchool }: { school: Scho
                     <p className="text-sm text-gray-500">{school?.postalAddress || 'Not provided'}</p>
                   </div>
                 </div>
-
-                <div className="flex items-start">
-                  <CheckCircle className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
-                  <div>
-                    <h3 className="font-medium">School Status</h3>
-                    <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${schoolStatusInfo.color} ${schoolStatusInfo.bgColor} capitalize`}>
-                      {school?.status || 'Unknown'}
-                    </span>
-                    {school?.approvedAt && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        Approved on {formatDate(school.approvedAt)}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <Calendar className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
-                  <div>
-                    <h3 className="font-medium">Registration Date</h3>
-                    <p className="text-sm text-gray-500">{formatDate(school?.createdAt)}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <Clock className="mr-2 h-5 w-5 text-gray-500 mt-0.5" />
-                  <div>
-                    <h3 className="font-medium">Last Updated</h3>
-                    <p className="text-sm text-gray-500">{formatDate(school?.updatedAt)}</p>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -548,82 +588,6 @@ export default function SchoolProfile({ school, onUpdateSchool }: { school: Scho
             )}
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Subscription Information</CardTitle>
-            <CardDescription>Current subscription details</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className={`p-4 rounded-lg ${subscriptionStatusInfo.bgColor}`}>
-                <div className="flex items-center gap-2">
-                  <StatusIcon size={16} className={subscriptionStatusInfo.color} />
-                  <div className="text-sm text-gray-500">Subscription Status</div>
-                </div>
-                <div className={`text-2xl font-bold mt-1 capitalize ${subscriptionStatusInfo.color}`}>
-                  {school?.subscriptionStatus || 'Unknown'}
-                </div>
-              </div>
-
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2 mb-1">
-                  <Calendar size={16} className="text-gray-500" />
-                  <div className="text-sm text-gray-500">Start Date</div>
-                </div>
-                <div className="text-lg font-semibold">
-                  {formatDate(school?.subscriptionStartDate)}
-                </div>
-              </div>
-
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2 mb-1">
-                  <Calendar size={16} className="text-gray-500" />
-                  <div className="text-sm text-gray-500">End Date</div>
-                </div>
-                <div className="text-lg font-semibold">
-                  {formatDate(school?.subscriptionEndDate)}
-                </div>
-                {school?.subscriptionEndDate && (
-                  <div className="text-xs text-gray-500 mt-1">
-                    {new Date(school.subscriptionEndDate) > new Date() 
-                      ? `${Math.ceil((new Date(school.subscriptionEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days remaining`
-                      : 'Expired'
-                    }
-                  </div>
-                )}
-              </div>
-
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2 mb-1">
-                  <CreditCard size={16} className="text-gray-500" />
-                  <div className="text-sm text-gray-500">Subdomain</div>
-                </div>
-                <div className="text-lg font-semibold">
-                  {school?.subdomain || 'Not assigned'}
-                </div>
-                {school?.subdomain && (
-                  <div className="text-xs text-blue-600 mt-1">
-                    {school.subdomain}.yourdomain.com
-                  </div>
-                )}
-              </div>
-
-              {school?.contacts && school.contacts.length > 0 && (
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Users size={16} className="text-gray-500" />
-                    <div className="text-sm text-gray-500">Contacts</div>
-                  </div>
-                  <div className="text-lg font-semibold">
-                    {school.contacts.length} contact{school.contacts.length !== 1 ? 's' : ''}
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div> 
  :
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
   <div className="bg-white w-full max-w-[95vw] sm:max-w-[700px] p-4 sm:p-6 rounded-2xl max-h-[90vh] overflow-y-auto">
@@ -650,16 +614,6 @@ export default function SchoolProfile({ school, onUpdateSchool }: { school: Scho
               {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
             </div>
             <div>
-              <Label htmlFor="registrationNumber">Registration Number *</Label>
-              <Input
-                id="registrationNumber"
-                value={formData.registrationNumber || ''}
-                onChange={(e) => handleInputChange('registrationNumber', e.target.value)}
-                className={errors.registrationNumber ? 'border-red-500' : ''}
-              />
-              {errors.registrationNumber && <p className="text-red-500 text-xs mt-1">{errors.registrationNumber}</p>}
-            </div>
-            <div>
               <Label htmlFor="subdomain">Subdomain *</Label>
               <Input
                 id="subdomain"
@@ -670,15 +624,6 @@ export default function SchoolProfile({ school, onUpdateSchool }: { school: Scho
               />
               {errors.subdomain && <p className="text-red-500 text-xs mt-1">{errors.subdomain}</p>}
               <p className="text-xs text-gray-500 mt-1">yourschool.yourdomain.com</p>
-            </div>
-            <div>
-              <Label htmlFor="logoUrl">Logo URL</Label>
-              <Input
-                id="logoUrl"
-                value={formData.logoUrl || ''}
-                onChange={(e) => handleInputChange('logoUrl', e.target.value)}
-                placeholder="https://example.com/logo.png"
-              />
             </div>
             <div>
               <Label htmlFor="motto">School Motto</Label>

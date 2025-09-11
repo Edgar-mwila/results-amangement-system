@@ -24,6 +24,7 @@ interface UserData {
 }
 
 interface SubjectData {
+  id: string;
   name: string;
   code: string;
   url: string;
@@ -50,6 +51,7 @@ interface AssessmentData {
 }
 
 interface ClassSubjectData {
+  id: string;
   subject: SubjectData;
   assessments: AssessmentData[];
   teacher: UserData;
@@ -118,7 +120,7 @@ const AdminClassView = () => {
       <div className="container mx-auto p-4">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading class data...</p>
           </div>
         </div>
@@ -141,7 +143,7 @@ const AdminClassView = () => {
             </p>
             <button
               onClick={() => refetch()}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
             >
               Try Again
             </button>
@@ -172,7 +174,7 @@ const AdminClassView = () => {
 
   console.log('Class data fetched successfully:', classData);
 
-  return <ClassView classData={classData} />;
+  return <ClassView classData={classData} school={school} />;
 };
 
 export const Route = createRoute({

@@ -573,7 +573,7 @@ const DetailedReportDialog: React.FC<DetailedReportDialogProps> = ({ title, type
                   <TableCell className="font-medium">{teacher.name}</TableCell>
                   <TableCell>{teacher.department}</TableCell>
                   <TableCell>
-                    <Badge className={teacher.rating >= 4.8 ? "bg-green-500" : "bg-blue-500"}>{teacher.rating}</Badge>
+                    <Badge className={teacher.rating >= 4.8 ? "bg-green-500" : "bg-green-500"}>{teacher.rating}</Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
@@ -732,7 +732,7 @@ const DetailedReportDialog: React.FC<DetailedReportDialogProps> = ({ title, type
                         subject.averageScore >= 85
                           ? "bg-green-500"
                           : subject.averageScore >= 80
-                            ? "bg-blue-500"
+                            ? "bg-green-500"
                             : "bg-amber-500"
                       }
                     >
@@ -837,7 +837,7 @@ const Reports: React.FC = () => {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center">
-                  <Users className="mr-2 h-5 w-5 text-blue-500" />
+                  <Users className="mr-2 h-5 w-5 text-green-500" />
                   Students
                 </CardTitle>
               </CardHeader>
@@ -971,7 +971,7 @@ const Reports: React.FC = () => {
                 <div>
                   <p className="text-sm text-gray-500">Average GPA</p>
                   <p className="text-2xl font-semibold">{overallMetrics.averageGPA}</p>
-                  <Badge className="mt-1 bg-blue-500">On Target</Badge>
+                  <Badge className="mt-1 bg-green-500">On Target</Badge>
                 </div>
               </div>
             </CardContent>
@@ -989,7 +989,7 @@ const Reports: React.FC = () => {
               title="School Performance"
               icon={<School className="h-5 w-5" />}
               description="Comprehensive school-wide performance analytics"
-              color="bg-blue-500"
+              color="bg-green-500"
               onClick={() => handleGenerateReport("school")}
             />
 
