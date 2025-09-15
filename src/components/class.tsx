@@ -4,7 +4,6 @@ import {
   Users,
   Edit,
   Plus,
-  Trash2,
   X,
   PlusSquare,
 } from "lucide-react"
@@ -120,13 +119,11 @@ export default function ClassComponent({ classData: initialClassData, school: sc
   const [editingSubject, setEditingSubject] = useState<ClassSubjectData | null>(null)
   const [editingClassTeacher, setEditingClassTeacher] = useState(false)
   const [addingSubject, setAddingSubject] = useState(false)
-  const [addingAssessment, setAddingAssessment] = useState<string | null>(null)
   const [newSubject, setNewSubject] = useState({ subject: "", teacher: "" })
-  const [newAssessment, setNewAssessment] = useState({ name: "", totalMarks: "", term: "Term 1" })
   const [teachers, setTeachers] = useState<UserData[]>([])
   const [subjects, setSubjects] = useState<SubjectData[]>([])
   const [showAssessmentModal, setShowAssessmentModal] = useState<{ open: boolean, subject: ClassSubjectData | null }>({ open: false, subject: null })
-  const [assessmentForm, setAssessmentForm] = useState({ name: '', totalMarks: '', termId: '', dateOfAssessment: '' })
+  const [assessmentForm, setAssessmentForm] = useState({ name: '', totalMarks: '', dateOfAssessment: '' })
   const assessmentModalRef = useRef<HTMLDivElement>(null)
   const [selectedClassTeacherId, setSelectedClassTeacherId] = useState<string>('')
   const [selectedSubjectTeacherId, setSelectedSubjectTeacherId] = useState<string>('')
@@ -145,7 +142,7 @@ export default function ClassComponent({ classData: initialClassData, school: sc
         // Fetch teachers
         const teachersRes = await fetch(`/api/${school}/users/`)
         const teachersData = await teachersRes.json()
-        setTeachers(teachersData.filter((u: UserData) => u.role?.name?.toLowerCase() === 'teacher'))
+        setTeachers(teachersData.filter((u: UserData) => u.role?.name?.toLowerCase() === 'teacher' || 'administrator'))
         // Fetch subjects
         const subjectsRes = await fetch(`/api/${school}/subjects/`)
         const subjectsData = await subjectsRes.json()
@@ -246,23 +243,23 @@ export default function ClassComponent({ classData: initialClassData, school: sc
   }
 
   // Admin: Remove subject from class
-  const handleRemoveSubject = async (subjectCode: string) => {
-    try {
-      const classSubject = classData.classSubjects.find(cs => cs.subject.code === subjectCode)
-      if (!classSubject) return
-      const res = await fetch(`/api/${school}/class-subjects/${classSubject.id}`, {
-        method: 'DELETE' })
-      if (!res.ok) throw new Error('Failed to remove subject')
-      // Refetch class data since backend returns no body
-      const refreshed = await fetch(`/api/${school}/classes/${classData.id}`)
-      if (refreshed.ok) {
-        const updatedClassData = await refreshed.json()
-        setClassData(updatedClassData)
-      }
-    } catch (err) {
-      console.error(`Failed to remove subject ${err}`)
-    }
-  }
+  // const handleRemoveSubject = async (subjectCode: string) => {
+  //   try {
+  //     const classSubject = classData.classSubjects.find(cs => cs.subject.code === subjectCode)
+  //     if (!classSubject) return
+  //     const res = await fetch(`/api/${school}/class-subjects/${classSubject.id}`, {
+  //       method: 'DELETE' })
+  //     if (!res.ok) throw new Error('Failed to remove subject')
+  //     // Refetch class data since backend returns no body
+  //     const refreshed = await fetch(`/api/${school}/classes/${classData.id}`)
+  //     if (refreshed.ok) {
+  //       const updatedClassData = await refreshed.json()
+  //       setClassData(updatedClassData)
+  //     }
+  //   } catch (err) {
+  //     console.error(`Failed to remove subject ${err}`)
+  //   }
+  // }
   // Only show subject row if admin, class teacher, or subject teacher for that subject
   const visibleSubjects = isAdmin || isClassTeacher
     ? classData.classSubjects
@@ -278,7 +275,6 @@ export default function ClassComponent({ classData: initialClassData, school: sc
         body: JSON.stringify({
           name: assessmentForm.name,
           classSubjectId: showAssessmentModal.subject.id,
-          termId: assessmentForm.termId,
           totalMarks: Number(assessmentForm.totalMarks),
           dateOfAssessment: assessmentForm.dateOfAssessment
         })
@@ -288,7 +284,7 @@ export default function ClassComponent({ classData: initialClassData, school: sc
       const updatedClassData = await res.json()
       setClassData(updatedClassData)
       setShowAssessmentModal({ open: false, subject: null })
-      setAssessmentForm({ name: '', totalMarks: '', termId: '', dateOfAssessment: '' })
+      setAssessmentForm({ name: '', totalMarks: '', dateOfAssessment: '' })
     } catch (err) {
       console.error(`Failed to create assessment ${err}`);
     }
@@ -382,12 +378,20 @@ export default function ClassComponent({ classData: initialClassData, school: sc
                               >
                                 <Edit className="h-4 w-4" />
                               </button>
-                              <button
+                              {/* <button
                                 onClick={() => handleRemoveSubject(subject.subject.code)}
                                 className="bg-red-100 hover:bg-red-200 p-2 rounded text-red-600"
                               >
                                 <Trash2 className="h-4 w-4" />
-                              </button>
+                              </button> */}
+                              {isSubjectTeacher && subject.teacher?.id === user?.id && (
+                          <button
+                            onClick={() => setShowAssessmentModal({ open: true, subject })}
+                            className="bg-green-400 text-white px-2 py-1 rounded text-xs hover:bg-green-500"
+                          >
+                            <PlusSquare />
+                          </button>
+                        )}
                         </div>
                       </td>
                       : <td className="py-3">
@@ -597,63 +601,6 @@ export default function ClassComponent({ classData: initialClassData, school: sc
         )}
       </Modal>
 
-      {/* Add Assessment Modal */}
-      <Modal
-        isOpen={!!addingAssessment}
-        onClose={() => setAddingAssessment(null)}
-        title="Add New Assessment"
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Assessment Name</label>
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              value={newAssessment.name}
-              onChange={(e) => setNewAssessment(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="Enter assessment name"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Total Marks</label>
-            <input
-              type="number"
-              className="w-full p-2 border rounded"
-              value={newAssessment.totalMarks}
-              onChange={(e) => setNewAssessment(prev => ({ ...prev, totalMarks: e.target.value }))}
-              placeholder="Enter total marks"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Term</label>
-            <select
-              className="w-full p-2 border rounded"
-              value={newAssessment.term}
-              onChange={(e) => setNewAssessment(prev => ({ ...prev, term: e.target.value }))}
-            >
-              <option value="Term 1">Term 1</option>
-              <option value="Term 2">Term 2</option>
-              <option value="Term 3">Term 3</option>
-            </select>
-          </div>
-          <div className="flex gap-2 pt-4">
-            <button
-              onClick={() => setAddingAssessment(null)}
-              className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => addingAssessment ? handleCreateAssessment() : null}
-              disabled={!newAssessment.name || !newAssessment.totalMarks}
-              className="flex-1 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 disabled:opacity-50"
-            >
-              Add Assessment
-            </button>
-          </div>
-        </div>
-      </Modal>
-
       {/* Assessment creation modal for subject teacher */}
       {showAssessmentModal.open && showAssessmentModal.subject && (
         <Modal
@@ -683,16 +630,6 @@ export default function ClassComponent({ classData: initialClassData, school: sc
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Term ID</label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded"
-                value={assessmentForm.termId}
-                onChange={e => setAssessmentForm(f => ({ ...f, termId: e.target.value }))}
-                placeholder="Enter term ID"
-              />
-            </div>
-            <div>
               <label className="block text-sm font-medium mb-2">Date of Assessment</label>
               <input
                 type="date"
@@ -710,7 +647,7 @@ export default function ClassComponent({ classData: initialClassData, school: sc
               </button>
               <button
                 onClick={handleCreateAssessment}
-                disabled={!assessmentForm.name || !assessmentForm.totalMarks || !assessmentForm.termId || !assessmentForm.dateOfAssessment}
+                disabled={!assessmentForm.name || !assessmentForm.totalMarks || !assessmentForm.dateOfAssessment}
                 className="flex-1 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 disabled:opacity-50"
               >
                 Create Assessment

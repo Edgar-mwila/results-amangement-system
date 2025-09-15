@@ -104,9 +104,10 @@ interface PasswordForm {
 }
 
 interface ApiInterface {
-  updatePersonalDetails: (userId: string, data: PersonalDetailsForm) => Promise<void>;
-  updatePassword: (userId: string, data: PasswordForm) => Promise<void>;
-  updateRole: (userId: string, roleId: string) => Promise<void>;
+  school: string;
+  updatePersonalDetails: (school: string, userId: string, data: PersonalDetailsForm) => Promise<void>;
+  updatePassword: (school: string, userId: string, data: PasswordForm) => Promise<void>;
+  updateRole: (school: string, userId: string, roleId: string) => Promise<void>;
   getRoles: () => Promise<Role[]>;
 }
 
@@ -145,7 +146,7 @@ export default function UserProfile({ user, api, isCurrentUser = false }: UserPr
     setError(null);
     
     try {
-      await api.updatePersonalDetails(user.id, personalForm);
+      await api.updatePersonalDetails(api.school, user.id, personalForm);
       setSuccess('Personal details updated successfully');
       setEditingSection(null);
     } catch (err) {
@@ -172,7 +173,7 @@ export default function UserProfile({ user, api, isCurrentUser = false }: UserPr
     }
     
     try {
-      await api.updatePassword(user.id, passwordForm);
+      await api.updatePassword(api.school, user.id, passwordForm);
       setSuccess('Password updated successfully');
       setEditingSection(null);
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
@@ -194,7 +195,7 @@ export default function UserProfile({ user, api, isCurrentUser = false }: UserPr
     setError(null);
     
     try {
-      await api.updateRole(user.id, selectedRoleId.toString());
+      await api.updateRole(api.school, user.id, selectedRoleId.toString());
       setSuccess('Role updated successfully');
       setEditingSection(null);
     } catch (err) {

@@ -106,24 +106,21 @@ const ClassTableSkeleton = () => (
 );
 
 // Create Class Dialog Component
+// Create Class Dialog Component - FIXED VERSION
 const CreateClassDialog = ({ schoolId }: { schoolId: string }) => {
   const [open, setOpen] = useState(false);
+  
+  // FIXED: Simplified form state - removed unnecessary object properties and 0 defaults
   const [formData, setFormData] = useState<{
     name: string;
-    grade?: Grade;
-    academicYear?: AcademicYear;
-    classTeacher?: User;
     gradeId?: number;
     academicYearId?: number;
     classTeacherId?: string;
   }>({
     name: '',
-    grade: undefined,
-    academicYear: undefined,
-    classTeacher: undefined,
-    gradeId: 0,
-    academicYearId: 0,
-    classTeacherId: '',
+    gradeId: undefined,
+    academicYearId: undefined,
+    classTeacherId: undefined,
   });
 
   const queryClient = useQueryClient();
@@ -152,62 +149,51 @@ const CreateClassDialog = ({ schoolId }: { schoolId: string }) => {
       queryClient.invalidateQueries({ queryKey: ['classes', schoolId] });
       toast.success('Class created successfully!');
       setOpen(false);
-      setFormData({
-        name: '',
-        grade: undefined,
-        academicYear: undefined,
-        classTeacher: undefined,
-        gradeId: 0,
-        academicYearId: 0,
-        classTeacherId: '',
-      });
+      resetForm();
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to create class');
     },
   });
 
+  // FIXED: Simplified handleSubmit - no more trying to set objects on formData
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    formData.grade = grades?.find(g => g.id === formData.gradeId);
-    formData.academicYear = academicYears?.find(y => y.id === formData.academicYearId);
-    formData.classTeacher = teachers?.find(t => t.id === formData.classTeacherId);
-
-    if (!formData.name) {
+    
+    // Validation with proper checks
+    if (!formData.name.trim()) {
       toast.error('Please enter the class name');
       return;
     }
-    if (!formData.grade) {
+    if (!formData.gradeId) {
       toast.error('Please select a grade');
       return;
     }
-    if (!formData.academicYear) {
+    if (!formData.academicYearId) {
       toast.error('Please select an academic year');
       return;
     }
-    if (!formData.classTeacher) {
+    if (!formData.classTeacherId) {
       toast.error('Please select a class teacher');
       return;
     }
 
-    // Submit only the required IDs as per CreateClassRequest
+    // Submit with the actual IDs
     createClassMutation.mutate({
-      name: formData.name,
-      gradeId: formData.gradeId!,
-      academicYearId: formData.academicYearId!,
-      classTeacherId: formData.classTeacherId!,
+      name: formData.name.trim(),
+      grade: grades!.find(grade => grade.id === formData.gradeId)!,
+      academicYear: academicYears!.find(year => year.id === formData.academicYearId)!,
+      classTeacher: teachers!.find(teacher => teacher.id === formData.classTeacherId)!,
     });
   };
 
+  // FIXED: Simplified reset form
   const resetForm = () => {
     setFormData({
       name: '',
-      grade: undefined,
-      academicYear: undefined,
-      classTeacher: undefined,
-      gradeId: 0,
-      academicYearId: 0,
-      classTeacherId: '',
+      gradeId: undefined,
+      academicYearId: undefined,
+      classTeacherId: undefined,
     });
   };
 
@@ -247,23 +233,17 @@ const CreateClassDialog = ({ schoolId }: { schoolId: string }) => {
               />
             </div>
 
+            {/* FIXED: Grade Select */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="grade" className="text-right font-medium">
                 Grade
               </Label>
               <Select
-                value={formData.gradeId?.toString()}
+                value={formData.gradeId?.toString() || ""}
                 onValueChange={(value) => {
                   const numericValue = Number(value);
-                  const grade = grades?.find(g => g.id === numericValue);
-                  if (!grade) {
-                    toast.error('Invalid grade selected');
-                    console.error('Invalid grade selected:', value);
-                    console.log('Available grades:', grades);
-                  }
                   setFormData(prev => ({
                     ...prev,
-                    grade: grade,
                     gradeId: numericValue,
                   }));
                 }}
@@ -287,17 +267,16 @@ const CreateClassDialog = ({ schoolId }: { schoolId: string }) => {
               </Select>
             </div>
 
+            {/* FIXED: Teacher Select */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="teacher" className="text-right font-medium">
                 Class Teacher
               </Label>
               <Select
-                value={formData.classTeacherId}
+                value={formData.classTeacherId || ""}
                 onValueChange={(value) => {
-                  const teacher = teachers?.find(t => t.id === value);
                   setFormData(prev => ({
                     ...prev,
-                    classTeacher: teacher,
                     classTeacherId: value,
                   }));
                 }}
@@ -321,18 +300,17 @@ const CreateClassDialog = ({ schoolId }: { schoolId: string }) => {
               </Select>
             </div>
 
+            {/* FIXED: Academic Year Select */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="academicYear" className="text-right font-medium">
                 Academic Year
               </Label>
               <Select
-                value={formData.academicYearId?.toString()}
+                value={formData.academicYearId?.toString() || ""}
                 onValueChange={(value) => {
                   const numericValue = Number(value);
-                  const year = academicYears?.find(y => y.id === numericValue);
                   setFormData(prev => ({
                     ...prev,
-                    academicYear: year,
                     academicYearId: numericValue,
                   }));
                 }}

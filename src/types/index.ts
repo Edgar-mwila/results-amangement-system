@@ -239,9 +239,9 @@ export interface ClassModel {
 
 export interface CreateClassRequest {
   name: string;
-  gradeId: number;
-  academicYearId: number;
-  classTeacherId: string;
+  grade: Grade;
+  academicYear: AcademicYear;
+  classTeacher: User;
 }
 
 interface Assessment {

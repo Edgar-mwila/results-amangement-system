@@ -4,9 +4,10 @@ import UserProfile from '@/components/user-profile'
 import { PersonalDetailsForm, PasswordForm, Role } from '@/types';
 import { UserData } from '@/components/user-profile';
 export interface ApiEndpoints {
-  updatePersonalDetails: (userId: string, data: PersonalDetailsForm) => Promise<void>;
-  updatePassword: (userId: string, data: PasswordForm) => Promise<void>;
-  updateRole: (userId: string, roleId: string) => Promise<void>;
+  school: string;
+  updatePersonalDetails: (school: string, userId: string, data: PersonalDetailsForm) => Promise<void>;
+  updatePassword: (school: string, userId: string, data: PasswordForm) => Promise<void>;
+  updateRole: (school: string, userId: string, roleId: string) => Promise<void>;
   getRoles: () => Promise<Role[]>;
 }
 
@@ -19,16 +20,8 @@ const fetchUserData = async (userId: string, school: string): Promise<UserData> 
   return response.json();
 };
 
-const fetchRoles = async (school: string): Promise<Role[]> => {
-  const response = await fetch(`/api/${school}/roles/`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch roles');
-  }
-  return response.json();
-};
-
-const updatePersonalDetails = async (userId: string, data: PersonalDetailsForm): Promise<void> => {
-  const response = await fetch(`/api/users/${userId}/personal-details`, {
+const updatePersonalDetails = async (school: string,userId: string, data: PersonalDetailsForm): Promise<void> => {
+  const response = await fetch(`/api/${school}/users/${userId}/personal-details`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -40,8 +33,8 @@ const updatePersonalDetails = async (userId: string, data: PersonalDetailsForm):
   }
 };
 
-const updatePassword = async (userId: string, data: PasswordForm): Promise<void> => {
-  const response = await fetch(`/api/users/${userId}/password`, {
+const updatePassword = async (school: string,userId: string, data: PasswordForm): Promise<void> => {
+  const response = await fetch(`/api/${school}/users/${userId}/password`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -53,8 +46,8 @@ const updatePassword = async (userId: string, data: PasswordForm): Promise<void>
   }
 };
 
-const updateRole = async (userId: string, roleId: string): Promise<void> => {
-  const response = await fetch(`/api/users/${userId}/role`, {
+const updateRole = async (school: string,userId: string, roleId: string): Promise<void> => {
+  const response = await fetch(`/api/${school}/users/${userId}/role`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -138,30 +131,16 @@ const Staffer = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Fetch roles data
-  const {
-    data: roles,
-    isLoading: isLoadingRoles,
-    error: rolesError
-  } = useQuery({
-    queryKey: ['roles'],
-    queryFn: () => fetchRoles(school),
-    retry: 2,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-  });
+  const roles: Role[] = [{ id: '1', name: 'Administrator' }, { id: '2', name: 'Teacher' }];
 
   // Handle loading states
-  if (isLoadingUser || isLoadingRoles) {
+  if (isLoadingUser) {
     return <UserProfileSkeleton />;
   }
 
   // Handle error states
   if (userError) {
     return <ErrorMessage error={userError as Error} onRetry={() => refetchUser()} />;
-  }
-
-  if (rolesError) {
-    return <ErrorMessage error={rolesError as Error} onRetry={() => window.location.reload()} />;
   }
 
   // Handle missing data
@@ -178,6 +157,7 @@ const Staffer = () => {
 
   // Create API endpoints object
   const apiEndpoints: ApiEndpoints = {
+    school,
     updatePersonalDetails,
     updatePassword,
     updateRole,

@@ -27,7 +27,7 @@ const Classes = () => {
     enabled: !!school && !!teacherId,
   })
 
-  const transformedClasses = userData?.classesManaged.map((classItem) => ({
+  const myClasses = userData?.classesManaged.map((classItem) => ({
     id: classItem.id.toString(),
     name: classItem.name,
     grade: classItem.grade.level,
@@ -43,6 +43,24 @@ const Classes = () => {
     pendingGrading: 0,
     teacher: `${userData.firstName} ${userData.lastName}`,
   })) || []
+
+  const additionalClasses = userData?.subjectsTeaching.map((subject) => ({
+      id: subject.classModel.id.toString(),
+      name: subject.classModel.name,
+      grade: subject.classModel.grade.level,
+      subjects: subject ? [subject.subject.name] : [],
+      schedule: "Schedule TBD", // Replace if actual schedule is available
+      students: subject.classModel.classStudents.length,
+      averagePerformance: 0, // You can calculate from assessments
+      recentTopics: [],
+      room: "Room TBD",
+      upcomingAssignments: 0,
+      pendingGrading: 0,
+      teacher: `${userData.firstName} ${userData.lastName}`,
+    }) 
+  ) || [];
+
+  const transformedClasses = myClasses.concat(additionalClasses);
 
   const filteredClasses = transformedClasses
     .filter(

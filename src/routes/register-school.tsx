@@ -114,7 +114,7 @@ const defaultValues: Partial<SchoolFormValues> = {
   school_type: undefined,
   ownership: undefined,
   curriculum: undefined,
-  logoUrl: "",
+  logoUrl: "http://placeholder",
   township: "",
   address: "",
   postalAddress: "",
@@ -302,23 +302,6 @@ const RegisterSchoolPage = () => {
                             className="resize-none"
                             rows={3}
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="logoUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <School className="h-4 w-4 text-green-600" />
-                          Logo URL
-                        </FormLabel>
-                        <FormControl>
-                          <Input type="url" placeholder="Enter logo URL" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
