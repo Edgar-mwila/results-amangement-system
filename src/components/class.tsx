@@ -188,10 +188,13 @@ export default function ClassComponent({ classData: initialClassData, school: sc
       })
       if (!res.ok) throw new Error('Failed to add subject')
       // Refetch or update classData
-      const updatedClassData = await res.json()
-      setClassData(updatedClassData)
       setAddingSubject(false)
       setNewSubject({ subject: '', teacher: '' })
+      const refreshed = await fetch(`/api/${school}/classes/${classData.id}`)
+      if (refreshed.ok) {
+        const updatedClassData = await refreshed.json()
+        setClassData(updatedClassData)
+      }
     } catch (err) {
       console.error(`Failed to add subject ${err}`)
     }
@@ -267,6 +270,7 @@ export default function ClassComponent({ classData: initialClassData, school: sc
 
   // Add handler for creating assessment
   const handleCreateAssessment = async () => {
+
     if (!showAssessmentModal.subject) return
     try {
       const res = await fetch(`/api/${school}/assessments/`, {
@@ -281,10 +285,9 @@ export default function ClassComponent({ classData: initialClassData, school: sc
       })
       if (!res.ok) throw new Error('Failed to create assessment')
       // Refetch or update classData
-      const updatedClassData = await res.json()
-      setClassData(updatedClassData)
-      setShowAssessmentModal({ open: false, subject: null })
       setAssessmentForm({ name: '', totalMarks: '', dateOfAssessment: '' })
+      setShowAssessmentModal({ open: false, subject: null })
+      location.reload();
     } catch (err) {
       console.error(`Failed to create assessment ${err}`);
     }

@@ -157,6 +157,7 @@ const TableSkeleton = () => (
 )
 
 // API Functions
+// Fixed apiCall function that handles 204 No Content responses
 const apiCall = async (url: string, options: RequestInit = {}) => {
   const response = await fetch(url, {
     ...options,
@@ -170,7 +171,19 @@ const apiCall = async (url: string, options: RequestInit = {}) => {
     throw new Error(`API call failed: ${response.status} ${response.statusText}`)
   }
   
-  return response.json()
+  // Handle 204 No Content - don't try to parse JSON
+  if (response.status === 204) {
+    return null
+  }
+  
+  // Check if response has content and is JSON
+  const contentType = response.headers.get('content-type')
+  if (contentType && contentType.includes('application/json')) {
+    return response.json()
+  }
+  
+  // For other successful responses, return as text
+  return response.text()
 }
 
 const fetchAssessments = async (school: string): Promise<Assessment[]> => {
@@ -195,10 +208,9 @@ const fetchAssessments = async (school: string): Promise<Assessment[]> => {
 const updateStudentAssessment = async (
   school: string, 
   assessmentId: string, 
-  studentId: string, 
-  data: { marksObtained: number; comment?: string }
-): Promise<StudentAssessment> => {
-  return apiCall(`/api/${school}/assessments/${assessmentId}/students/${studentId}`, {
+  data: { marksObtained: number; comment?: string, studentId: string }
+): Promise<void> => {
+  return apiCall(`/api/${school}/student-assessments/${assessmentId}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   })
@@ -226,7 +238,7 @@ const calculateCompletion = (assessment: Assessment) => {
 const canUserGradeAssessment = (user: User | null, assessment: Assessment): boolean => {
   if (!user) return false
   // Only the assigned teacher (creator) can edit/grade this assessment
-  if (user.role.name === 'teacher' && user.id === assessment.classSubjects.teacher.id) return true
+  if (user.id === assessment.classSubjects.teacher.id) return true
   return false
 }
 
@@ -481,9 +493,10 @@ const StudentGradingDialog = ({
         .filter(([_, grade]) => grade.isModified && grade.hasValidMarks)
       
       const promises = modifiedGrades.map(([studentId, grade]) =>
-        updateStudentAssessment(school, assessment.id.toString(), studentId, {
+        updateStudentAssessment(school, assessment.id.toString(), {
           marksObtained: grade.marks,
-          comment: grade.comment
+          comment: grade.comment,
+          studentId
         })
       )
       

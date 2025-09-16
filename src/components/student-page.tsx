@@ -313,7 +313,7 @@ export default function StudentPage({ students }: StudentPageProps) {
     if (student.classStudents && student.classStudents.length > 0) {
       // Get the most recent class enrollment
       const latestClass = student.classStudents[0]
-      return latestClass.classModel.grade.level.toString()
+      return latestClass.classModel.name.toString()
     }
     return 'N/A'
   }
@@ -460,7 +460,7 @@ export default function StudentPage({ students }: StudentPageProps) {
             <TableRow className="hover:bg-gray-50">
               <TableHead className="font-medium text-xs sm:text-base p-4">Student</TableHead>
               <TableHead className="font-medium text-xs sm:text-base p-4">ID</TableHead>
-              <TableHead className="font-medium text-xs sm:text-base p-4">Grade</TableHead>
+              <TableHead className="font-medium text-xs sm:text-base p-4">Class</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y">
@@ -483,7 +483,7 @@ export default function StudentPage({ students }: StudentPageProps) {
                   </TableCell>
                   <TableCell className="p-4">
                     <div>
-                      {currentGrade !== 'N/A' ? `Grade ${currentGrade}` : 'Not Enrolled'}
+                      {currentGrade}
                     </div>
                   </TableCell>
                 </TableRow>
